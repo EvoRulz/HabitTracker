@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habit Tracker</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: sans-serif;
+      background: #111;
+      color: white;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    body::-webkit-scrollbar { display: none; }
+
+    h1 { margin-top: 0; }
+
+    .tracker-btn {
+      padding: 12px 20px;
+      background: #444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 8px;
+    }
+
+    .tracker-section {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .controls {
+      margin-bottom: 8px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .controls select {
+      background: #000;
+      color: white;
+      border: 1px solid #444;
+      padding: 6px;
+      font-size: 13px;
+      border-radius: 4px;
+    }
+
+    .controls button {
+      padding: 6px 12px;
+      background: #444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .stats {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .scroll-container {
+      overflow-y: auto;
+      max-height: 80vh;
+      overflow-x: auto;
+      border: 1px solid #333;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .scroll-container::-webkit-scrollbar { display: none; }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 6px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #000;
+      z-index: 1;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    th:hover { background: #1a1a1a; }
+    th.sorted-asc::after  { content: " ▲"; }
+    th.sorted-desc::after { content: " ▼"; }
+
+    .bar-container {
+      width: 100%;
+      height: 18px;
+      background: #222;
+    }
+    .bar        { height: 100%; background: #7030A0; transition: width 0.2s; }
+    .bar-total  { height: 100%; background: #8000ff; transition: width 0.2s; }
+    .bar-streak { height: 100%; background: #375623; transition: width 0.2s; margin-left: auto; }
+
+    td.set-cell { padding: 0; }
+
+    input[type="number"] {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 13px;
+      text-align: center;
+      outline: none;
+      padding: 4px 0;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    td select {
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 12px;
+      width: 100%;
+      padding: 4px 2px;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    td select option { background: #111; }
+
+    td textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 36px;
+      box-sizing: border-box;
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 12px;
+      resize: none;
+      outline: none;
+      padding: 4px;
+      font-family: sans-serif;
+    }
+
+    .sentinel { height: 1px; }
+  </style>
+</head>
+<body>
+
+<h1>Habit Tracker <span style="font-size:14px;color:#888;font-weight:normal">v1.0</span></h1>
+<div id="app-controls" style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
+  <button class="tracker-btn" onclick="appExport()">Export All</button>
+  <button class="tracker-btn" onclick="document.getElementById('app-import-file').click()">Import All</button>
+  <input type="file" id="app-import-file" accept=".json" style="display:none" onchange="appImport(this)">
+</div>
+<div id="buttons"></div>
+<div id="sections"></div>
+
+<script>
+  // ── Service Worker Registration ────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('Service Worker registered!', reg))
+        .catch(err => console.error('Service Worker registration failed: ', err));
+    });
+  }
+
+  // ── Shared constants ───────────────────────────────────────
+  const MIN_DATE       = new Date("2026-03-14");
+  const MAX_DATE       = new Date("2111-04-19");
+  const STATUSES       = ["yes", "no", "idk", "n/a"];
+  const CHUNK          = 30;
+  const SET_BAR_MAX    = 100;
+  const TOTAL_BAR_MAX  = 100;
+  const STREAK_BAR_MAX = 30;
+
+  // ── Tracker configs ────────────────────────────────────────
+  const TRACKER_CONFIGS = [
+    {
+      id:        "pushups",
+      label:     "Pushups",
+      hasSets:   true,
+      hasStreak: (row) => row && sum(row.sets) > 0,
+    },
+    {
+      id:        "teeth",
+      label:     "Teeth",
+      hasSets:   false,
+      hasStreak: (row) => row && row.status !== "",
+    },
+  ];
+
+  // ── Shared utils ───────────────────────────────────────────
+  function dateStr(d) { return d.toISOString().split("T")[0]; }
+  function displayDate(iso) {
+    const [y, m, d] = iso.split("-");
+    return `${d}/${m}/${y.slice(-2)}`;
+  }
+  function offsetDate(base, days) {
+    const d = new Date(base);
+    d.setDate(d.getDate() + days);
+    return d;
+  }
+  function clamp(d) {
+    if (d < MIN_DATE) return new Date(MIN_DATE);
+    if (d > MAX_DATE) return new Date(MAX_DATE);
+    return d;
+  }
+  function sum(sets) { return (sets || []).reduce((a, b) => a + b, 0); }
+
+  // ── Global handler dispatch ────────────────────────────────
+  const trackers = {};
+  function onSelectChange(id, ds, el) { trackers[id].onSelectChange(ds, el); }
+  function onReasonInput(id, ds, el)  { trackers[id].onReasonInput(ds, el); }
+  function onSetInput(id, ds)          { trackers[id].onInput(ds); }
+  function onHeaderClick(id, key)      { trackers[id].onHeaderClick(key); }
+  function onFilterChange(id, val)    { trackers[id].onFilterChange(val); }
+  function jumpToToday(id)            { trackers[id].jumpToToday(); }
+  function exportData(id)              { trackers[id].exportData(); }
+  function importData(id, el)          { trackers[id].importData(el); }
+
+  // ── Tracker factory ────────────────────────────────────────
+  function createTracker(config) {
+    const { id, label, hasSets, hasStreak } = config;
+    const prefix = id + ":";
+
+    const store = {};
+    let sortKey      = "date";
+    let sortDir      = 1;
+    let filterStatus = "";
+    let viewDates    = null;
+    let topDate, bottomDate;
+
+    function sel(q)  { return document.querySelector(`#section-${id} ${q}`); }
+    function selAll(q) { return document.querySelectorAll(`#section-${id} ${q}`); }
+
+    // ── Storage ──
+    function loadAll() {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key.startsWith(prefix)) continue;
+        const ds = key.slice(prefix.length);
+        try { store[ds] = JSON.parse(localStorage.getItem(key)); } catch {}
+      }
+    }
+
+    function save(ds) {
+      localStorage.setItem(prefix + ds, JSON.stringify(store[ds]));
+    }
+
+    function getRow(ds) {
+      if (hasSets) return store[ds] || { status: "", reason: "", sets: Array(9).fill(0) };
+      return store[ds] || { status: "", reason: "" };
+    }
+
+    function setRowFromDOM(ds) {
+      const row = sel(`tr[data-date="${ds}"]`);
+      if (!row) return;
+      const cells = row.querySelectorAll("td");
+      const status = cells[1].querySelector("select").value;
+      const reason = cells[2].querySelector("textarea").value;
+      if (hasSets) {
+        const sets = [...cells].slice(5).map(c => Number(c.querySelector("input")?.value || 0));
+        store[ds] = { status, reason, sets };
+      } else {
+        store[ds] = { status, reason };
+      }
+      save(ds);
+    }
+
+    // ── Streak ──
+    function computeStreak(ds) {
+      let streak = 0;
+      let d = new Date(ds);
+      while (true) {
+        const key = dateStr(new Date(d));
+        if (!hasStreak(store[key])) break;
+        streak++;
+        d.setDate(d.getDate() - 1);
+        if (d < MIN_DATE) break;
+      }
+      return streak;
+    }
+
+    // ── View / sort ──
+    function buildView() {
+      if (filterStatus === "") { viewDates = null; return; }
+      viewDates = Object.entries(store)
+        .filter(([, v]) => v.status === filterStatus)
+        .map(([k]) => k);
+      if (sortKey === "date") {
+        viewDates.sort((a, b) => sortDir * a.localeCompare(b));
+      } else if (sortKey === "total" && hasSets) {
+        viewDates.sort((a, b) => sortDir * (sum(store[a]?.sets) - sum(store[b]?.sets)));
+      } else if (sortKey === "status") {
+        viewDates.sort((a, b) => sortDir * (store[a]?.status || "").localeCompare(store[b]?.status || ""));
+      } else if (sortKey.startsWith("set") && hasSets) {
+        const idx = parseInt(sortKey.slice(3)) - 1;
+        viewDates.sort((a, b) => sortDir * ((store[a]?.sets?.[idx] || 0) - (store[b]?.sets?.[idx] || 0)));
+      }
+    }
+
+    // ── Row DOM ──
+    function makeRow(ds) {
+      const saved     = getRow(ds);
+      const streak    = computeStreak(ds);
+      const streakPct = Math.min(streak, STREAK_BAR_MAX) / STREAK_BAR_MAX * 100;
+
+      const statusOpts = `<option value=""></option>` +
+        STATUSES.map(s => `<option value="${s}"${saved.status === s ? " selected" : ""}>${s}</option>`).join("");
+
+      const tr = document.createElement("tr");
+      tr.dataset.date = ds;
+
+      let html = `
+        <td>${displayDate(ds)}</td>
+        <td style="padding:0"><select onchange="onSelectChange('${id}','${ds}',this)">${statusOpts}</select></td>
+        <td style="padding:0"><textarea oninput="onReasonInput('${id}','${ds}',this)">${saved.reason || ""}</textarea></td>
+        <td class="set-cell">
+          <div style="text-align:center;font-size:12px;line-height:18px">${streak || ""}</div>
+          <div class="bar-container"><div class="bar-streak" style="width:${streakPct}%"></div></div>
+        </td>`;
+
+      if (hasSets) {
+        const total    = sum(saved.sets);
+        const totalPct = Math.min(total, TOTAL_BAR_MAX) / TOTAL_BAR_MAX * 100;
+        html += `
+        <td class="set-cell">
+          <div style="text-align:center;font-size:12px;line-height:18px">${total || ""}</div>
+          <div class="bar-container"><div class="bar-total" style="width:${totalPct}%"></div></div>
+        </td>`;
+        for (let s = 0; s < 9; s++) {
+          const val = saved.sets[s] || 0;
+          const pct = Math.min(val, SET_BAR_MAX) / SET_BAR_MAX * 100;
+          html += `<td class="set-cell">
+            <input type="number" min="0" value="${val || ""}" placeholder=""
+              oninput="onInput('${id}','${ds}')">
+            <div class="bar-container"><div class="bar" style="width:${pct}%"></div></div>
+          </td>`;
+        }
+      }
+
+      tr.innerHTML = html;
+      return tr;
+    }
+
+    // ── Update helpers ──
+    function updateBars() {
+      if (!hasSets) return;
+      const tbody = sel("tbody");
+      if (!tbody) return;
+      for (let col = 0; col < 9; col++) {
+        const inputs = [...tbody.querySelectorAll(`tr td:nth-child(${col + 6}) input`)];
+        inputs.forEach(i => {
+          const pct = Math.min(Number(i.value || 0), SET_BAR_MAX) / SET_BAR_MAX * 100;
+          i.parentElement.querySelector(".bar").style.width = pct + "%";
+        });
+      }
+    }
+
+    function updateStreakAndTotal(fromDs) {
+      const tbody = sel("tbody");
+      if (!tbody) return;
+      const rows     = [...tbody.querySelectorAll("tr")];
+      const startIdx = fromDs ? Math.max(0, rows.findIndex(r => r.dataset.date === fromDs)) : 0;
+      rows.slice(startIdx).forEach(row => {
+        const ds    = row.dataset.date;
+        const cells = row.querySelectorAll("td");
+        const streak    = computeStreak(ds);
+        const streakPct = Math.min(streak, STREAK_BAR_MAX) / STREAK_BAR_MAX * 100;
+        cells[3].querySelector("div").textContent         = streak || "";
+        cells[3].querySelector(".bar-streak").style.width = streakPct + "%";
+        if (hasSets) {
+          const total    = sum(store[ds]?.sets || []);
+          const totalPct = Math.min(total, TOTAL_BAR_MAX) / TOTAL_BAR_MAX * 100;
+          cells[4].querySelector("div").textContent         = total || "";
+          cells[4].querySelector(".bar-total").style.width  = totalPct + "%";
+        }
+      });
+    }
+
+    function updateStats() {
+      const el = sel(".stats");
+      if (!el) return;
+      const entries    = Object.values(store);
+      const daysLogged = entries.length;
+      if (hasSets) {
+        const totalReps = entries.reduce((t, r) => t + sum(r.sets), 0);
+        el.textContent = `${daysLogged} days logged · ${totalReps} total reps`;
+      } else {
+        el.textContent = `${daysLogged} days logged`;
+      }
+    }
+
+    // ── Handlers ──
+    function onSelectChange(ds, el) {
+      if (!store[ds]) store[ds] = getRow(ds);
+      store[ds].status = el.value;
+      save(ds);
+      updateStreakAndTotal(ds);
+      updateStats();
+    }
+
+    function onReasonInput(ds, el) {
+      if (!store[ds]) store[ds] = getRow(ds);
+      store[ds].reason = el.value;
+      save(ds);
+    }
+
+    function onInput(ds) {
+      setRowFromDOM(ds);
+      updateStreakAndTotal(ds);
+      updateBars();
+      updateStats();
+    }
+
+    function onHeaderClick(key) {
+      if (sortKey === key) sortDir *= -1;
+      else { sortKey = key; sortDir = 1; }
+      buildView();
+      rerenderTable();
+      updateHeaderClasses();
+    }
+
+    function updateHeaderClasses() {
+      selAll("th[data-sort]").forEach(th => {
+        th.classList.remove("sorted-asc", "sorted-desc");
+        if (th.dataset.sort === sortKey)
+          th.classList.add(sortDir === 1 ? "sorted-asc" : "sorted-desc");
+      });
+    }
+
+    function onFilterChange(val) {
+      filterStatus = val;
+      buildView();
+      rerenderTable();
+    }
+
+    // ── Scroll ──
+    function scrollToDate(ds) {
+      const container = sel(".scroll-container");
+      const row       = sel(`tr[data-date="${ds}"]`);
+      if (!container || !row) return;
+      const thead       = container.querySelector("thead");
+      const theadHeight = thead ? thead.getBoundingClientRect().height : 0;
+      container.scrollTop += row.getBoundingClientRect().top
+                             - container.getBoundingClientRect().top
+                             - theadHeight;
+    }
+
+    function jumpToToday() {
+      filterStatus = "";
+      const filterSel = sel(".filter-select");
+      if (filterSel) filterSel.value = "";
+      buildView();
+      rerenderTable();
+      setTimeout(() => scrollToDate(dateStr(new Date())), 50);
+    }
+
+    // ── Render ──
+    function buildHeader() {
+      const setHeaders = hasSets
+        ? `<th data-sort="total" onclick="onHeaderClick('${id}','total')">Total</th>` +
+          Array.from({length: 9}, (_, i) =>
+            `<th data-sort="set${i+1}" onclick="onHeaderClick('${id}','set${i+1}')">Set ${i+1}</th>`
+          ).join("")
+        : "";
+      return `<thead><tr>
+        <th data-sort="date"   onclick="onHeaderClick('${id}','date')">Date</th>
+        <th data-sort="status" onclick="onHeaderClick('${id}','status')">Status</th>
+        <th>Reason</th>
+        <th>Streak</th>
+        ${setHeaders}
+      </tr></thead>`;
+    }
+
+    function rerenderTable() {
+      const tbody   = sel("tbody");
+      const sentTop = sel(".sentinel-top");
+      const sentBot = sel(".sentinel-bottom");
+      tbody.innerHTML = "";
+
+      if (viewDates === null) {
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        topDate    = clamp(offsetDate(today, -CHUNK));
+        bottomDate = clamp(offsetDate(today,  CHUNK));
+        for (let d = new Date(topDate); d <= bottomDate; d.setDate(d.getDate() + 1))
+          tbody.appendChild(makeRow(dateStr(new Date(d))));
+        sentTop.style.display = "";
+        sentBot.style.display = "";
+        scrollToDate(dateStr(new Date()));
+      } else {
+        sentTop.style.display = "none";
+        sentBot.style.display = "none";
+        viewDates.forEach(ds => tbody.appendChild(makeRow(ds)));
+      }
+      updateBars();
+    }
+
+    function setupObservers() {
+      const container = sel(".scroll-container");
+      const opts      = { root: container, threshold: 0 };
+
+      new IntersectionObserver(entries => {
+        if (!entries[0].isIntersecting || viewDates !== null) return;
+        if (topDate <= MIN_DATE) return;
+        const tbody = sel("tbody");
+        const frag  = document.createDocumentFragment();
+        for (let i = 0; i < CHUNK; i++) {
+          topDate = clamp(offsetDate(topDate, -1));
+          if (topDate <= MIN_DATE) break;
+          frag.appendChild(makeRow(dateStr(new Date(topDate))));
+        }
+        tbody.prepend(frag);
+        for (let i = 0; i < CHUNK; i++) {
+          const last = tbody.lastElementChild;
+          if (!last) break;
+          tbody.removeChild(last);
+          bottomDate = clamp(offsetDate(bottomDate, -1));
+        }
+        updateBars();
+      }, opts).observe(sel(".sentinel-top"));
+
+      new IntersectionObserver(entries => {
+        if (!entries[0].isIntersecting || viewDates !== null) return;
+        if (bottomDate >= MAX_DATE) return;
+        const tbody = sel("tbody");
+        const frag  = document.createDocumentFragment();
+        for (let i = 0; i < CHUNK; i++) {
+          bottomDate = clamp(offsetDate(bottomDate, 1));
+          if (bottomDate >= MAX_DATE) break;
+          frag.appendChild(makeRow(dateStr(new Date(bottomDate))));
+        }
+        tbody.append(frag);
+        for (let i = 0; i < CHUNK; i++) {
+          const first = tbody.firstElementChild;
+          if (!first) break;
+          tbody.removeChild(first);
+          topDate = clamp(offsetDate(topDate, 1));
+        }
+        updateBars();
+      }, opts).observe(sel(".sentinel-bottom"));
+    }
+
+    // ── Export / import ──
+    function exportData() {
+      const out = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(prefix)) out[key] = localStorage.getItem(key);
+      }
+      const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
+      const a    = document.createElement("a");
+      a.href     = URL.createObjectURL(blob);
+      a.download = `${id}-backup-${dateStr(new Date())}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function importData(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const data = JSON.parse(e.target.result);
+          let count  = 0;
+          for (const [key, val] of Object.entries(data)) {
+            if (key.startsWith(prefix)) {
+              localStorage.setItem(key, val);
+              const ds = key.slice(prefix.length);
+              try { store[ds] = JSON.parse(val); } catch {}
+              count++;
+            }
+          }
+          input.value = "";
+          buildView();
+          rerenderTable();
+          updateStats();
+          alert(`Imported ${count} entries.`);
+        } catch { alert("Invalid backup file."); }
+      };
+      reader.readAsText(file);
+    }
+
+    // ── Init ──
+    function init() {
+      loadAll();
+      buildView();
+
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      topDate    = clamp(offsetDate(today, -CHUNK));
+      bottomDate = clamp(offsetDate(today,  CHUNK));
+
+      const section = document.getElementById(`section-${id}`);
+      section.innerHTML = `
+        <div class="controls">
+          <label>Filter:
+            <select class="filter-select" onchange="onFilterChange('${id}',this.value)">
+              <option value="">All</option>
+              ${STATUSES.map(s => `<option value="${s}">${s}</option>`).join("")}
+            </select>
+          </label>
+          <button onclick="jumpToToday('${id}')">Today</button>
+          <button onclick="exportData('${id}')">Export</button>
+          <button onclick="document.getElementById('import-${id}').click()">Import</button>
+          <input type="file" id="import-${id}" accept=".json" style="display:none"
+            onchange="importData('${id}',this)">
+        </div>
+        <div class="stats"></div>
+        <div class="scroll-container">
+          <div class="sentinel sentinel-top"></div>
+          <table>
+            ${buildHeader()}
+            <tbody></tbody>
+          </table>
+          <div class="sentinel sentinel-bottom"></div>
+        </div>
+      `;
+
+      const tbody = sel("tbody");
+      for (let d = new Date(topDate); d <= bottomDate; d.setDate(d.getDate() + 1))
+        tbody.appendChild(makeRow(dateStr(new Date(d))));
+
+      updateBars();
+      updateStats();
+      updateHeaderClasses();
+      setupObservers();
+      scrollToDate(dateStr(today));
+    }
+
+    function reload() {
+      loadAll();
+      buildView();
+      rerenderTable();
+      updateStats();
+    }
+
+    return {
+      init, reload, onSelectChange, onReasonInput, onInput,
+      onHeaderClick, onFilterChange, jumpToToday,
+      exportData, importData,
+    };
+  }
+
+  // ── App-level export / import ──────────────────────────────
+  const APP_PREFIXES = TRACKER_CONFIGS.map(c => c.id + ":");
+
+  function appExport() {
+    const out = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (APP_PREFIXES.some(p => key.startsWith(p))) out[key] = localStorage.getItem(key);
+    }
+    const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
+    const a    = document.createElement("a");
+    a.href     = URL.createObjectURL(blob);
+    a.download = `habit-tracker-backup-${dateStr(new Date())}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function appImport(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        let count  = 0;
+        for (const [key, val] of Object.entries(data)) {
+          if (APP_PREFIXES.some(p => key.startsWith(p))) {
+            localStorage.setItem(key, val);
+            count++;
+          }
+        }
+        input.value = "";
+        Object.values(trackers).forEach(t => {
+          if (t.reload) t.reload();
+        });
+        alert(`Imported ${count} entries across all trackers.`);
+      } catch { alert("Invalid backup file."); }
+    };
+    reader.readAsText(file);
+  }
+
+  // ── Bootstrap ──────────────────────────────────────────────
+  const buttonsEl  = document.getElementById("buttons");
+  const sectionsEl = document.getElementById("sections");
+
+  TRACKER_CONFIGS.forEach(config => {
+    const section      = document.createElement("div");
+    section.id         = `section-${config.id}`;
+    section.className  = "tracker-section";
+    sectionsEl.appendChild(section);
+
+    const btn       = document.createElement("button");
+    btn.className   = "tracker-btn";
+    btn.textContent = config.label;
+    let initialized = false;
+    btn.addEventListener("click", () => {
+      if (section.style.display === "block") {
+        section.style.display = "none";
+      } else {
+        section.style.display = "block";
+        if (!initialized) {
+          trackers[config.id] = createTracker(config);
+          trackers[config.id].init();
+          initialized = true;
+        }
+      }
+    });
+    buttonsEl.appendChild(btn);
+  });
+</script>
+</body>
+</html>
