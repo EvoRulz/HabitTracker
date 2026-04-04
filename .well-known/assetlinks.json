@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "io.github.evorulz.twa",
+    "sha256_cert_fingerprints": [
+      "33:D3:7B:7D:6F:34:21:F4:36:23:FE:2A:D3:BE:1C:F6:DC:0A:3C:A0:DF:A6:D4:48:27:83:BE:C9:24:2A:B9:5A"
+    ]
+  }
+}]
