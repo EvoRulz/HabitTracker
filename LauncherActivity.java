@@ -44,6 +44,15 @@ public class LauncherActivity
                     "com.sec.android.app.myfiles",
                     "com.sec.android.app.myfiles.external.ui.MainActivity"));
                 myFilesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                // If the host is "downloads", pass the Downloads folder path
+                String host = data.getHost();
+                if ("downloads".equals(host)) {
+                    myFilesIntent.putExtra("current_path",
+                        android.os.Environment.getExternalStoragePublicDirectory(
+                            android.os.Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+                }
+
                 startActivity(myFilesIntent);
             } catch (Exception e) {
                 // My Files not available on this device
