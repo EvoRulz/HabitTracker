@@ -1,4 +1,4 @@
-const CACHE = "habit-tracker-v1";
+const CACHE = "habit-tracker-v3";
 
 // Added icons and ensuring the path matches GitHub Pages relative structure
 const ASSETS = [
@@ -45,3 +45,4 @@ self.addEventListener("fetch", e => {
     })
   );
 });
+
