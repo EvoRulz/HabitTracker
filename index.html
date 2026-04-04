@@ -353,7 +353,7 @@
           const pct = Math.min(val, SET_BAR_MAX) / SET_BAR_MAX * 100;
           html += `<td class="set-cell">
             <input type="number" min="0" value="${val || ""}" placeholder=""
-              oninput="onInput('${id}','${ds}')">
+              oninput="onSetInput('${id}','${ds}')">
             <div class="bar-container"><div class="bar" style="width:${pct}%"></div></div>
           </td>`;
         }
