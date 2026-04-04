@@ -176,7 +176,7 @@
 
 <script>
   // ── Service Worker Registration ────────────────────────────
-  if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator && !location.hostname.includes('claudeusercontent.com')) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./service-worker.js')
         .then(reg => console.log('Service Worker registered!', reg))
@@ -210,7 +210,12 @@
   ];
 
   // ── Shared utils ───────────────────────────────────────────
-  function dateStr(d) { return d.toISOString().split("T")[0]; }
+  function dateStr(d) {
+    const y   = d.getFullYear();
+    const m   = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
   function displayDate(iso) {
     const [y, m, d] = iso.split("-");
     return `${d}/${m}/${y.slice(-2)}`;
@@ -250,7 +255,7 @@
     let viewDates    = null;
     let topDate, bottomDate;
 
-    function sel(q)  { return document.querySelector(`#section-${id} ${q}`); }
+    function sel(q)    { return document.querySelector(`#section-${id} ${q}`); }
     function selAll(q) { return document.querySelectorAll(`#section-${id} ${q}`); }
 
     // ── Storage ──
@@ -275,7 +280,7 @@
     function setRowFromDOM(ds) {
       const row = sel(`tr[data-date="${ds}"]`);
       if (!row) return;
-      const cells = row.querySelectorAll("td");
+      const cells  = row.querySelectorAll("td");
       const status = cells[1].querySelector("select").value;
       const reason = cells[2].querySelector("textarea").value;
       if (hasSets) {
