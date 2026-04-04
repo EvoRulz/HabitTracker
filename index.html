@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Habit Tracker</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#000000">
@@ -165,7 +168,7 @@
 </head>
 <body>
 
-<h1>Habit Tracker <!-- version number auto-bumped by utwa (keep in sync with service-worker.js) --><span style="font-size:14px;color:#888;font-weight:normal">v5</span></h1>
+<h1>Habit Tracker <!-- version number auto-bumped by utwa (keep in sync with service-worker.js) --><span style="font-size:14px;color:#888;font-weight:normal">v14</span></h1>
 <div id="app-controls" style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
   <button class="tracker-btn" onclick="appExport()">Export All</button>
   <button class="tracker-btn" onclick="document.getElementById('app-import-file').click()">Import All</button>
@@ -178,7 +181,7 @@
 <script>
   // ── My Files (opens Samsung/Android My Files app via intent) ──
   function openMyFiles() {
-    window.location.href = "intent://com.sec.android.app.myfiles#Intent;scheme=myfiles;package=com.sec.android.app.myfiles;action=android.intent.action.MAIN;end";
+    window.open("intent://com.sec.android.app.myfiles#Intent;scheme=myfiles;package=com.sec.android.app.myfiles;action=android.intent.action.MAIN;end", "_blank");
   }
 
   // ── Service Worker Registration ────────────────────────────
