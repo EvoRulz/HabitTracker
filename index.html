@@ -44,11 +44,11 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       margin-bottom: 12px;
-      min-height: 200px;
+      min-height: 300px;
       grid-auto-rows: 52px;
       align-content: start;
     }
-    #buttons::after {
+#buttons::after {
       content: "";
       grid-column: 1 / -1;
       height: 60px;           /* this creates visible empty space at the bottom */
@@ -69,16 +69,18 @@
       touch-action: none;
       transition: box-shadow 0.2s, background 0.2s;
 
-      /* Lock size so nothing stretches */
       height: 52px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
+    /* Transparent placeholders that act as real drop targets / spacers */
     .tracker-placeholder {
-      visibility: hidden;
       height: 52px;
-      pointer-events: none;
+      background: transparent;
+      border: none;
+      visibility: visible;   /* must be visible to occupy space */
+      pointer-events: none;  /* can't click them */
     }
     .tracker-btn.active {
       background: #555;
@@ -239,7 +241,7 @@
 </div>
 
 <h1>Habit Tracker
-  <span style="font-size:14px;color:#888;font-weight:normal">v32</span>
+  <span style="font-size:14px;color:#888;font-weight:normal">v33</span>
   <span id="live-clock" style="font-size:13px;color:#666;font-weight:normal;margin-left:18px;letter-spacing:0.02em"></span>
 </h1>
 
@@ -981,33 +983,37 @@
     }
     drag = null;
   });
-    // Add invisible placeholders so you can drag to new rows
+        // Create transparent placeholder slots so you can drag to new rows
     function addPlaceholders() {
-      // Remove old ones first
+      // Remove old placeholders
       document.querySelectorAll('.tracker-placeholder').forEach(p => p.remove());
+
+      const container = document.getElementById('buttons');
+      const realButtons = container.querySelectorAll('.tracker-btn').length;
       
-      const buttonsContainer = document.getElementById('buttons');
-      const currentCount = buttonsContainer.querySelectorAll('.tracker-btn').length;
-      const needed = Math.max(0, 12 - currentCount);   // enough for 4 full rows
-      
-      for (let i = 0; i < needed; i++) {
+      // Add enough placeholders for up to 4–5 rows total
+      const totalSlotsNeeded = Math.max(12, realButtons + 9); // 3 extra full rows
+
+      for (let i = 0; i < totalSlotsNeeded - realButtons; i++) {
         const ph = document.createElement('div');
         ph.className = 'tracker-placeholder';
-        buttonsContainer.appendChild(ph);
+        container.appendChild(ph);
       }
     }
 
-    // Run it on load and after any reorder
+    // Run once on load
     window.addEventListener('load', addPlaceholders);
-    // Re-add after drag ends (in case order changed)
-    const originalPointerUp = document.addEventListener('pointerup', e => {
+
+    // Rebuild placeholders after every drag (so new rows appear)
+    document.addEventListener('pointerup', () => {
       if (drag && drag.active) {
-        setTimeout(addPlaceholders, 10);   // small delay so DOM updates first
+        setTimeout(addPlaceholders, 20);
       }
     });
 </script>
 </body>
 </html>
+
 
 
 
