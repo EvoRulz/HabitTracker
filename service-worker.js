@@ -1,4 +1,4 @@
-const CACHE = "habit-tracker-v43";
+const CACHE = "habit-tracker-v44";
 
 const ASSETS = [
   "./",
@@ -45,6 +45,7 @@ self.addEventListener("fetch", e => {
     })
   );
 });
+
 
 
 

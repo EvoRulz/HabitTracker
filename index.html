@@ -68,7 +68,17 @@
     .tracker-btn.drag-ghost {
       transition: none !important;
     }
-
+    .empty-slot {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 47px;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+    body.is-dragging .empty-slot {
+      border: 2px dashed #555;
+      pointer-events: auto;
+    }
     .tracker-section {
       display: none;
       margin-top: 20px;
@@ -219,7 +229,7 @@
 </div>
 
 <h1>Habit Tracker
-  <span style="font-size:14px;color:#888;font-weight:normal">v43</span>
+  <span style="font-size:14px;color:#888;font-weight:normal">v44</span>
   <span id="live-clock" style="font-size:13px;color:#666;font-weight:normal;margin-left:18px;letter-spacing:0.02em"></span>
 </h1>
 
@@ -818,13 +828,20 @@
   function loadButtonOrder() {
     try {
       const saved = JSON.parse(localStorage.getItem("_buttonOrder"));
-      if (Array.isArray(saved) && saved.every(id => TRACKER_CONFIGS.some(c => c.id === id)))
-        return saved;
+      if (Array.isArray(saved)) {
+        const knownIds = TRACKER_CONFIGS.map(c => c.id);
+        // Accept new format (array of id|null) — validate all real IDs are present
+        const realIds = saved.filter(Boolean);
+        if (knownIds.every(id => realIds.includes(id)) &&
+            realIds.every(id => knownIds.includes(id)))
+          return saved;
+      }
     } catch {}
     return TRACKER_CONFIGS.map(c => c.id);
   }
   function saveButtonOrder() {
-    const order = [...buttonsEl.querySelectorAll(".tracker-btn[data-id]")].map(b => b.dataset.id);
+    // Save full slot layout — null for empty slots so positions persist
+    const order = [...buttonsEl.children].map(el => el.dataset.id || null);
     localStorage.setItem("_buttonOrder", JSON.stringify(order));
   }
 
@@ -837,17 +854,37 @@
     return btn;
   }
 
-  // Initial button render in saved order
-  loadButtonOrder().forEach(id => {
-    const config = TRACKER_CONFIGS.find(c => c.id === id);
-    if (config) buttonsEl.appendChild(makeTrackerBtn(config));
-  });
+  // Total grid slots: 3 cols × 3 rows = 9, giving 3 buttons room to spread out
+  const TOTAL_SLOTS = 9;
 
-  // ── Drag-to-reorder (pointer events) ──────────────────────
-  // Ghost floats freely. A placeholder <div> moves through the grid
-  // to show the drop slot. The original button is hidden with display:none
-  // so it never causes a reflow during the drag — this prevents jumping.
-  const DRAG_THRESHOLD = 6; // px before drag activates
+  function padEmptySlots() {
+    buttonsEl.querySelectorAll(".empty-slot").forEach(s => s.remove());
+    const filled = buttonsEl.querySelectorAll(".tracker-btn[data-id]").length;
+    for (let i = filled; i < TOTAL_SLOTS; i++) {
+      const slot = document.createElement("div");
+      slot.className = "empty-slot";
+      buttonsEl.appendChild(slot);
+    }
+  }
+
+  // Initial button render in saved order (supports id or null for empty slots)
+  loadButtonOrder().forEach(id => {
+    if (!id) {
+      const slot = document.createElement("div");
+      slot.className = "empty-slot";
+      buttonsEl.appendChild(slot);
+    } else {
+      const config = TRACKER_CONFIGS.find(c => c.id === id);
+      if (config) buttonsEl.appendChild(makeTrackerBtn(config));
+    }
+  });
+  padEmptySlots(); // fill any remaining slots up to TOTAL_SLOTS
+
+/// ── Drag-to-reorder (pointer events) ──────────────────────
+  // Ghost floats freely. Original stays visibility:hidden (keeps slot + pointer capture).
+  // Swaps with whatever slot (button or empty) the ghost centre overlaps.
+  // lastOver prevents re-swapping the same target on consecutive frames.
+  const DRAG_THRESHOLD = 6;
   let drag = null;
 
   buttonsEl.addEventListener("pointerdown", e => {
@@ -855,16 +892,13 @@
     if (!btn) return;
     e.preventDefault();
     btn.setPointerCapture(e.pointerId);
+    const rect = btn.getBoundingClientRect();
     drag = {
-      id:     btn.dataset.id,
-      btn,
-      startX: e.clientX,
-      startY: e.clientY,
-      offX:   e.clientX - btn.getBoundingClientRect().left,
-      offY:   e.clientY - btn.getBoundingClientRect().top,
-      ghost:       null,
-      placeholder: null,
-      active: false,
+      id: btn.dataset.id, btn,
+      startX: e.clientX, startY: e.clientY,
+      offX: e.clientX - rect.left, offY: e.clientY - rect.top,
+      btnW: rect.width, btnH: rect.height,
+      ghost: null, lastOver: null, active: false,
     };
   });
 
@@ -872,118 +906,84 @@
     if (!drag) return;
 
     if (!drag.active) {
-      const dist = Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY);
-      if (dist < DRAG_THRESHOLD) return;
-
-      // Activate drag
+      if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < DRAG_THRESHOLD) return;
       drag.active = true;
       const rect = drag.btn.getBoundingClientRect();
 
-      // Ghost: floating clone that follows the cursor
       drag.ghost = drag.btn.cloneNode(true);
       drag.ghost.classList.add("drag-ghost");
       Object.assign(drag.ghost.style, {
-        position:      "fixed",
-        left:          rect.left + "px",
-        top:           rect.top  + "px",
-        width:         rect.width + "px",
-        height:        rect.height + "px",
-        pointerEvents: "none",
-        opacity:       "0.75",
-        zIndex:        "9000",
-        margin:        "0",
-        boxSizing:     "border-box",
+        position: "fixed", left: rect.left + "px", top: rect.top + "px",
+        width: rect.width + "px", height: rect.height + "px",
+        pointerEvents: "none", opacity: "0.75", zIndex: "9000",
+        margin: "0", boxSizing: "border-box",
       });
       document.body.appendChild(drag.ghost);
-
-      // Placeholder: a same-size slot that moves through the grid
-      drag.placeholder = document.createElement("div");
-      drag.placeholder.className = "tracker-btn";
-      Object.assign(drag.placeholder.style, {
-        width:         rect.width  + "px",
-        height:        rect.height + "px",
-        background:    "transparent",
-        border:        "2px dashed #666",
-        boxSizing:     "border-box",
-        pointerEvents: "none",
-        opacity:       "0.5",
-        cursor:        "default",
-      });
-      // Insert placeholder where the original is, then hide original
-      drag.btn.parentNode.insertBefore(drag.placeholder, drag.btn);
-      drag.btn.style.display = "none";
+      drag.btn.style.visibility = "hidden";
+      document.body.classList.add("is-dragging");
     }
 
-    // Move ghost
     drag.ghost.style.left = (e.clientX - drag.offX) + "px";
     drag.ghost.style.top  = (e.clientY - drag.offY) + "px";
 
-    // Determine where to move the placeholder.
-    // Iterate buttons in DOM order; insert before the first one where
-    // the cursor is "above" it (cursor Y < button mid-Y) or on the same
-    // row and to its left (cursor Y inside row, cursor X < button mid-X).
-    const slots = [...buttonsEl.querySelectorAll(".tracker-btn[data-id]")];
+    // Ghost centre in viewport coords
+    const gcx = e.clientX - drag.offX + drag.btnW / 2;
+    const gcy = e.clientY - drag.offY + drag.btnH / 2;
 
-    let target = null; // insert placeholder before this element (null = append)
-    for (const sib of slots) {
-      const r   = sib.getBoundingClientRect();
-      const midX = r.left + r.width  / 2;
-      const midY = r.top  + r.height / 2;
-      if (e.clientY < midY) {
-        // Cursor is above this button's midpoint — always insert before it
-        target = sib;
-        break;
-      }
-      if (e.clientY < r.bottom && e.clientX < midX) {
-        // Same row, cursor is left of its midpoint
-        target = sib;
-        break;
+    // Hit-test against all slots: real buttons and empty slots
+    let over = null;
+    for (const t of buttonsEl.children) {
+      if (t === drag.btn) continue;
+      const r = t.getBoundingClientRect();
+      if (gcx >= r.left && gcx <= r.right && gcy >= r.top && gcy <= r.bottom) {
+        over = t; break;
       }
     }
 
-    if (target) {
-      buttonsEl.insertBefore(drag.placeholder, target);
+    if (!over)            { drag.lastOver = null; return; }
+    if (over === drag.lastOver) return;
+    drag.lastOver = over;
+
+    // Swap drag.btn ↔ over in the DOM
+    const overNext = over.nextSibling;
+    const btnNext  = drag.btn.nextSibling;
+    if (btnNext === over) {
+      buttonsEl.insertBefore(over, drag.btn);
+    } else if (overNext === drag.btn) {
+      buttonsEl.insertBefore(drag.btn, over);
     } else {
-      buttonsEl.appendChild(drag.placeholder);
+      buttonsEl.insertBefore(drag.btn, overNext || null);
+      buttonsEl.insertBefore(over,     btnNext  || null);
     }
   });
 
-  document.addEventListener("pointerup", e => {
+  document.addEventListener("pointerup", () => {
     if (!drag) return;
-
     if (drag.active) {
-      // Move original to where the placeholder ended up, then clean up
-      drag.placeholder.parentNode.insertBefore(drag.btn, drag.placeholder);
-      drag.btn.style.display = "";
-      drag.placeholder.remove();
+      drag.btn.style.visibility = "";
       drag.ghost.remove();
+      document.body.classList.remove("is-dragging");
       saveButtonOrder();
     } else {
-      // Tap/click — toggle section
       const currentlyOpen = getActiveSectionId();
       setActiveSection(currentlyOpen === drag.id ? null : drag.id);
     }
-
     drag = null;
   });
 
-  // Cancel drag on pointer cancel (e.g. incoming call on Android)
   document.addEventListener("pointercancel", () => {
     if (!drag) return;
     if (drag.active) {
-      // Restore original and clean up
-      if (drag.placeholder && drag.placeholder.parentNode) {
-        drag.placeholder.parentNode.insertBefore(drag.btn, drag.placeholder);
-        drag.placeholder.remove();
-      }
-      drag.btn.style.display = "";
+      drag.btn.style.visibility = "";
       if (drag.ghost) drag.ghost.remove();
+      document.body.classList.remove("is-dragging");
     }
     drag = null;
   });
 </script>
 </body>
 </html>
+
 
 
 
