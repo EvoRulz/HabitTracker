@@ -38,15 +38,21 @@
       color: #ff9999;
     }
 
-/* ── Tracker toggle buttons in the drag grid ── */
+    /* ── Tracker toggle buttons in the drag grid ── */
     #buttons {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       margin-bottom: 12px;
-      min-height: 120px; 
+      min-height: 200px;   /* ← increased a bit so there's room to drag down */
       grid-auto-rows: 52px;
-      align-items: start;
+      align-content: start;
+    }
+    #buttons::after {
+      content: "";
+      grid-column: 1 / -1;
+      height: 60px;           /* this creates visible empty space at the bottom */
+      visibility: hidden;
     }
     .tracker-btn {
       width: 100%;
@@ -63,6 +69,10 @@
       touch-action: none;
       transition: box-shadow 0.2s, background 0.2s;
       height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 52px;           /* matches grid-auto-rows */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -226,7 +236,7 @@
 </div>
 
 <h1>Habit Tracker
-  <span style="font-size:14px;color:#888;font-weight:normal">v30</span>
+  <span style="font-size:14px;color:#888;font-weight:normal">v31</span>
   <span id="live-clock" style="font-size:13px;color:#666;font-weight:normal;margin-left:18px;letter-spacing:0.02em"></span>
 </h1>
 
@@ -971,6 +981,7 @@
 </script>
 </body>
 </html>
+
 
 
 
