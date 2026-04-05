@@ -220,7 +220,7 @@
 </div>
 
 <h1>Habit Tracker
-  <span style="font-size:14px;color:#888;font-weight:normal">v34</span>
+  <span style="font-size:14px;color:#888;font-weight:normal">v35</span>
   <span id="live-clock" style="font-size:13px;color:#666;font-weight:normal;margin-left:18px;letter-spacing:0.02em"></span>
 </h1>
 
@@ -905,28 +905,33 @@
     drag.ghost.style.left = (e.clientX - drag.offX) + "px";
     drag.ghost.style.top  = (e.clientY - drag.offY) + "px";
 
-   const siblings = [...buttonsEl.querySelectorAll(".tracker-btn[data-id]")]
-  .filter(b => b !== drag.btn);
+    // Find the nearest visible button and live-reorder the hidden original
+    const siblings = [...buttonsEl.querySelectorAll(".tracker-btn[data-id]")]
+      .filter(b => b !== drag.btn);
 
-if (siblings.length === 0) return;
+    if (siblings.length === 0) return;
 
-let target = null;
+    let best = null, bestDist = Infinity;
+    siblings.forEach(b => {
+      const r  = b.getBoundingClientRect();
+      const cx = r.left + r.width  / 2;
+      const cy = r.top  + r.height / 2;
+      const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+      if (dist < bestDist) { bestDist = dist; best = b; }
+    });
 
-for (const b of siblings) {
-  const r = b.getBoundingClientRect();
-  const midY = r.top + r.height / 2;
-
-  if (e.clientY < midY) {
-    target = b;
-    break;
-  }
-}
-
-if (target) {
-  buttonsEl.insertBefore(drag.btn, target);
-} else {
-  buttonsEl.appendChild(drag.btn);
-}
+    if (best) {
+      const r = best.getBoundingClientRect();
+      // Snap decision: insert before or after based on which half of the target the cursor is in.
+      // Use X axis primarily (left/right columns), fall back to Y for same-column detection.
+      const halfW = r.width / 2;
+      const halfH = r.height / 2;
+      const relX  = e.clientX - (r.left + halfW);
+      const relY  = e.clientY - (r.top  + halfH);
+      // Weight X more since columns are the primary snap axis
+      const insertBefore = (relX * 1.5 + relY) < 0;
+      buttonsEl.insertBefore(drag.btn, insertBefore ? best : best.nextSibling);
+    }
   });
 
   document.addEventListener("pointerup", e => {
