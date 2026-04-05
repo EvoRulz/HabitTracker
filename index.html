@@ -38,15 +38,17 @@
       color: #ff9999;
     }
 
-    /* ── Tracker toggle buttons in the drag grid ── */
+        /* ── Tracker toggle buttons in the drag grid ── */
     #buttons {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 12px;
+      min-height: 120px; 
     }
     .tracker-btn {
-      width: 100%;
+      flex: 1 1 calc(33.333% - 6px);
+      min-width: 140px;
       box-sizing: border-box;
       padding: 12px 20px;
       background: #444;
@@ -219,7 +221,7 @@
 </div>
 
 <h1>Habit Tracker
-  <span style="font-size:14px;color:#888;font-weight:normal">v27</span>
+  <span style="font-size:14px;color:#888;font-weight:normal">v28</span>
   <span id="live-clock" style="font-size:13px;color:#666;font-weight:normal;margin-left:18px;letter-spacing:0.02em"></span>
 </h1>
 
@@ -904,25 +906,32 @@
     drag.ghost.style.left = (e.clientX - drag.offX) + "px";
     drag.ghost.style.top  = (e.clientY - drag.offY) + "px";
 
-    // Find the nearest button and live-reorder the hidden original
-    const siblings = [...buttonsEl.querySelectorAll(".tracker-btn[data-id]")].filter(b => b !== drag.btn);
-    let best = null, bestDist = Infinity;
+    // Find the nearest visible button and live-reorder the hidden original
+    const siblings = [...buttonsEl.querySelectorAll(".tracker-btn[data-id]")]
+      .filter(b => b !== drag.btn);
 
+    if (siblings.length === 0) return;
+
+    let best = null, bestDist = Infinity;
     siblings.forEach(b => {
-      const r = b.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      // Weight the X-axis distance more heavily to make column-switching snappier
-      const dist = Math.hypot(e.clientX - cx, (e.clientY - cy) * 1.5);
+      const r  = b.getBoundingClientRect();
+      const cx = r.left + r.width  / 2;
+      const cy = r.top  + r.height / 2;
+      const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
       if (dist < bestDist) { bestDist = dist; best = b; }
     });
 
     if (best) {
       const r = best.getBoundingClientRect();
-      // Logic to determine if we drop before or after the target column
-      const isBefore = e.clientX < (r.left + r.width / 2);
-      if (isBefore) buttonsEl.insertBefore(drag.btn, best);
-      else buttonsEl.insertBefore(drag.btn, best.nextSibling);
+      // Snap decision: insert before or after based on which half of the target the cursor is in.
+      // Use X axis primarily (left/right columns), fall back to Y for same-column detection.
+      const halfW = r.width / 2;
+      const halfH = r.height / 2;
+      const relX  = e.clientX - (r.left + halfW);
+      const relY  = e.clientY - (r.top  + halfH);
+      // Weight X more since columns are the primary snap axis
+      const insertBefore = (relX * 1.5 + relY) < 0;
+      buttonsEl.insertBefore(drag.btn, insertBefore ? best : best.nextSibling);
     }
   });
 
