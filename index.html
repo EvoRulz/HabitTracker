@@ -23,7 +23,6 @@
 
     h1 { margin-top: 0; }
 
-    /* ── App-level buttons (Export All etc) ── */
     .app-btn {
       padding: 12px 20px;
       background: #444;
@@ -38,7 +37,6 @@
       color: #ff9999;
     }
 
-    /* ── Tracker toggle buttons in the drag grid ── */
     #buttons {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -58,14 +56,14 @@
       font-size: 16px;
       user-select: none;
       -webkit-user-select: none;
-      touch-action: none; /* required for pointer capture on mobile/TWA */
+      touch-action: none;
       transition: box-shadow 0.2s, background 0.2s;
     }
     .tracker-btn.active {
       background: #555;
       box-shadow: 0 0 16px 5px rgba(150, 90, 255, 0.65);
     }
-    /* Ghost clone shouldn't inherit transitions */
+
     .tracker-btn.drag-ghost {
       transition: none !important;
     }
@@ -171,7 +169,7 @@
 
     .sentinel { height: 1px; }
 
-    /* ── Confirmation overlay ── */
+
     #confirm-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.78); z-index: 9999;
@@ -208,7 +206,6 @@
 </head>
 <body>
 
-<!-- Shared confirmation overlay -->
 <div id="confirm-overlay">
   <div id="confirm-box">
     <p id="confirm-msg"></p>
@@ -220,7 +217,7 @@
 </div>
 
 <h1>Habit Tracker
-  <span style="font-size:14px;color:#888;font-weight:normal">v36</span>
+  <span style="font-size:14px;color:#888;font-weight:normal">v37</span>
   <span id="live-clock" style="font-size:13px;color:#666;font-weight:normal;margin-left:18px;letter-spacing:0.02em"></span>
 </h1>
 
@@ -231,14 +228,11 @@
   <button class="app-btn btn-clear-all" onclick="appClear()">Clear All</button>
   <button class="app-btn" onclick="openMyFiles()">My Files</button>
 </div>
-
-<!-- Drag-sortable 3-column grid of tracker toggle buttons -->
 <div id="buttons"></div>
-<!-- Tracker sections rendered below buttons -->
 <div id="sections"></div>
 
 <script>
-  // ── Live clock ─────────────────────────────────────────────
+
   (function() {
     const el = document.getElementById("live-clock");
     function tick() {
@@ -255,10 +249,8 @@
     setInterval(tick, 1000);
   })();
 
-  // ── My Files ───────────────────────────────────────────────
   function openMyFiles() { window.location.href = "myfiles://downloads"; }
 
-  // ── Service Worker ─────────────────────────────────────────
   if ('serviceWorker' in navigator && !location.hostname.includes('claudeusercontent.com')) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./service-worker.js')
@@ -267,7 +259,6 @@
     });
   }
 
-  // ── Constants ──────────────────────────────────────────────
   const MIN_DATE       = new Date("2026-03-14");
   const MAX_DATE       = new Date("2111-04-19");
   const STATUSES       = ["yes", "no", "idk", "not yet", "n/a"];
@@ -277,7 +268,6 @@
   const STREAK_BAR_MAX = 30;
   const NUM_SETS       = 10;
 
-  // ── Status colour ──────────────────────────────────────────
   function applyStatusColor(el) {
     const v = el.value;
     if      (v === "yes") { el.style.background = "#90EE90"; el.style.color = "#000"; }
@@ -287,7 +277,6 @@
     else                  { el.style.background = "#FFD580"; el.style.color = "#000"; }
   }
 
-  // ── Confirmation overlay ───────────────────────────────────
   let _confirmResolve = null;
   function confirmClear(bodyHTML) {
     return new Promise(resolve => {
@@ -324,7 +313,6 @@
     if (e.target === document.getElementById("confirm-overlay")) confirmCancel();
   });
 
-  // ── Tracker configs ────────────────────────────────────────
   const TRACKER_CONFIGS = [
     {
       id:        "pushups",
@@ -352,7 +340,6 @@
     },
   ];
 
-  // ── Utils ──────────────────────────────────────────────────
   function dateStr(d) {
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   }
@@ -373,7 +360,6 @@
   }
   function sum(sets) { return (sets||[]).reduce((a,b) => a + (b??0), 0); }
 
-  // ── Global dispatch ────────────────────────────────────────
   const trackers = {};
   function onSelectChange(id,ds,el) { trackers[id].onSelectChange(ds,el); }
   function onReasonInput(id,ds,el)  { trackers[id].onReasonInput(ds,el); }
@@ -385,7 +371,6 @@
   function importData(id,el)          { trackers[id].importData(el); }
   function clearData(id)              { trackers[id].clearData(); }
 
-  // ── Tracker factory ────────────────────────────────────────
   function createTracker(config) {
     const { id, label, hasSets, hasStreak, autoStatus } = config;
     const prefix = id + ":";
@@ -726,7 +711,6 @@
              onHeaderClick, onFilterChange, jumpToToday, exportData, importData, clearData };
   }
 
-  // ── App-level export / import / clear ─────────────────────
   const APP_PREFIXES = TRACKER_CONFIGS.map(c => c.id+":");
 
   function appExport() {
@@ -768,11 +752,9 @@
     Object.values(trackers).forEach(t=>{ if (t.reload) t.reload(); });
   }
 
-  // ── Bootstrap ──────────────────────────────────────────────
   const buttonsEl  = document.getElementById("buttons");
   const sectionsEl = document.getElementById("sections");
 
-  // Pre-create all section divs (always present in DOM so open state survives reorder)
   const sectionEls = {};
   TRACKER_CONFIGS.forEach(config => {
     const section = document.createElement("div");
@@ -782,31 +764,26 @@
     sectionEls[config.id] = section;
   });
 
-  // Track which trackers have been lazy-initialised
   const initializedSet = new Set();
 
-  // ── Active section management ──────────────────────────────
-  // Only one section open at a time; button glows when its section is open.
   function getActiveSectionId() {
     return TRACKER_CONFIGS.map(c=>c.id).find(id => sectionEls[id].style.display === "block") || null;
   }
 
   function setActiveSection(targetId) {
-    // Close all sections and unglow all buttons
+
     TRACKER_CONFIGS.forEach(c => {
       sectionEls[c.id].style.display = "none";
       const btn = buttonsEl.querySelector(`.tracker-btn[data-id="${c.id}"]`);
       if (btn) btn.classList.remove("active");
     });
 
-    if (!targetId) return; // just close everything
+    if (!targetId) return;
 
-    // Open target and glow its button
     sectionEls[targetId].style.display = "block";
     const btn = buttonsEl.querySelector(`.tracker-btn[data-id="${targetId}"]`);
     if (btn) btn.classList.add("active");
 
-    // Lazy-init tracker
     if (!initializedSet.has(targetId)) {
       const config = TRACKER_CONFIGS.find(c => c.id === targetId);
       trackers[targetId] = createTracker(config);
@@ -815,7 +792,6 @@
     }
   }
 
-  // ── Button order persistence ───────────────────────────────
   function loadButtonOrder() {
     try {
       const saved = JSON.parse(localStorage.getItem("_buttonOrder"));
@@ -829,7 +805,6 @@
     localStorage.setItem("_buttonOrder", JSON.stringify(order));
   }
 
-  // ── Create a tracker toggle button element ─────────────────
   function makeTrackerBtn(config) {
     const btn = document.createElement("button");
     btn.className   = "tracker-btn";
@@ -838,16 +813,12 @@
     return btn;
   }
 
-  // Initial button render in saved order
   loadButtonOrder().forEach(id => {
     const config = TRACKER_CONFIGS.find(c => c.id === id);
     if (config) buttonsEl.appendChild(makeTrackerBtn(config));
   });
 
-  // ── Drag-to-reorder (pointer events) ──────────────────────
-  // Uses a fixed-position ghost + invisible original acting as drop slot.
-  // A movement threshold separates drag from tap/click.
-  const DRAG_THRESHOLD = 6; // px before drag activates
+  const DRAG_THRESHOLD = 6;
   let drag = null;
 
   buttonsEl.addEventListener("pointerdown", e => {
@@ -867,8 +838,6 @@
     };
   });
 
-  // pointermove fires on buttonsEl because the btn has pointer capture,
-  // and events bubble up. We also listen on document as a safety net.
   document.addEventListener("pointermove", e => {
     if (!drag) return;
 
@@ -876,11 +845,9 @@
       const dist = Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY);
       if (dist < DRAG_THRESHOLD) return;
 
-      // Activate drag
       drag.active = true;
       const rect = drag.btn.getBoundingClientRect();
 
-      // Ghost: a floating clone that follows the cursor
       drag.ghost = drag.btn.cloneNode(true);
       drag.ghost.classList.add("drag-ghost");
       Object.assign(drag.ghost.style, {
@@ -896,16 +863,13 @@
       });
       document.body.appendChild(drag.ghost);
 
-      // Hide original in place — it acts as the invisible drop slot
       drag.btn.style.opacity       = "0";
       drag.btn.style.pointerEvents = "none";
     }
 
-    // Move ghost
     drag.ghost.style.left = (e.clientX - drag.offX) + "px";
     drag.ghost.style.top  = (e.clientY - drag.offY) + "px";
 
-    // Find the nearest visible button and live-reorder the hidden original
     const siblings = [...buttonsEl.querySelectorAll(".tracker-btn[data-id]")]
       .filter(b => b !== drag.btn);
 
@@ -922,13 +886,10 @@
 
     if (best) {
       const r = best.getBoundingClientRect();
-      // Snap decision: insert before or after based on which half of the target the cursor is in.
-      // Use X axis primarily (left/right columns), fall back to Y for same-column detection.
       const halfW = r.width / 2;
       const halfH = r.height / 2;
       const relX  = e.clientX - (r.left + halfW);
       const relY  = e.clientY - (r.top  + halfH);
-      // Weight X more since columns are the primary snap axis
       const insertBefore = (relX * 1.5 + relY) < 0;
       buttonsEl.insertBefore(drag.btn, insertBefore ? best : best.nextSibling);
     }
@@ -938,13 +899,11 @@
     if (!drag) return;
 
     if (drag.active) {
-      // Restore original button
       drag.btn.style.opacity       = "";
       drag.btn.style.pointerEvents = "";
       drag.ghost.remove();
       saveButtonOrder();
     } else {
-      // It was a tap/click — toggle section
       const currentlyOpen = getActiveSectionId();
       setActiveSection(currentlyOpen === drag.id ? null : drag.id);
     }
@@ -952,7 +911,6 @@
     drag = null;
   });
 
-  // Cancel drag on pointer cancel (e.g. incoming call on Android)
   document.addEventListener("pointercancel", () => {
     if (!drag) return;
     if (drag.active) {
@@ -965,4 +923,5 @@
 </script>
 </body>
 </html>
+
 
