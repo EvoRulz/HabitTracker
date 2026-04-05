@@ -20,6 +20,8 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import java.io.File;
 public class LauncherActivity
         extends com.google.androidbrowserhelper.trusted.LauncherActivity {
     @Override
@@ -38,21 +40,33 @@ public class LauncherActivity
         // Intercept myfiles:// URLs and launch Samsung My Files natively
         if (data != null && "myfiles".equals(data.getScheme())) {
             try {
-                Intent myFilesIntent = new Intent(Intent.ACTION_MAIN);
-                myFilesIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-                myFilesIntent.setComponent(new ComponentName(
-                    "com.sec.android.app.myfiles",
-                    "com.sec.android.app.myfiles.external.ui.MainActivity"));
-                myFilesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                File downloadsDir = Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOWNLOADS);
+                String downloadsPath = downloadsDir.getAbsolutePath();
 
-                // If the host is "downloads", pass the Downloads folder path
-                String host = data.getHost();
-                if ("downloads".equals(host)) {
-                    myFilesIntent.putExtra("current_path",
-                        android.os.Environment.getExternalStoragePublicDirectory(
-                            android.os.Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+                Intent myFilesIntent;
+
+                if ("downloads".equals(data.getHost())) {
+                    // Use ACTION_VIEW with a file URI — My Files responds to this for folder navigation.
+                    // Also include every known extra key variant as a belt-and-suspenders measure.
+                    myFilesIntent = new Intent(Intent.ACTION_VIEW);
+                    myFilesIntent.setDataAndType(Uri.fromFile(downloadsDir), "resource/folder");
+                    myFilesIntent.setComponent(new ComponentName(
+                            "com.sec.android.app.myfiles",
+                            "com.sec.android.app.myfiles.external.ui.MainActivity"));
+                    myFilesIntent.putExtra("current_path", downloadsPath);
+                    myFilesIntent.putExtra("path",         downloadsPath);
+                    myFilesIntent.putExtra("rootName",     "Downloads");
+                } else {
+                    // Plain open — no folder targeting
+                    myFilesIntent = new Intent(Intent.ACTION_MAIN);
+                    myFilesIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+                    myFilesIntent.setComponent(new ComponentName(
+                            "com.sec.android.app.myfiles",
+                            "com.sec.android.app.myfiles.external.ui.MainActivity"));
                 }
 
+                myFilesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(myFilesIntent);
             } catch (Exception e) {
                 // My Files not available on this device
