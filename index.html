@@ -38,13 +38,13 @@
       color: #ff9999;
     }
 
-    /* ── Tracker toggle buttons in the drag grid ── */
+/* ── Tracker toggle buttons in the drag grid ── */
     #buttons {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       margin-bottom: 12px;
-      min-height: 200px;   /* ← increased a bit so there's room to drag down */
+      min-height: 200px;
       grid-auto-rows: 52px;
       align-content: start;
     }
@@ -68,14 +68,17 @@
       -webkit-user-select: none;
       touch-action: none;
       transition: box-shadow 0.2s, background 0.2s;
-      height: 100%;
+
+      /* Lock size so nothing stretches */
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 52px;           /* matches grid-auto-rows */
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    }
+    .tracker-placeholder {
+      visibility: hidden;
+      height: 52px;
+      pointer-events: none;
     }
     .tracker-btn.active {
       background: #555;
@@ -236,7 +239,7 @@
 </div>
 
 <h1>Habit Tracker
-  <span style="font-size:14px;color:#888;font-weight:normal">v31</span>
+  <span style="font-size:14px;color:#888;font-weight:normal">v32</span>
   <span id="live-clock" style="font-size:13px;color:#666;font-weight:normal;margin-left:18px;letter-spacing:0.02em"></span>
 </h1>
 
@@ -978,9 +981,34 @@
     }
     drag = null;
   });
+    // Add invisible placeholders so you can drag to new rows
+    function addPlaceholders() {
+      // Remove old ones first
+      document.querySelectorAll('.tracker-placeholder').forEach(p => p.remove());
+      
+      const buttonsContainer = document.getElementById('buttons');
+      const currentCount = buttonsContainer.querySelectorAll('.tracker-btn').length;
+      const needed = Math.max(0, 12 - currentCount);   // enough for 4 full rows
+      
+      for (let i = 0; i < needed; i++) {
+        const ph = document.createElement('div');
+        ph.className = 'tracker-placeholder';
+        buttonsContainer.appendChild(ph);
+      }
+    }
+
+    // Run it on load and after any reorder
+    window.addEventListener('load', addPlaceholders);
+    // Re-add after drag ends (in case order changed)
+    const originalPointerUp = document.addEventListener('pointerup', e => {
+      if (drag && drag.active) {
+        setTimeout(addPlaceholders, 10);   // small delay so DOM updates first
+      }
+    });
 </script>
 </body>
 </html>
+
 
 
 
