@@ -308,7 +308,7 @@
 </div>
 
 <h1>Habit Tracker
-  <span style="font-size:14px;color:#888;font-weight:normal">v48</span>
+  <span style="font-size:14px;color:#888;font-weight:normal">v49</span>
   <span id="live-clock" style="font-size:13px;color:#666;font-weight:normal;margin-left:18px;letter-spacing:0.02em"></span>
 </h1>
 
@@ -937,9 +937,8 @@
   const TOTAL_SLOTS = 9;
 
   function padEmptySlots() {
-    buttonsEl.querySelectorAll(".empty-slot").forEach(s => s.remove());
-    const filled = buttonsEl.querySelectorAll(".tracker-btn[data-id]").length;
-    for (let i = filled; i < TOTAL_SLOTS; i++) {
+    const total = buttonsEl.children.length;
+    for (let i = total; i < TOTAL_SLOTS; i++) {
       const slot = document.createElement("div");
       slot.className = "empty-slot";
       buttonsEl.appendChild(slot);
@@ -1124,6 +1123,7 @@
 </script>
 </body>
 </html>
+
 
 
 
