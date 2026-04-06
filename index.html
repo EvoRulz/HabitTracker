@@ -211,15 +211,26 @@
     #confirm-cancel:hover { background: #444; }
     /* ── Settings cog & panel ── */
     #settings-cog {
-      position: fixed; top: 14px; right: 14px;
       width: 34px; height: 34px; border-radius: 50%;
       background: #2a2a2a; border: 1px solid #444;
-      color: #999; cursor: pointer; z-index: 1000;
+      color: #999; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.2s, color 0.2s; padding: 0;
+      transition: background 0.2s, color 0.2s; padding: 0; flex-shrink: 0;
     }
     #settings-cog:hover { background: #3a3a3a; color: #fff; }
     #settings-cog svg { width: 16px; height: 16px; fill: currentColor; }
+
+    #widget-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+    .widget { position: relative; }
+    .widget-handle {
+      display: flex; align-items: center; gap: 8px;
+      cursor: grab; padding: 2px 4px; margin-bottom: 4px;
+      border-radius: 4px; user-select: none; -webkit-user-select: none;
+      touch-action: none;
+    }
+    .widget-handle:hover { background: #1e1e1e; }
+    .widget-handle .drag-dots { color: #555; font-size: 16px; line-height: 1; }
+    .widget-handle .widget-label { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.08em; }
     #settings-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.78); z-index: 9998;
@@ -269,63 +280,48 @@
   </div>
 </div>
 
-<!-- Settings cog -->
-<button id="settings-cog" onclick="settingsOpen()" title="Button style settings">
-  <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8.325 2.317a1.75 1.75 0 0 1 3.35 0l.07.254a1.75 1.75 0 0 0 2.494 1.08l.235-.127a1.75 1.75 0 0 1 2.369 2.369l-.127.235a1.75 1.75 0 0 0 1.08 2.494l.254.07a1.75 1.75 0 0 1 0 3.35l-.254.07a1.75 1.75 0 0 0-1.08 2.494l.127.235a1.75 1.75 0 0 1-2.369 2.369l-.235-.127a1.75 1.75 0 0 0-2.494 1.08l-.07.254a1.75 1.75 0 0 1-3.35 0l-.07-.254a1.75 1.75 0 0 0-2.494-1.08l-.235.127a1.75 1.75 0 0 1-2.369-2.369l.127-.235a1.75 1.75 0 0 0-1.08-2.494l-.254-.07a1.75 1.75 0 0 1 0-3.35l.254-.07a1.75 1.75 0 0 0 1.08-2.494l-.127-.235a1.75 1.75 0 0 1 2.369-2.369l.235.127a1.75 1.75 0 0 0 2.494-1.08l.07-.254ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
-  </svg>
-</button>
+<div id="widget-grid">
 
-<!-- Settings overlay -->
-<div id="settings-overlay">
-  <div id="settings-panel">
-    <h2>Button Style</h2>
-    <div class="settings-row">
-      <label>Background</label>
-      <input type="color" id="s-bg" oninput="settingsChange()">
-    </div>
-    <div class="settings-row">
-      <label>Text colour</label>
-      <input type="color" id="s-fg" oninput="settingsChange()">
-    </div>
-    <div class="settings-row">
-      <label>Typeface</label>
-      <select id="s-font" onchange="settingsChange()">
-        <option value="sans-serif">Default</option>
-        <option value="system-ui, sans-serif">System UI</option>
-        <option value="Georgia, serif">Serif</option>
-        <option value="'Courier New', monospace">Monospace</option>
-        <option value="Impact, sans-serif">Impact</option>
-        <option value="cursive">Cursive</option>
-      </select>
-    </div>
-    <button id="settings-btn-preview">Preview</button>
-    <div id="settings-footer">
-      <button id="settings-reset" onclick="settingsReset()">Reset</button>
-      <button id="settings-close" onclick="settingsClose()">Done</button>
+  <div class="widget" data-widget="title">
+    <div class="widget-handle"><span class="drag-dots">⠿</span><span class="widget-label">Title</span></div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <h1 style="margin:0">Habit Tracker
+        <span style="font-size:14px;color:#888;font-weight:normal">v51</span>
+        <span id="live-clock" style="font-size:13px;color:#666;font-weight:normal;margin-left:18px;letter-spacing:0.02em"></span>
+      </h1>
+      <button id="settings-cog" onclick="settingsOpen()" title="Button style settings">
+        <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8.325 2.317a1.75 1.75 0 0 1 3.35 0l.07.254a1.75 1.75 0 0 0 2.494 1.08l.235-.127a1.75 1.75 0 0 1 2.369 2.369l-.127.235a1.75 1.75 0 0 0 1.08 2.494l.254.07a1.75 1.75 0 0 1 0 3.35l-.254.07a1.75 1.75 0 0 0-1.08 2.494l.127.235a1.75 1.75 0 0 1-2.369 2.369l-.235-.127a1.75 1.75 0 0 0-2.494 1.08l-.07.254a1.75 1.75 0 0 1-3.35 0l-.07-.254a1.75 1.75 0 0 0-2.494-1.08l-.235.127a1.75 1.75 0 0 1-2.369-2.369l.127-.235a1.75 1.75 0 0 0-1.08-2.494l-.254-.07a1.75 1.75 0 0 1 0-3.35l.254-.07a1.75 1.75 0 0 0 1.08-2.494l-.127-.235a1.75 1.75 0 0 1 2.369-2.369l.235.127a1.75 1.75 0 0 0 2.494-1.08l.07-.254ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+        </svg>
+      </button>
     </div>
   </div>
+
+  <div class="widget" data-widget="controls">
+    <div class="widget-handle"><span class="drag-dots">⠿</span><span class="widget-label">Controls</span></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="app-btn" onclick="appExport()">Export All</button>
+      <button class="app-btn" onclick="document.getElementById('app-import-file').click()">Import All</button>
+      <input type="file" id="app-import-file" accept=".json" style="display:none" onchange="appImport(this)">
+      <button class="app-btn" onclick="exportLayout()">Export Layout</button>
+      <button class="app-btn" onclick="document.getElementById('layout-import-file').click()">Import Layout</button>
+      <input type="file" id="layout-import-file" accept=".json" style="display:none" onchange="importLayout(this)">
+      <button class="app-btn btn-clear-all" onclick="appClear()">Clear All</button>
+      <button class="app-btn" onclick="openMyFiles()">My Files</button>
+    </div>
+  </div>
+
+  <div class="widget" data-widget="habits-toggle">
+    <div class="widget-handle"><span class="drag-dots">⠿</span><span class="widget-label">Habits Toggle</span></div>
+    <button class="app-btn" id="habits-toggle-btn" onclick="toggleHabits()">Hide Habits</button>
+  </div>
+
+  <div class="widget" data-widget="habits">
+    <div class="widget-handle"><span class="drag-dots">⠿</span><span class="widget-label">Habits</span></div>
+    <div id="buttons"></div>
+  </div>
+
 </div>
-
-<h1>Habit Tracker
-  <span style="font-size:14px;color:#888;font-weight:normal">v50</span>
-  <span id="live-clock" style="font-size:13px;color:#666;font-weight:normal;margin-left:18px;letter-spacing:0.02em"></span>
-</h1>
-
-<div id="app-controls" style="margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-  <button class="app-btn" onclick="appExport()">Export All</button>
-  <button class="app-btn" onclick="document.getElementById('app-import-file').click()">Import All</button>
-  <input type="file" id="app-import-file" accept=".json" style="display:none" onchange="appImport(this)">
-  <button class="app-btn" onclick="exportLayout()">Export Layout</button>
-  <button class="app-btn" onclick="document.getElementById('layout-import-file').click()">Import Layout</button>
-  <input type="file" id="layout-import-file" accept=".json" style="display:none" onchange="importLayout(this)">
-  <button class="app-btn btn-clear-all" onclick="appClear()">Clear All</button>
-  <button class="app-btn" onclick="openMyFiles()">My Files</button>
-</div>
-
-<!-- Drag-sortable 3-column grid of tracker toggle buttons -->
-<div id="buttons"></div>
-<!-- Tracker sections rendered below buttons -->
 <div id="sections"></div>
 
 <script>
@@ -828,6 +824,8 @@ function appExport() {
     }
     const order=localStorage.getItem("_buttonOrder");
     if (order) out["_buttonOrder"]=order;
+    const worder=localStorage.getItem("_widgetOrder");
+    if (worder) out["_widgetOrder"]=worder;
     const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
     const a=document.createElement("a");
     a.href=URL.createObjectURL(blob); a.download=`all-${exportDateStr(new Date())}.json`;
@@ -843,6 +841,7 @@ function appExport() {
           if (APP_PREFIXES.some(p=>key.startsWith(p))) { localStorage.setItem(key,val); count++; }
         }
         if (data["_buttonOrder"]) { localStorage.setItem("_buttonOrder", data["_buttonOrder"]); applyButtonOrder(); }
+        if (data["_widgetOrder"]) { localStorage.setItem("_widgetOrder", data["_widgetOrder"]); applyWidgetOrder(); }
         input.value="";
         Object.values(trackers).forEach(t=>{ if (t.reload) t.reload(); });
         alert(`Imported ${count} entries across all trackers.`);
@@ -852,7 +851,7 @@ function appExport() {
   }
   function exportLayout() {
     const order=localStorage.getItem("_buttonOrder");
-    const out={ "_buttonOrder": order || JSON.stringify(TRACKER_CONFIGS.map(c=>c.id)) };
+    const out={ "_buttonOrder": order || JSON.stringify(TRACKER_CONFIGS.map(c=>c.id)), "_widgetOrder": localStorage.getItem("_widgetOrder")||"" };
     const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
     const a=document.createElement("a");
     a.href=URL.createObjectURL(blob); a.download=`layout-${exportDateStr(new Date())}.json`;
@@ -866,7 +865,8 @@ function appExport() {
         const data=JSON.parse(e.target.result);
         if (!data["_buttonOrder"]) { alert("No layout data found in file."); return; }
         localStorage.setItem("_buttonOrder", data["_buttonOrder"]);
-        applyButtonOrder();
+          applyButtonOrder();
+        if (data["_widgetOrder"]) { localStorage.setItem("_widgetOrder", data["_widgetOrder"]); applyWidgetOrder(); }
         input.value="";
         alert("Layout imported.");
       } catch { alert("Invalid layout file."); }
@@ -1164,9 +1164,109 @@ function appExport() {
     }
     drag = null;
   });
+  // ── Show / Hide Habits ─────────────────────────────────────
+  let habitsVisible = true;
+  function toggleHabits() {
+    habitsVisible = !habitsVisible;
+    document.getElementById("buttons").style.display = habitsVisible ? "" : "none";
+    document.getElementById("habits-toggle-btn").textContent = habitsVisible ? "Hide Habits" : "Show Habits";
+  }
+
+  // ── Widget drag-to-reorder ─────────────────────────────────
+  const widgetGrid = document.getElementById("widget-grid");
+  let wdrag = null;
+  const W_THRESHOLD = 6;
+
+  widgetGrid.addEventListener("pointerdown", e => {
+    const handle = e.target.closest(".widget-handle");
+    if (!handle) return;
+    const widget = handle.closest(".widget");
+    if (!widget) return;
+    e.preventDefault();
+    handle.setPointerCapture(e.pointerId);
+    const rect = widget.getBoundingClientRect();
+    wdrag = {
+      widget, startX: e.clientX, startY: e.clientY,
+      offX: e.clientX - rect.left, offY: e.clientY - rect.top,
+      h: rect.height, ghost: null, lastOver: null, active: false,
+    };
+  });
+
+  document.addEventListener("pointermove", e => {
+    if (!wdrag) return;
+    if (!wdrag.active) {
+      if (Math.hypot(e.clientX - wdrag.startX, e.clientY - wdrag.startY) < W_THRESHOLD) return;
+      wdrag.active = true;
+      const rect = wdrag.widget.getBoundingClientRect();
+      wdrag.ghost = wdrag.widget.cloneNode(true);
+      Object.assign(wdrag.ghost.style, {
+        position: "fixed", left: rect.left+"px", top: rect.top+"px",
+        width: rect.width+"px", pointerEvents: "none", opacity: "0.8",
+        zIndex: "8999", background: "#111", borderRadius: "6px",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.5)", margin: "0",
+      });
+      document.body.appendChild(wdrag.ghost);
+      wdrag.widget.style.opacity = "0.15";
+    }
+    wdrag.ghost.style.left = (e.clientX - wdrag.offX) + "px";
+    wdrag.ghost.style.top  = (e.clientY - wdrag.offY) + "px";
+
+    const gcy = e.clientY - wdrag.offY + wdrag.h / 2;
+    let over = null;
+    for (const t of widgetGrid.children) {
+      if (t === wdrag.widget) continue;
+      const r = t.getBoundingClientRect();
+      if (gcy >= r.top && gcy <= r.bottom) { over = t; break; }
+    }
+    if (!over) { wdrag.lastOver = null; return; }
+    if (over === wdrag.lastOver) return;
+    wdrag.lastOver = over;
+    const overNext = over.nextSibling, wNext = wdrag.widget.nextSibling;
+    if (wNext === over)              widgetGrid.insertBefore(over, wdrag.widget);
+    else if (overNext === wdrag.widget) widgetGrid.insertBefore(wdrag.widget, over);
+    else {
+      widgetGrid.insertBefore(wdrag.widget, overNext || null);
+      widgetGrid.insertBefore(over, wNext || null);
+    }
+  });
+
+  document.addEventListener("pointerup", e => {
+    if (!wdrag) return;
+    if (wdrag.active) {
+      wdrag.widget.style.opacity = "";
+      if (wdrag.ghost) wdrag.ghost.remove();
+      saveWidgetOrder();
+    }
+    wdrag = null;
+  });
+
+  document.addEventListener("pointercancel", e => {
+    if (!wdrag) return;
+    wdrag.widget.style.opacity = "";
+    if (wdrag.ghost) wdrag.ghost.remove();
+    wdrag = null;
+  });
+
+  // ── Widget order persistence ───────────────────────────────
+  function saveWidgetOrder() {
+    const order = [...widgetGrid.children].map(w => w.dataset.widget).filter(Boolean);
+    localStorage.setItem("_widgetOrder", JSON.stringify(order));
+  }
+  function applyWidgetOrder() {
+    try {
+      const saved = JSON.parse(localStorage.getItem("_widgetOrder"));
+      if (!Array.isArray(saved)) return;
+      saved.forEach(id => {
+        const w = widgetGrid.querySelector(`.widget[data-widget="${id}"]`);
+        if (w) widgetGrid.appendChild(w);
+      });
+    } catch {}
+  }
+  applyWidgetOrder();
 </script>
 </body>
 </html>
+
 
 
 
