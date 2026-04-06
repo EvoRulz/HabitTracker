@@ -279,7 +279,7 @@
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span style="font-size:22px;font-weight:bold;color:white">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v54</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v55</span></div>
   <div class="top-item" data-item="clock"><span id="live-clock" style="font-size:13px;color:#666;letter-spacing:0.02em"></span></div>
   <div class="top-item" data-item="settings">
     <button id="settings-cog" onclick="settingsOpen()" title="Button style settings">
@@ -1034,6 +1034,7 @@ function appExport() {
   applyBtnStyle();
 
   function settingsOpen() {
+  _settingsJustOpened = true;
     document.getElementById("s-bg").value   = btnStyle.bg;
     document.getElementById("s-fg").value   = btnStyle.fg;
     document.getElementById("s-font").value = btnStyle.font;
@@ -1067,9 +1068,11 @@ function appExport() {
     p.style.fontFamily  = btnStyle.font;
     p.textContent = document.getElementById("s-font").selectedOptions[0].text;
   }
-  document.getElementById("settings-overlay").addEventListener("click", e => {
-    if (e.target === document.getElementById("settings-overlay")) settingsClose();
-  });
+  let _settingsJustOpened = false;
+    document.getElementById("settings-overlay").addEventListener("click", e => {
+  if (_settingsJustOpened) { _settingsJustOpened = false; return; }
+  if (e.target === document.getElementById("settings-overlay")) settingsClose();
+});
 
 /// ── Drag-to-reorder — HABIT BUTTONS ──────────────────────
   const DRAG_THRESHOLD = 6;
@@ -1256,6 +1259,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
