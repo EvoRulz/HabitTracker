@@ -289,13 +289,17 @@
       font-size: 15px; text-align: center; pointer-events: none; cursor: default;
     }
     #settings-footer { display: flex; gap: 8px; margin-top: 4px; }
-    #settings-close, #settings-reset {
+    #settings-save, #settings-cancel, #settings-reset, #settings-export, #settings-import-btn {
       padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;
     }
-    #settings-close { background: #333; color: #ccc; }
-    #settings-close:hover { background: #444; }
-    #settings-reset { background: #2a1a1a; color: #ff9999; }
+    #settings-save   { background: #1a3a1a; color: #99ff99; }
+    #settings-save:hover { background: #2a4a2a; }
+    #settings-cancel { background: #333; color: #ccc; }
+    #settings-cancel:hover { background: #444; }
+    #settings-reset  { background: #2a1a1a; color: #ff9999; }
     #settings-reset:hover { background: #3a2020; }
+    #settings-export, #settings-import-btn { background: #1a2a3a; color: #99ccff; }
+    #settings-export:hover, #settings-import-btn:hover { background: #2a3a4a; }
   </style>
 </head>
 <body>
@@ -313,7 +317,7 @@
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span style="font-size:22px;font-weight:bold;color:white">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v63</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v64</span></div>
   <div class="top-item" data-item="date"><span id="live-date" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="time"><span id="live-time" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -365,8 +369,14 @@
     </div>
     <button id="settings-btn-preview">Preview</button>
     <div id="settings-footer">
-      <button id="settings-close" onclick="settingsClose()">Close</button>
+      <button id="settings-save" onclick="settingsSave()">Save</button>
+      <button id="settings-cancel" onclick="settingsCancel()">Cancel</button>
       <button id="settings-reset" onclick="settingsReset()">Reset</button>
+    </div>
+    <div id="settings-footer">
+      <button id="settings-export" onclick="settingsExport()">Export</button>
+      <button id="settings-import-btn" onclick="document.getElementById('settings-import-file').click()">Import</button>
+      <input type="file" id="settings-import-file" accept=".json" style="display:none" onchange="settingsImport(this)">
     </div>
   </div>
 </div>
@@ -1101,8 +1111,10 @@ function appExport() {
   }
   applyBtnStyle();
 
+  let _btnStyleSnapshot = null;
   function settingsOpen() {
-  _settingsJustOpened = true;
+    _settingsJustOpened = true;
+    _btnStyleSnapshot = Object.assign({}, btnStyle);
     document.getElementById("s-bg").value   = btnStyle.bg;
     document.getElementById("s-fg").value   = btnStyle.fg;
     document.getElementById("s-font").value = btnStyle.font;
@@ -1113,12 +1125,50 @@ function appExport() {
   function settingsClose() {
     document.getElementById("settings-overlay").classList.remove("active");
   }
+  function settingsSave() {
+    localStorage.setItem("_btnStyle", JSON.stringify(btnStyle));
+    settingsClose();
+  }
+  function settingsCancel() {
+    if (_btnStyleSnapshot) {
+      btnStyle = Object.assign({}, _btnStyleSnapshot);
+      applyBtnStyle();
+    }
+    settingsClose();
+  }
+  function settingsExport() {
+    const out = { "_btnStyle": JSON.stringify(btnStyle) };
+    const blob = new Blob([JSON.stringify(out, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `settings-${exportDateStr(new Date())}.json`;
+    a.click(); URL.revokeObjectURL(a.href);
+  }
+  function settingsImport(input) {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (data["_btnStyle"]) {
+          btnStyle = Object.assign({}, BTN_STYLE_DEFAULTS, JSON.parse(data["_btnStyle"]));
+          applyBtnStyle();
+          document.getElementById("s-bg").value   = btnStyle.bg;
+          document.getElementById("s-fg").value   = btnStyle.fg;
+          document.getElementById("s-font").value = btnStyle.font;
+          document.getElementById("s-glow").value = btnStyle.glow;
+          settingsUpdatePreview();
+        }
+        input.value = "";
+      } catch { alert("Invalid settings file."); }
+    };
+    reader.readAsText(file);
+  }
   function settingsChange() {
     btnStyle.bg   = document.getElementById("s-bg").value;
     btnStyle.fg   = document.getElementById("s-fg").value;
     btnStyle.font = document.getElementById("s-font").value;
     btnStyle.glow = document.getElementById("s-glow").value;
-    localStorage.setItem("_btnStyle", JSON.stringify(btnStyle));
     applyBtnStyle();
     settingsUpdatePreview();
   }
@@ -1329,6 +1379,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
