@@ -221,13 +221,42 @@
     #settings-cog svg { width: 16px; height: 16px; fill: currentColor; }
 
     #top-grid {
-      display: flex; flex-wrap: wrap; gap: 8px;
-      margin-bottom: 12px; align-items: center;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
     }
     .top-item {
-      touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      background: #444;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      box-sizing: border-box;
+      text-align: center;
+      min-height: 44px;
     }
     .top-item:active { cursor: grabbing; }
+    .top-item[data-item="clear-all"] { background: #5a1a1a; color: #ff9999; }
+    .top-item button, .top-item span, .top-item label {
+      background: transparent;
+      color: inherit;
+      border: none;
+      font-size: inherit;
+      font-family: inherit;
+      cursor: inherit;
+      padding: 0;
+      margin: 0;
+      pointer-events: none;
+    }
+    .top-item input[type="file"] { display: none; }
     #settings-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.78); z-index: 9998;
@@ -279,7 +308,7 @@
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span style="font-size:22px;font-weight:bold;color:white">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v55</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v56</span></div>
   <div class="top-item" data-item="clock"><span id="live-clock" style="font-size:13px;color:#666;letter-spacing:0.02em"></span></div>
   <div class="top-item" data-item="settings">
     <button id="settings-cog" onclick="settingsOpen()" title="Button style settings">
@@ -1259,6 +1288,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
