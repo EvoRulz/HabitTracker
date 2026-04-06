@@ -312,7 +312,7 @@
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span style="font-size:22px;font-weight:bold;color:white">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v59</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v60</span></div>
   <div class="top-item" data-item="clock"><span id="live-clock" style="font-size:13px;color:#666;letter-spacing:0.02em"></span></div>
   <div class="top-item" data-item="settings">
     <button id="settings-cog" onclick="settingsOpen()" title="Button style settings">
@@ -891,7 +891,7 @@ function appExport() {
   }
   function exportLayout() {
     const order=localStorage.getItem("_buttonOrder");
-    const out={ "_buttonOrder": order || JSON.stringify(TRACKER_CONFIGS.map(c=>c.id)), "_widgetOrder": localStorage.getItem("_widgetOrder")||"" };
+    const out={ "_buttonOrder": order || JSON.stringify(TRACKER_CONFIGS.map(c=>c.id)), "_widgetOrder": localStorage.getItem("_widgetOrder")||"", "_topGridOrder": localStorage.getItem("_topGridOrder")||"" };
     const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
     const a=document.createElement("a");
     a.href=URL.createObjectURL(blob); a.download=`layout-${exportDateStr(new Date())}.json`;
@@ -907,6 +907,7 @@ function appExport() {
         localStorage.setItem("_buttonOrder", data["_buttonOrder"]);
           applyButtonOrder();
         if (data["_widgetOrder"]) { localStorage.setItem("_widgetOrder", data["_widgetOrder"]); applyWidgetOrder(); }
+        if (data["_topGridOrder"]) { localStorage.setItem("_topGridOrder", data["_topGridOrder"]); applyTopGridOrder(); }
         input.value="";
         alert("Layout imported.");
       } catch { alert("Invalid layout file."); }
@@ -1300,6 +1301,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
