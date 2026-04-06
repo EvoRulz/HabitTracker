@@ -322,8 +322,8 @@
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span style="font-size:22px;font-weight:bold;color:white">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v65</span></div>
-  <div class="top-item" data-item="date"><span id="live-date" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v66</span></div>
+  <div class="top-item" data-item="date"><span id="live-date" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time"><span id="live-time" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
     <button id="settings-cog" onclick="settingsOpen()" title="Button style settings">
@@ -376,6 +376,25 @@
         <option value="fantasy">Fantasy</option>
       </select>
     </div>
+    <div class="settings-row">
+      <label>Date format</label>
+      <select id="s-datefmt" onchange="settingsChange()">
+        <option value="0">Monday / 7/4/26</option>
+        <option value="1">Mon / 7/4/26</option>
+        <option value="2">7/4/26</option>
+        <option value="3">7/4/2026</option>
+        <option value="4">07/04/2026</option>
+        <option value="5">Mon / 07/04/2026</option>
+        <option value="6">Monday / 07/04/2026</option>
+      </select>
+    </div>
+    <div class="settings-row">
+      <label>Time format</label>
+      <select id="s-time24" onchange="settingsChange()">
+        <option value="true">24-hour</option>
+        <option value="false">12-hour am/pm</option>
+      </select>
+    </div>
     <button id="settings-btn-preview">Preview</button>
     <div id="settings-footer">
       <button id="settings-save" onclick="settingsSave()">Save</button>
@@ -394,33 +413,47 @@
   (function() {
     const dateEl = document.getElementById("live-date");
     const timeEl = document.getElementById("live-time");
-    let dateLong = true;  // true = dd/mm/yyyy, false = d/m/yy
-    let time24   = true;  // true = 24hr,        false = 12hr am/pm
+    // 0: day+d/m/yy (default)  1: d/m/yyyy  2: day+dd/mm/yyyy  3: dd/mm/yyyy
+    let dateFmt = Number(localStorage.getItem("_clockDateFmt") ?? 0);
+    let time24  = localStorage.getItem("_clockTime24") !== "false";
+    window._clockGet = () => ({ dateFmt, time24 });
+    window._clockSet = (df, t24) => { dateFmt = df; time24 = t24; tick(); };
+    const DOW_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const DOW_LONG  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
     function tick() {
-      const n  = new Date();
-      const d  = n.getDate();
-      const mo = n.getMonth() + 1;
-      const y  = n.getFullYear();
-      if (dateLong) {
-        dateEl.textContent = `${String(d).padStart(2,"0")}/${String(mo).padStart(2,"0")}/${y}`;
-      } else {
-        dateEl.textContent = `${d}/${mo}/${String(y).slice(-2)}`;
-      }
+      const n   = new Date();
+      const d   = n.getDate();
+      const mo  = n.getMonth() + 1;
+      const y   = n.getFullYear();
+      const dow = DOW[n.getDay()];
+      const dd  = String(d).padStart(2,"0");
+      const mm  = String(mo).padStart(2,"0");
+      const yy  = String(y).slice(-2);
+      const dowS = DOW_SHORT[n.getDay()];
+      const dowL = DOW_LONG[n.getDay()];
+      if      (dateFmt === 0) dateEl.innerHTML = `${dowL}<br>${d}/${mo}/${yy}`;
+      else if (dateFmt === 1) dateEl.innerHTML = `${dowS}<br>${d}/${mo}/${yy}`;
+      else if (dateFmt === 2) dateEl.innerHTML = `${d}/${mo}/${yy}`;
+      else if (dateFmt === 3) dateEl.innerHTML = `${d}/${mo}/${y}`;
+      else if (dateFmt === 4) dateEl.innerHTML = `${dd}/${mm}/${y}`;
+      else if (dateFmt === 5) dateEl.innerHTML = `${dowS}<br>${dd}/${mm}/${y}`;
+      else                    dateEl.innerHTML = `${dowL}<br>${dd}/${mm}/${y}`;
+
       const mi = String(n.getMinutes()).padStart(2,"0");
       const ss = String(n.getSeconds()).padStart(2,"0");
       if (time24) {
         timeEl.textContent = `${String(n.getHours()).padStart(2,"0")}:${mi}:${ss}`;
       } else {
-        const h   = n.getHours();
+        const h    = n.getHours();
         const ampm = h >= 12 ? "pm" : "am";
         const h12  = h % 12 || 12;
         timeEl.textContent = `${h12}:${mi}:${ss} ${ampm}`;
       }
     }
 
-    dateEl.closest(".top-item").addEventListener("click", () => { dateLong = !dateLong; tick(); });
-    timeEl.closest(".top-item").addEventListener("click", () => { time24   = !time24;   tick(); });
+    dateEl.closest(".top-item").addEventListener("click", () => { dateFmt = (dateFmt + 1) % 7; tick(); });
+    timeEl.closest(".top-item").addEventListener("click", () => { time24  = !time24; tick(); });
 
     tick();
     setInterval(tick, 1000);
@@ -532,7 +565,8 @@
   }
   function displayDate(iso) {
     const [y,m,d] = iso.split("-");
-    return `${d}/${m}/${y.slice(-2)}`;
+    const dow = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date(Number(y), Number(m)-1, Number(d)).getDay()];
+    return `${dow}<br>${Number(d)}/${Number(m)}/${y.slice(-2)}`;
   }
   function offsetDate(base, days) {
     const d = new Date(base); d.setDate(d.getDate() + days); return d;
@@ -1122,14 +1156,19 @@ function appExport() {
   applyBtnStyle();
 
   let _btnStyleSnapshot = null;
+  let _clockSnapshot    = null;
   function settingsOpen() {
     _settingsJustOpened = true;
     _btnStyleSnapshot = Object.assign({}, btnStyle);
+    const clk = window._clockGet();
+    _clockSnapshot = { dateFmt: clk.dateFmt, time24: clk.time24 };
     document.getElementById("s-bg").value       = btnStyle.bg;
     document.getElementById("s-fg").value       = btnStyle.fg;
     document.getElementById("s-font").value     = btnStyle.font;
     document.getElementById("s-glow").value     = btnStyle.glow;
     document.getElementById("s-activebg").value = btnStyle.activeBg;
+    document.getElementById("s-datefmt").value  = clk.dateFmt;
+    document.getElementById("s-time24").value   = String(clk.time24);
     settingsUpdatePreview();
     document.getElementById("settings-overlay").classList.add("active");
   }
@@ -1138,6 +1177,10 @@ function appExport() {
   }
   function settingsSave() {
     localStorage.setItem("_btnStyle", JSON.stringify(btnStyle));
+    const df  = Number(document.getElementById("s-datefmt").value);
+    const t24 = document.getElementById("s-time24").value === "true";
+    localStorage.setItem("_clockDateFmt", df);
+    localStorage.setItem("_clockTime24",  t24);
     settingsClose();
   }
   function settingsCancel() {
@@ -1145,10 +1188,12 @@ function appExport() {
       btnStyle = Object.assign({}, _btnStyleSnapshot);
       applyBtnStyle();
     }
+    if (_clockSnapshot) window._clockSet(_clockSnapshot.dateFmt, _clockSnapshot.time24);
     settingsClose();
   }
   function settingsExport() {
-    const out = { "_btnStyle": JSON.stringify(btnStyle) };
+    const clk = window._clockGet();
+    const out = { "_btnStyle": JSON.stringify(btnStyle), "_clockDateFmt": clk.dateFmt, "_clockTime24": clk.time24 };
     const blob = new Blob([JSON.stringify(out, null, 2)], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -1171,6 +1216,15 @@ function appExport() {
           document.getElementById("s-activebg").value = btnStyle.activeBg;
           settingsUpdatePreview();
         }
+        if (data["_clockDateFmt"] !== undefined) {
+          const df  = Number(data["_clockDateFmt"]);
+          const t24 = data["_clockTime24"] !== false && data["_clockTime24"] !== "false";
+          localStorage.setItem("_clockDateFmt", df);
+          localStorage.setItem("_clockTime24",  t24);
+          window._clockSet(df, t24);
+          document.getElementById("s-datefmt").value = df;
+          document.getElementById("s-time24").value  = String(t24);
+        }
         input.value = "";
       } catch { alert("Invalid settings file."); }
     };
@@ -1183,15 +1237,23 @@ function appExport() {
     btnStyle.glow     = document.getElementById("s-glow").value;
     btnStyle.activeBg = document.getElementById("s-activebg").value;
     applyBtnStyle();
+    const df  = Number(document.getElementById("s-datefmt").value);
+    const t24 = document.getElementById("s-time24").value === "true";
+    window._clockSet(df, t24);
     settingsUpdatePreview();
   }
   function settingsReset() {
     btnStyle = Object.assign({}, BTN_STYLE_DEFAULTS);
     localStorage.removeItem("_btnStyle");
-    document.getElementById("s-bg").value   = btnStyle.bg;
-    document.getElementById("s-fg").value   = btnStyle.fg;
-    document.getElementById("s-font").value = btnStyle.font;
+    localStorage.removeItem("_clockDateFmt");
+    localStorage.removeItem("_clockTime24");
+    document.getElementById("s-bg").value      = btnStyle.bg;
+    document.getElementById("s-fg").value      = btnStyle.fg;
+    document.getElementById("s-font").value    = btnStyle.font;
+    document.getElementById("s-datefmt").value = "0";
+    document.getElementById("s-time24").value  = "true";
     applyBtnStyle();
+    window._clockSet(0, true);
     settingsUpdatePreview();
   }
   function settingsUpdatePreview() {
@@ -1397,6 +1459,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
