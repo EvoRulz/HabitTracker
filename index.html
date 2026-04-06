@@ -279,7 +279,7 @@
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span style="font-size:22px;font-weight:bold;color:white">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v52</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v53</span></div>
   <div class="top-item" data-item="clock"><span id="live-clock" style="font-size:13px;color:#666;letter-spacing:0.02em"></span></div>
   <div class="top-item" data-item="settings">
     <button id="settings-cog" onclick="settingsOpen()" title="Button style settings">
@@ -1042,10 +1042,7 @@ function appExport() {
     if (e.target === document.getElementById("settings-overlay")) settingsClose();
   });
 
-/// ── Drag-to-reorder (pointer events) ──────────────────────
-  // Ghost floats freely. Original stays visibility:hidden (keeps slot + pointer capture).
-  // Swaps with whatever slot (button or empty) the ghost centre overlaps.
-  // lastOver prevents re-swapping the same target on consecutive frames.
+/// ── Drag-to-reorder — HABIT BUTTONS ──────────────────────
   const DRAG_THRESHOLD = 6;
   let drag = null;
 
@@ -1066,17 +1063,15 @@ function appExport() {
 
   document.addEventListener("pointermove", e => {
     if (!drag) return;
-
     if (!drag.active) {
       if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < DRAG_THRESHOLD) return;
       drag.active = true;
       const rect = drag.btn.getBoundingClientRect();
-
       drag.ghost = drag.btn.cloneNode(true);
       drag.ghost.classList.add("drag-ghost");
       Object.assign(drag.ghost.style, {
-        position: "fixed", left: rect.left + "px", top: rect.top + "px",
-        width: rect.width + "px", height: rect.height + "px",
+        position: "fixed", left: rect.left+"px", top: rect.top+"px",
+        width: rect.width+"px", height: rect.height+"px",
         pointerEvents: "none", opacity: "0.75", zIndex: "9000",
         margin: "0", boxSizing: "border-box",
       });
@@ -1084,38 +1079,25 @@ function appExport() {
       drag.btn.style.visibility = "hidden";
       document.body.classList.add("is-dragging");
     }
-
     drag.ghost.style.left = (e.clientX - drag.offX) + "px";
     drag.ghost.style.top  = (e.clientY - drag.offY) + "px";
-
-    // Ghost centre in viewport coords
     const gcx = e.clientX - drag.offX + drag.btnW / 2;
     const gcy = e.clientY - drag.offY + drag.btnH / 2;
-
-    // Hit-test against all slots: real buttons and empty slots
     let over = null;
     for (const t of buttonsEl.children) {
       if (t === drag.btn) continue;
       const r = t.getBoundingClientRect();
-      if (gcx >= r.left && gcx <= r.right && gcy >= r.top && gcy <= r.bottom) {
-        over = t; break;
-      }
+      if (gcx >= r.left && gcx <= r.right && gcy >= r.top && gcy <= r.bottom) { over = t; break; }
     }
-
-    if (!over)            { drag.lastOver = null; return; }
+    if (!over) { drag.lastOver = null; return; }
     if (over === drag.lastOver) return;
     drag.lastOver = over;
-
-    // Swap drag.btn ↔ over in the DOM
-    const overNext = over.nextSibling;
-    const btnNext  = drag.btn.nextSibling;
-    if (btnNext === over) {
-      buttonsEl.insertBefore(over, drag.btn);
-    } else if (overNext === drag.btn) {
-      buttonsEl.insertBefore(drag.btn, over);
-    } else {
+    const overNext = over.nextSibling, btnNext = drag.btn.nextSibling;
+    if (btnNext === over)              buttonsEl.insertBefore(over, drag.btn);
+    else if (overNext === drag.btn)    buttonsEl.insertBefore(drag.btn, over);
+    else {
       buttonsEl.insertBefore(drag.btn, overNext || null);
-      buttonsEl.insertBefore(over,     btnNext  || null);
+      buttonsEl.insertBefore(over, btnNext || null);
     }
   });
 
@@ -1142,18 +1124,18 @@ function appExport() {
     }
     drag = null;
   });
+
   // ── Show / Hide Habits ─────────────────────────────────────
   let habitsVisible = true;
   function toggleHabits() {
     habitsVisible = !habitsVisible;
-    document.getElementById("buttons").style.display = habitsVisible ? "" : "none";
+    buttonsEl.style.display = habitsVisible ? "" : "none";
     document.getElementById("hide-habits-btn").textContent = habitsVisible ? "Hide Habits" : "Show Habits";
   }
 
   // ── Top grid drag-to-reorder ───────────────────────────────
   const topGrid = document.getElementById("top-grid");
   let tdrag = null;
-  const T_THRESHOLD = 6;
 
   topGrid.addEventListener("pointerdown", e => {
     const item = e.target.closest(".top-item");
@@ -1169,10 +1151,10 @@ function appExport() {
     };
   });
 
-  document.addEventListener("pointermove", e => {
+  topGrid.addEventListener("pointermove", e => {
     if (!tdrag) return;
     if (!tdrag.active) {
-      if (Math.hypot(e.clientX - tdrag.startX, e.clientY - tdrag.startY) < T_THRESHOLD) return;
+      if (Math.hypot(e.clientX - tdrag.startX, e.clientY - tdrag.startY) < DRAG_THRESHOLD) return;
       tdrag.active = true;
       const rect = tdrag.item.getBoundingClientRect();
       tdrag.ghost = tdrag.item.cloneNode(true);
@@ -1187,7 +1169,6 @@ function appExport() {
     }
     tdrag.ghost.style.left = (e.clientX - tdrag.offX) + "px";
     tdrag.ghost.style.top  = (e.clientY - tdrag.offY) + "px";
-
     const gcx = e.clientX - tdrag.offX + tdrag.w / 2;
     const gcy = e.clientY - tdrag.offY + tdrag.h / 2;
     let over = null;
@@ -1200,15 +1181,15 @@ function appExport() {
     if (over === tdrag.lastOver) return;
     tdrag.lastOver = over;
     const overNext = over.nextSibling, iNext = tdrag.item.nextSibling;
-    if (iNext === over)               topGrid.insertBefore(over, tdrag.item);
-    else if (overNext === tdrag.item) topGrid.insertBefore(tdrag.item, over);
+    if (iNext === over)                topGrid.insertBefore(over, tdrag.item);
+    else if (overNext === tdrag.item)  topGrid.insertBefore(tdrag.item, over);
     else {
       topGrid.insertBefore(tdrag.item, overNext || null);
       topGrid.insertBefore(over, iNext || null);
     }
   });
 
-  document.addEventListener("pointerup", () => {
+  topGrid.addEventListener("pointerup", () => {
     if (!tdrag) return;
     if (tdrag.active) {
       tdrag.item.style.visibility = "";
@@ -1221,7 +1202,7 @@ function appExport() {
     tdrag = null;
   });
 
-  document.addEventListener("pointercancel", () => {
+  topGrid.addEventListener("pointercancel", () => {
     if (!tdrag) return;
     tdrag.item.style.visibility = "";
     if (tdrag.ghost) tdrag.ghost.remove();
@@ -1246,6 +1227,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
