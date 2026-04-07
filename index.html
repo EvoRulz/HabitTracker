@@ -372,7 +372,7 @@
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v88</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v89</span></div>
   <div class="top-item" data-item="date"><span id="live-date" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time"><span id="live-time" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -403,6 +403,12 @@
       <div class="settings-group-item" data-group="sg-buttons">Buttons</div>
       <div class="settings-group-item" data-group="sg-sliders">Sliders</div>
       <div class="settings-group-item" data-group="sg-clock">Clock</div>
+      <div class="empty-slot"></div>
+      <div class="empty-slot"></div>
+      <div class="empty-slot"></div>
+      <div class="empty-slot"></div>
+      <div class="empty-slot"></div>
+      <div class="empty-slot"></div>
     </div>
     <div class="settings-group-content" id="sg-buttons">
       <div class="color-settings-row">
@@ -1377,6 +1383,13 @@ function appExport() {
   let _btnStyleSnapshot = null;
   let _clockSnapshot    = null;
   function toggleSettingsGroup(groupId) {
+    document.querySelectorAll('.settings-group-content').forEach(el => {
+      if (el.id !== groupId) {
+        el.classList.remove('open');
+        const btn = document.querySelector(`#settings-groups-grid [data-group="${el.id}"]`);
+        if (btn) btn.classList.remove('sg-active');
+      }
+    });
     const c = document.getElementById(groupId);
     const isOpen = c.classList.toggle('open');
     const item = document.querySelector(`#settings-groups-grid [data-group="${groupId}"]`);
@@ -1789,52 +1802,3 @@ function appExport() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
