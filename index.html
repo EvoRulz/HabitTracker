@@ -431,6 +431,102 @@ input[type="checkbox"]:checked::after {
 input[type="checkbox"]:hover {
   border-color: var(--checkbox-border-hover, #777777FF);
 }
+    .tumb-outer {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .tumb-preview {
+      font-size: 15px;
+      color: #fff;
+      font-family: monospace;
+      letter-spacing: 0.06em;
+      line-height: 1.5;
+      padding: 10px 12px;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 6px 6px 0 0;
+      min-height: 48px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .tumb-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border: 1px solid #444;
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      overflow: hidden;
+    }
+    .tumb-col {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      border-right: 1px solid #333;
+      position: relative;
+      overflow: hidden;
+      min-height: 88px;
+    }
+    .tumb-col:last-child { border-right: none; }
+    .tumb-col-label {
+      font-size: 10px;
+      color: #666;
+      text-align: center;
+      padding: 3px 2px 2px;
+      background: #111;
+      border-bottom: 1px solid #222;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      user-select: none;
+    }
+    .tumb-window {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      overflow: hidden;
+      touch-action: none;
+      cursor: ns-resize;
+      user-select: none;
+      -webkit-user-select: none;
+      background: #1c1c1c;
+      position: relative;
+    }
+    .tumb-item {
+      font-size: 13px;
+      line-height: 1;
+      padding: 5px 4px;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+      color: #888;
+      transition: color 0.15s, font-size 0.15s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none;
+    }
+    .tumb-item.tumb-sel {
+      color: #fff;
+      font-size: 15px;
+      background: #2a2a2a;
+    }
+    .tumb-item.tumb-adj {
+      color: #555;
+      font-size: 11px;
+    }
+    .tumb-arrow {
+      font-size: 9px;
+      color: #444;
+      text-align: center;
+      padding: 2px;
+      user-select: none;
+      pointer-events: none;
+      line-height: 1;
+    }
   </style>
 </head>
 <body>
@@ -611,40 +707,7 @@ input[type="checkbox"]:hover {
       </div>
     </div>
     <div class="settings-group-content" id="sg-clock">
-      <div class="settings-row">
-        <label>Date format</label>
-        <select id="s-datefmt" onchange="settingsChange()">
-          <option value="0">Monday / 7/4/26</option>
-          <option value="1">Mon / 7/4/26</option>
-          <option value="2">7/4/26</option>
-          <option value="3">7/4/2026</option>
-          <option value="4">07/04/2026</option>
-          <option value="5">Mon / 07/04/2026</option>
-          <option value="6">Monday / 07/04/2026</option>
-        </select>
-      </div>
-      <div class="settings-row">
-        <label>Time format</label>
-        <select id="s-time24" onchange="settingsChange()">
-          <option value="true">24-hour</option>
-          <option value="false">12-hour am/pm</option>
-        </select>
-      </div>
-      <div style="margin-bottom:12px;padding:12px;background:#2a2a2a;border-radius:6px;border:1px solid #444">
-        <label style="font-size:12px;color:#999;display:block;margin-bottom:6px">Live preview:</label>
-        <div id="clock-demo" style="font-size:16px;color:#fff;font-family:monospace;letter-spacing:0.05em;line-height:1.6"></div>
-      </div>
-      <div class="color-settings-row">
-        <label>Custom date/time format</label>
-        <input type="text" id="s-customfmt" placeholder="d/m/y HH:MM:SS" style="flex:1;background:#111;color:#fff;border:1px solid #555;border-radius:4px;padding:6px 10px;font-size:13px;font-family:monospace;outline:none;min-width:0" oninput="settingsChange()" spellcheck="false">
-        <button style="padding:6px 10px;background:#1a2a3a;color:#99ccff;border:none;border-radius:4px;cursor:pointer;font-size:12px;white-space:nowrap" onclick="showFormatHelp()">Help</button>
-      </div>
-      <div id="format-help" style="display:none;margin-top:8px;padding:8px;background:#1a1a1a;border-radius:4px;border-left:2px solid #555;font-size:12px;color:#ccc;line-height:1.5">
-        <strong style="color:#99ccff">Format codes:</strong><br>
-        <strong>Date:</strong> d(ay), dd, m(onth), mm, y(ear), yy, D(ay name short), DD(full)<br>
-        <strong>Time:</strong> H(our 24), HH, h(our 12), hh, M(in), MM, S(ec), SS, a(m/pm), A(M/PM)<br>
-        <strong>Example:</strong> dd/mm/yyyy HH:MM:SS
-      </div>
+      <div id="clock-tumbler-wrap"></div>
     </div>
       <div class="settings-group-content" id="sg-checkboxes">
       <div class="color-settings-row">
@@ -718,46 +781,118 @@ input[type="checkbox"]:hover {
   (function() {
     const dateEl = document.getElementById("live-date");
     const timeEl = document.getElementById("live-time");
-    // 0: day+d/m/yy (default)  1: d/m/yyyy  2: day+dd/mm/yyyy  3: dd/mm/yyyy
-    let dateFmt = Number(localStorage.getItem("_clockDateFmt") ?? 0);
-    let time24  = localStorage.getItem("_clockTime24") !== "false";
-    window._clockGet = () => ({ dateFmt, time24 });
-    window._clockSet = (df, t24) => { dateFmt = df; time24 = t24; tick(); };
     const DOW_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
     const DOW_LONG  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
-    function tick() {
-      const n   = new Date();
-      const d   = n.getDate();
-      const mo  = n.getMonth() + 1;
-      const y   = n.getFullYear();
+    // Clock config: 9 tumbler indices
+    // [dayName, day, month, year, hour, minute, second, ms, ampm]
+    // Stored as JSON array in _clockTumbler
+    const TUMBLER_DEFAULTS = [6, 1, 1, 1, 2, 1, 1, 0, 0];
+    // dayName options: 0=blank,1="",2="",3="",4="",5="Mon",6="Monday"  (indices map to DAY_OPTS below)
+    // We encode choices per-column as indices into the column's options array.
+
+    let tumblerCfg = TUMBLER_DEFAULTS.slice();
+    try {
+      const s = JSON.parse(localStorage.getItem("_clockTumbler"));
+      if (Array.isArray(s) && s.length === 9) tumblerCfg = s;
+    } catch {}
+
+    window._clockGet = () => ({ tumblerCfg: tumblerCfg.slice() });
+    window._clockSet = (cfg) => { tumblerCfg = cfg.slice(); tick(); };
+
+    // Col definitions: [label, options[]]
+    // Each option is a display string (empty string = blank/off)
+    const COLS = [
+      { label:"Day name",  opts:["—","m","mo","mon","mond","monda","Monday"] },
+      { label:"Day #",     opts:["—","d","dd"] },
+      { label:"Month",     opts:["—","m","mm"] },
+      { label:"Year",      opts:["—","yy","yyyy"] },
+      { label:"Hour",      opts:["—","12h","12hh","24h","24hh"] },
+      { label:"Minutes",   opts:["—","MM"] },
+      { label:"Seconds",   opts:["—","SS"] },
+      { label:"Millis",    opts:["—","mmm"] },
+      { label:"am/pm",     opts:["—","am/pm"] },
+    ];
+    window._CLOCK_COLS = COLS;
+
+    function buildDateTime(now, cfg) {
+      const d   = now.getDate();
+      const mo  = now.getMonth() + 1;
+      const y   = now.getFullYear();
       const dd  = String(d).padStart(2,"0");
       const mm  = String(mo).padStart(2,"0");
       const yy  = String(y).slice(-2);
-      const dowS = DOW_SHORT[n.getDay()];
-      const dowL = DOW_LONG[n.getDay()];
-      if      (dateFmt === 0) dateEl.innerHTML = `${dowL}<br>${d}/${mo}/${yy}`;
-      else if (dateFmt === 1) dateEl.innerHTML = `${dowS}<br>${d}/${mo}/${yy}`;
-      else if (dateFmt === 2) dateEl.innerHTML = `${d}/${mo}/${yy}`;
-      else if (dateFmt === 3) dateEl.innerHTML = `${d}/${mo}/${y}`;
-      else if (dateFmt === 4) dateEl.innerHTML = `${dd}/${mm}/${y}`;
-      else if (dateFmt === 5) dateEl.innerHTML = `${dowS}<br>${dd}/${mm}/${y}`;
-      else                    dateEl.innerHTML = `${dowL}<br>${dd}/${mm}/${y}`;
+      const yyyy= String(y);
+      const dowS = DOW_SHORT[now.getDay()];
+      const dowL = DOW_LONG[now.getDay()];
+      const dow3 = dowL.slice(0,3);
+      const dow4 = dowL.slice(0,4);
+      const dow5 = dowL.slice(0,5);
+      const dow6 = dowL.slice(0,6);
+      const h24  = now.getHours();
+      const h12  = h24 % 12 || 12;
+      const mi   = String(now.getMinutes()).padStart(2,"0");
+      const se   = String(now.getSeconds()).padStart(2,"0");
+      const ms   = String(now.getMilliseconds()).padStart(3,"0");
+      const ampm = h24 >= 12 ? "pm" : "am";
 
-      const mi = String(n.getMinutes()).padStart(2,"0");
-      const ss = String(n.getSeconds()).padStart(2,"0");
-      if (time24) {
-        timeEl.textContent = `${String(n.getHours()).padStart(2,"0")}:${mi}:${ss}`;
-      } else {
-        const h    = n.getHours();
-        const ampm = h >= 12 ? "pm" : "am";
-        const h12  = h % 12 || 12;
-        timeEl.textContent = `${h12}:${mi}:${ss} ${ampm}`;
-      }
+      // Day name part
+      const dayNameIdx = cfg[0];
+      const dayNameMap = ["","m","mo",dow3,dow4,dow5,dowL];
+      const dayNameStr = dayNameIdx === 0 ? "" : (dayNameMap[dayNameIdx] || "");
+
+      // Day number
+      const dayNumIdx = cfg[1];
+      const dayNumStr = dayNumIdx === 0 ? "" : dayNumIdx === 1 ? String(d) : dd;
+
+      // Month
+      const moIdx = cfg[2];
+      const moStr = moIdx === 0 ? "" : moIdx === 1 ? String(mo) : mm;
+
+      // Year
+      const yrIdx = cfg[3];
+      const yrStr = yrIdx === 0 ? "" : yrIdx === 1 ? yy : yyyy;
+
+      // Hour
+      const hrIdx = cfg[4];
+      let hrStr = "";
+      if      (hrIdx === 1) hrStr = String(h12);
+      else if (hrIdx === 2) hrStr = String(h12).padStart(2,"0");
+      else if (hrIdx === 3) hrStr = String(h24);
+      else if (hrIdx === 4) hrStr = String(h24).padStart(2,"0");
+
+      // Minutes
+      const minStr = cfg[5] === 0 ? "" : mi;
+      // Seconds
+      const secStr = cfg[6] === 0 ? "" : se;
+      // Millis
+      const msStr  = cfg[7] === 0 ? "" : ms;
+      // ampm
+      const amStr  = cfg[8] === 0 ? "" : ampm;
+
+      // Build date line
+      const dateParts = [dayNameStr, [dayNumStr, moStr, yrStr].filter(Boolean).join("/")].filter(Boolean);
+      const dateLine = dateParts.join(" ");
+
+      // Build time line
+      let timeParts = [hrStr];
+      if (minStr) timeParts.push(minStr);
+      if (secStr) timeParts.push(secStr);
+      const timeBase = timeParts.filter(Boolean).join(":");
+      const timeLine = [timeBase, msStr ? "."+msStr : "", amStr ? " "+amStr : ""].join("").trim();
+
+      return { dateLine, timeLine };
     }
 
-    dateEl.closest(".top-item").addEventListener("click", () => { dateFmt = (dateFmt + 1) % 7; tick(); });
-    timeEl.closest(".top-item").addEventListener("click", () => { time24  = !time24; tick(); });
+    function tick() {
+      const now = new Date();
+      const { dateLine, timeLine } = buildDateTime(now, tumblerCfg);
+      dateEl.innerHTML = dateLine.replace(/\s/g,"<br>");
+      timeEl.textContent = timeLine;
+    }
+
+    dateEl.closest(".top-item").addEventListener("click", () => {});
+    timeEl.closest(".top-item").addEventListener("click", () => {});
 
     tick();
     setInterval(tick, 1000);
@@ -1611,10 +1746,7 @@ function appExport() {
     _settingsJustOpened = true;
     _btnStyleSnapshot = Object.assign({}, btnStyle);
     const clk = window._clockGet();
-    _clockSnapshot = { dateFmt: clk.dateFmt, time24: clk.time24 };
-    document.getElementById("s-customfmt").value = "d/m/y HH:MM:SS";
-    updateClockDemo();
-    setInterval(updateClockDemo, 1000);
+    _clockSnapshot = { tumblerCfg: clk.tumblerCfg.slice() };
     setColorValue('s-bg',           btnStyle.bg);
     setColorValue('s-fg',           btnStyle.fg);
     setColorValue('s-glow',         btnStyle.glow);
@@ -1637,10 +1769,7 @@ function appExport() {
   }
   function settingsSave() {
     localStorage.setItem("_btnStyle", JSON.stringify(btnStyle));
-    const df  = Number(document.getElementById("s-datefmt").value);
-    const t24 = document.getElementById("s-time24").value === "true";
-    localStorage.setItem("_clockDateFmt", df);
-    localStorage.setItem("_clockTime24",  t24);
+    localStorage.setItem("_clockTumbler", JSON.stringify(window._clockGet().tumblerCfg));
     settingsClose();
   }
   function settingsCancel() {
@@ -1648,12 +1777,12 @@ function appExport() {
       btnStyle = Object.assign({}, _btnStyleSnapshot);
       applyBtnStyle();
     }
-    if (_clockSnapshot) window._clockSet(_clockSnapshot.dateFmt, _clockSnapshot.time24);
+    if (_clockSnapshot) window._clockSet(_clockSnapshot.tumblerCfg);
     settingsClose();
   }
   function settingsExport() {
     const clk = window._clockGet();
-    const out = { "_btnStyle": JSON.stringify(btnStyle), "_clockDateFmt": clk.dateFmt, "_clockTime24": clk.time24 };
+    const out = { "_btnStyle": JSON.stringify(btnStyle), "_clockTumbler": JSON.stringify(clk.tumblerCfg) };
     const blob = new Blob([JSON.stringify(out, null, 2)], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -1676,68 +1805,21 @@ function appExport() {
           document.getElementById("s-activebg").value = btnStyle.activeBg;
           settingsUpdatePreview();
         }
-        if (data["_clockDateFmt"] !== undefined) {
-          const df  = Number(data["_clockDateFmt"]);
-          const t24 = data["_clockTime24"] !== false && data["_clockTime24"] !== "false";
-          localStorage.setItem("_clockDateFmt", df);
-          localStorage.setItem("_clockTime24",  t24);
-          window._clockSet(df, t24);
-          document.getElementById("s-datefmt").value = df;
-          document.getElementById("s-time24").value  = String(t24);
+        if (data["_clockTumbler"] !== undefined) {
+          try {
+            const cfg = JSON.parse(data["_clockTumbler"]);
+            if (Array.isArray(cfg) && cfg.length === 9) {
+              localStorage.setItem("_clockTumbler", data["_clockTumbler"]);
+              window._clockSet(cfg);
+              if (window._tumblerRefresh) window._tumblerRefresh();
+            }
+          } catch {}
         }
         input.value = "";
       } catch { alert("Invalid settings file."); }
     };
     reader.readAsText(file);
   }
-  function showFormatHelp() {
-  const h = document.getElementById('format-help');
-  h.style.display = h.style.display === 'none' ? 'block' : 'none';
-}
-
-function formatCustomDate(date, format) {
-  const pad = (n) => String(n).padStart(2, '0');
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const daysShort = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  
-  let result = format;
-  const h24 = date.getHours();
-  const h12 = h24 % 12 || 12;
-  const ampm = h24 >= 12 ? 'pm' : 'am';
-  const AMPM = h24 >= 12 ? 'PM' : 'AM';
-  const tokens = {
-    'DD':   days[date.getDay()],
-    'D':    daysShort[date.getDay()],
-    'dd':   pad(date.getDate()),
-    'd':    String(date.getDate()),
-    'mm':   pad(date.getMonth() + 1),
-    'm':    String(date.getMonth() + 1),
-    'yyyy': String(date.getFullYear()),
-    'yy':   String(date.getFullYear()).slice(-2),
-    'HH':   pad(h24),
-    'H':    String(h24),
-    'hh':   pad(h12),
-    'h':    String(h12),
-    'MM':   pad(date.getMinutes()),
-    'M':    String(date.getMinutes()),
-    'SS':   pad(date.getSeconds()),
-    'S':    String(date.getSeconds()),
-    'A':    AMPM,
-    'a':    ampm,
-  };
-
-  return format.replace(/DD|D|dd|d|mm|m|yyyy|yy|HH|H|hh|h|MM|M|SS|S|A|a/g, match => tokens[match]);
-}
-
-function updateClockDemo() {
-  const fmt = document.getElementById('s-customfmt');
-  if (!fmt || !fmt.value.trim()) {
-    document.getElementById('clock-demo').textContent = '';
-    return;
-  }
-  const now = new Date();
-  document.getElementById('clock-demo').textContent = formatCustomDate(now, fmt.value);
-}
   function settingsChange() {
     btnStyle.bg             = getColorValue('s-bg');
     btnStyle.fg             = getColorValue('s-fg');
@@ -1753,17 +1835,14 @@ function updateClockDemo() {
     btnStyle.checkboxBorder  = getColorValue('s-checkbox-border');
     btnStyle.checkboxBg      = getColorValue('s-checkbox-bg');
     applyBtnStyle();
-    const df  = Number(document.getElementById("s-datefmt").value);
-    const t24 = document.getElementById("s-time24").value === "true";
-    window._clockSet(df, t24);
     settingsUpdatePreview();
-    updateClockDemo();
   }
   function settingsReset() {
     btnStyle = Object.assign({}, BTN_STYLE_DEFAULTS);
     localStorage.removeItem("_btnStyle");
-    localStorage.removeItem("_clockDateFmt");
-    localStorage.removeItem("_clockTime24");
+    localStorage.removeItem("_clockTumbler");
+    window._clockSet([6, 1, 1, 1, 2, 1, 1, 0, 0]);
+    if (window._tumblerRefresh) window._tumblerRefresh();
     setColorValue('s-bg',              btnStyle.bg);
     setColorValue('s-fg',              btnStyle.fg);
     setColorValue('s-glow',            btnStyle.glow);
@@ -2216,6 +2295,143 @@ function updateClockDemo() {
   document.getElementById("manage-overlay").addEventListener("click", e => {
   if (e.target === document.getElementById("manage-overlay")) manageClose();
 });
+
+  // ── Clock tumbler ──────────────────────────────────────────
+  (function() {
+    const COLS = window._CLOCK_COLS;
+    const wrap = document.getElementById("clock-tumbler-wrap");
+
+    function getCfg() { return window._clockGet().tumblerCfg; }
+    function setCfg(cfg) { window._clockSet(cfg); renderPreviews(); }
+
+    function renderPreviews() {
+      const cfg = getCfg();
+      const preview = wrap.querySelector(".tumb-preview");
+      const now = new Date();
+      const DOW_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+      const DOW_LONG  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      const d = now.getDate(), mo = now.getMonth()+1, y = now.getFullYear();
+      const dd = String(d).padStart(2,"0"), mm = String(mo).padStart(2,"0");
+      const yy = String(y).slice(-2);
+      const dowL = DOW_LONG[now.getDay()];
+      const dayNameMap = ["","m","mo",dowL.slice(0,3),dowL.slice(0,4),dowL.slice(0,5),dowL];
+      const dayNameStr = cfg[0] === 0 ? "" : (dayNameMap[cfg[0]] || "");
+      const dayNumStr  = cfg[1] === 0 ? "" : cfg[1] === 1 ? String(d) : dd;
+      const moStr      = cfg[2] === 0 ? "" : cfg[2] === 1 ? String(mo) : mm;
+      const yrStr      = cfg[3] === 0 ? "" : cfg[3] === 1 ? yy : String(y);
+      const h24 = now.getHours(), h12 = h24 % 12 || 12;
+      const mi = String(now.getMinutes()).padStart(2,"0");
+      const se = String(now.getSeconds()).padStart(2,"0");
+      const ms = String(now.getMilliseconds()).padStart(3,"0");
+      const ampm = h24 >= 12 ? "pm" : "am";
+      let hrStr = "";
+      if      (cfg[4]===1) hrStr = String(h12);
+      else if (cfg[4]===2) hrStr = String(h12).padStart(2,"0");
+      else if (cfg[4]===3) hrStr = String(h24);
+      else if (cfg[4]===4) hrStr = String(h24).padStart(2,"0");
+      const minStr = cfg[5] === 0 ? "" : mi;
+      const secStr = cfg[6] === 0 ? "" : se;
+      const msStr  = cfg[7] === 0 ? "" : ms;
+      const amStr  = cfg[8] === 0 ? "" : ampm;
+      const dateParts = [dayNameStr, [dayNumStr, moStr, yrStr].filter(Boolean).join("/")].filter(Boolean);
+      const dateLine = dateParts.join(" ");
+      let timeParts = [hrStr];
+      if (minStr) timeParts.push(minStr);
+      if (secStr) timeParts.push(secStr);
+      const timeBase = timeParts.filter(Boolean).join(":");
+      const timeLine = [timeBase, msStr ? "."+msStr : "", amStr ? " "+amStr : ""].join("").trim();
+      const fullStr = [dateLine, timeLine].filter(Boolean).join("\n");
+      preview.textContent = fullStr || "(nothing selected)";
+      COLS.forEach((col, ci) => renderCol(ci));
+    }
+
+    function renderCol(ci) {
+      const cfg = getCfg();
+      const col = wrap.querySelector(`.tumb-col[data-ci="${ci}"]`);
+      if (!col) return;
+      const win = col.querySelector(".tumb-window");
+      win.innerHTML = "";
+      const opts = COLS[ci].opts;
+      const sel  = cfg[ci];
+      const prev = (sel - 1 + opts.length) % opts.length;
+      const next = (sel + 1) % opts.length;
+      const aUp = document.createElement("div");
+      aUp.className = "tumb-arrow"; aUp.textContent = "▲";
+      const elPrev = document.createElement("div");
+      elPrev.className = "tumb-item tumb-adj";
+      elPrev.textContent = opts[prev] || "—";
+      const elSel = document.createElement("div");
+      elSel.className = "tumb-item tumb-sel";
+      elSel.textContent = opts[sel] || "—";
+      const elNext = document.createElement("div");
+      elNext.className = "tumb-item tumb-adj";
+      elNext.textContent = opts[next] || "—";
+      const aDown = document.createElement("div");
+      aDown.className = "tumb-arrow"; aDown.textContent = "▼";
+      win.append(aUp, elPrev, elSel, elNext, aDown);
+    }
+
+    function buildTumbler() {
+      wrap.innerHTML = "";
+      const preview = document.createElement("div");
+      preview.className = "tumb-preview";
+      wrap.appendChild(preview);
+      const grid = document.createElement("div");
+      grid.className = "tumb-grid";
+      COLS.forEach((col, ci) => {
+        const colEl = document.createElement("div");
+        colEl.className = "tumb-col";
+        colEl.dataset.ci = ci;
+        const lbl = document.createElement("div");
+        lbl.className = "tumb-col-label";
+        lbl.textContent = col.label;
+        colEl.appendChild(lbl);
+        const win = document.createElement("div");
+        win.className = "tumb-window";
+        colEl.appendChild(win);
+        grid.appendChild(colEl);
+        setupDrag(win, ci);
+      });
+      wrap.appendChild(grid);
+      renderPreviews();
+    }
+
+    function setupDrag(win, ci) {
+      let startY = null, lastY = null, accum = 0;
+      const STEP = 28;
+      function step(dir) {
+        const cfg = getCfg().slice();
+        cfg[ci] = (cfg[ci] + dir + COLS[ci].opts.length) % COLS[ci].opts.length;
+        setCfg(cfg);
+      }
+      win.addEventListener("pointerdown", e => {
+        e.preventDefault();
+        win.setPointerCapture(e.pointerId);
+        startY = e.clientY; lastY = e.clientY; accum = 0;
+      });
+      win.addEventListener("pointermove", e => {
+        if (startY === null) return;
+        const dy = lastY - e.clientY;
+        accum += dy;
+        lastY = e.clientY;
+        while (accum >= STEP)  { accum -= STEP; step(1); }
+        while (accum <= -STEP) { accum += STEP; step(-1); }
+      });
+      win.addEventListener("pointerup", e => {
+        if (startY !== null && Math.abs(e.clientY - startY) < 4) {
+          const rect = win.getBoundingClientRect();
+          const mid  = rect.top + rect.height / 2;
+          step(e.clientY < mid ? -1 : 1);
+        }
+        startY = null; lastY = null; accum = 0;
+      });
+      win.addEventListener("pointercancel", () => { startY = null; lastY = null; accum = 0; });
+    }
+
+    window._tumblerRefresh = () => { buildTumbler(); };
+    buildTumbler();
+    setInterval(renderPreviews, 1000);
+  })();
 </script>
 </body>
 </html>
