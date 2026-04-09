@@ -396,6 +396,37 @@
     #manage-close-btn { padding: 8px 16px; background: #333; color: #ccc;
       border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
     #manage-close-btn:hover { background: #444; }
+    /* Checkbox styling */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--checkbox-border, #555555FF);
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  position: relative;
+}
+input[type="checkbox"]:checked {
+  background: var(--checkbox-checked, #90EE90FF);
+  border-color: var(--checkbox-checked, #90EE90FF);
+}
+input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--checkbox-mark, #000000FF);
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+}
+input[type="checkbox"]:hover {
+  border-color: var(--checkbox-border-hover, #777777FF);
+}
   </style>
 </head>
 <body>
@@ -413,7 +444,7 @@
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v119</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v120</span></div>
   <div class="top-item" data-item="date"><span id="live-date" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time"><span id="live-time" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -464,6 +495,7 @@
       <div class="settings-group-item" data-group="sg-buttons">Buttons</div>
       <div class="settings-group-item" data-group="sg-sliders">Sliders</div>
       <div class="settings-group-item" data-group="sg-clock">Clock</div>
+      <div class="settings-group-item" data-group="sg-checkboxes">Checkboxes</div>
       <div class="empty-slot"></div>
       <div class="empty-slot"></div>
       <div class="empty-slot"></div>
@@ -592,6 +624,52 @@
           <option value="false">12-hour am/pm</option>
         </select>
       </div>
+      <div class="settings-group-content" id="sg-checkboxes">
+      <div class="color-settings-row">
+        <label>Checked background</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-checkbox-checked" oninput="onColorPickerChange('s-checkbox-checked')">
+          <input type="range" class="alpha-slider" id="s-checkbox-checked-alpha" min="0" max="255" value="255" oninput="onAlphaChange('s-checkbox-checked')">
+        </div>
+        <div class="hex-copy-row">
+          <input type="text" class="hex-input" id="s-checkbox-checked-hex" maxlength="9" oninput="onHexInput('s-checkbox-checked')" spellcheck="false" autocomplete="off">
+          <button class="copy-btn" onclick="copyHex('s-checkbox-checked',this)">Copy</button>
+        </div>
+      </div>
+      <div class="color-settings-row">
+        <label>Checkmark colour</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-checkbox-mark" oninput="onColorPickerChange('s-checkbox-mark')">
+          <input type="range" class="alpha-slider" id="s-checkbox-mark-alpha" min="0" max="255" value="255" oninput="onAlphaChange('s-checkbox-mark')">
+        </div>
+        <div class="hex-copy-row">
+          <input type="text" class="hex-input" id="s-checkbox-mark-hex" maxlength="9" oninput="onHexInput('s-checkbox-mark')" spellcheck="false" autocomplete="off">
+          <button class="copy-btn" onclick="copyHex('s-checkbox-mark',this)">Copy</button>
+        </div>
+      </div>
+      <div class="color-settings-row">
+        <label>Border colour</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-checkbox-border" oninput="onColorPickerChange('s-checkbox-border')">
+          <input type="range" class="alpha-slider" id="s-checkbox-border-alpha" min="0" max="255" value="255" oninput="onAlphaChange('s-checkbox-border')">
+        </div>
+        <div class="hex-copy-row">
+          <input type="text" class="hex-input" id="s-checkbox-border-hex" maxlength="9" oninput="onHexInput('s-checkbox-border')" spellcheck="false" autocomplete="off">
+          <button class="copy-btn" onclick="copyHex('s-checkbox-border',this)">Copy</button>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #444">
+        <label style="font-size:13px;color:#bbb">Demo:</label>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+          <input type="checkbox" id="settings-checkbox-demo-unchecked" style="width:20px;height:20px;cursor:pointer">
+          <span style="font-size:13px;color:#888">Unchecked</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+          <input type="checkbox" id="settings-checkbox-demo-checked" checked style="width:20px;height:20px;cursor:pointer">
+          <span style="font-size:13px;color:#888">Checked</span>
+        </div>
+      </div>
+    </div>
     </div>
     <button id="settings-btn-preview" style="display:none">Preview</button>
     <div id="settings-footer">
@@ -1382,7 +1460,7 @@ function appExport() {
   requestAnimationFrame(equalizeTopGrid);
 
   // ── Button style settings ──────────────────────────────────
-  const BTN_STYLE_DEFAULTS = { bg: "#444444FF", fg: "#FFFFFFFF", font: "sans-serif", glow: "#9659FFFF", activeBg: "#555555FF", tapHighlight: "#0000FFFF", sliderBorder: "#555555FF", sliderH: 8, sliderR: 4 };
+  const BTN_STYLE_DEFAULTS = { bg: "#444444FF", fg: "#FFFFFFFF", font: "sans-serif", glow: "#9659FFFF", activeBg: "#555555FF", tapHighlight: "#0000FFFF", sliderBorder: "#555555FF", sliderH: 8, sliderR: 4, checkboxChecked: "#90EE90FF", checkboxMark: "#000000FF", checkboxBorder: "#555555FF" };
   let btnStyle = Object.assign({}, BTN_STYLE_DEFAULTS);
   try {
     const saved = JSON.parse(localStorage.getItem("_btnStyle"));
@@ -1476,6 +1554,9 @@ function appExport() {
     document.documentElement.style.setProperty("--slider-border-color", hex8ToCss(btnStyle.sliderBorder));
     document.documentElement.style.setProperty("--slider-h",            btnStyle.sliderH + "px");
     document.documentElement.style.setProperty("--slider-r",            btnStyle.sliderR + "px");
+    document.documentElement.style.setProperty("--checkbox-checked",     hex8ToCss(btnStyle.checkboxChecked));
+    document.documentElement.style.setProperty("--checkbox-mark",        hex8ToCss(btnStyle.checkboxMark));
+    document.documentElement.style.setProperty("--checkbox-border",      hex8ToCss(btnStyle.checkboxBorder));
   }
   applyBtnStyle();
 
@@ -1506,6 +1587,9 @@ function appExport() {
     setColorValue('s-glow',         btnStyle.glow);
     setColorValue('s-activebg',     btnStyle.activeBg);
     setColorValue('s-taphighlight', btnStyle.tapHighlight);
+    setColorValue('s-checkbox-checked', btnStyle.checkboxChecked);
+    setColorValue('s-checkbox-mark',    btnStyle.checkboxMark);
+    setColorValue('s-checkbox-border',  btnStyle.checkboxBorder);
     document.getElementById("s-font").value    = btnStyle.font;
     document.getElementById("s-datefmt").value = clk.dateFmt;
     document.getElementById("s-time24").value  = String(clk.time24);
@@ -1573,15 +1657,18 @@ function appExport() {
     reader.readAsText(file);
   }
   function settingsChange() {
-    btnStyle.bg           = getColorValue('s-bg');
-    btnStyle.fg           = getColorValue('s-fg');
-    btnStyle.font         = document.getElementById("s-font").value;
-    btnStyle.glow         = getColorValue('s-glow');
-    btnStyle.activeBg     = getColorValue('s-activebg');
-    btnStyle.tapHighlight = getColorValue('s-taphighlight');
-    btnStyle.sliderBorder = getColorValue('s-sliderborder');
-    btnStyle.sliderH      = Number(document.getElementById("s-sliderh").value);
-    btnStyle.sliderR      = Number(document.getElementById("s-sliderr").value);
+    btnStyle.bg             = getColorValue('s-bg');
+    btnStyle.fg             = getColorValue('s-fg');
+    btnStyle.font           = document.getElementById("s-font").value;
+    btnStyle.glow           = getColorValue('s-glow');
+    btnStyle.activeBg       = getColorValue('s-activebg');
+    btnStyle.tapHighlight   = getColorValue('s-taphighlight');
+    btnStyle.sliderBorder   = getColorValue('s-sliderborder');
+    btnStyle.sliderH        = Number(document.getElementById("s-sliderh").value);
+    btnStyle.sliderR        = Number(document.getElementById("s-sliderr").value);
+    btnStyle.checkboxChecked = getColorValue('s-checkbox-checked');
+    btnStyle.checkboxMark    = getColorValue('s-checkbox-mark');
+    btnStyle.checkboxBorder  = getColorValue('s-checkbox-border');
     applyBtnStyle();
     const df  = Number(document.getElementById("s-datefmt").value);
     const t24 = document.getElementById("s-time24").value === "true";
@@ -1593,12 +1680,15 @@ function appExport() {
     localStorage.removeItem("_btnStyle");
     localStorage.removeItem("_clockDateFmt");
     localStorage.removeItem("_clockTime24");
-    setColorValue('s-bg',           btnStyle.bg);
-    setColorValue('s-fg',           btnStyle.fg);
-    setColorValue('s-glow',         btnStyle.glow);
-    setColorValue('s-activebg',     btnStyle.activeBg);
-    setColorValue('s-taphighlight', btnStyle.tapHighlight);
-    setColorValue('s-sliderborder', btnStyle.sliderBorder);
+    setColorValue('s-bg',              btnStyle.bg);
+    setColorValue('s-fg',              btnStyle.fg);
+    setColorValue('s-glow',            btnStyle.glow);
+    setColorValue('s-activebg',        btnStyle.activeBg);
+    setColorValue('s-taphighlight',    btnStyle.tapHighlight);
+    setColorValue('s-sliderborder',    btnStyle.sliderBorder);
+    setColorValue('s-checkbox-checked', btnStyle.checkboxChecked);
+    setColorValue('s-checkbox-mark',    btnStyle.checkboxMark);
+    setColorValue('s-checkbox-border',  btnStyle.checkboxBorder);
     document.getElementById("s-sliderh").value = btnStyle.sliderH;
     document.getElementById("s-sliderr").value = btnStyle.sliderR;
     setColorValue('s-sliderborder', btnStyle.sliderBorder);
@@ -2044,6 +2134,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
