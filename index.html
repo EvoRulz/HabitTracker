@@ -409,7 +409,7 @@
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v106</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v107</span></div>
   <div class="top-item" data-item="date"><span id="live-date" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time"><span id="live-time" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -1081,8 +1081,8 @@
           const srcPrefix=keys[0].slice(0, keys[0].indexOf(":")+1);
           const allSamePrefix=keys.every(k=>k.startsWith(srcPrefix));
           if (!allSamePrefix) { alert("Invalid backup file."); return; }
-          const srcName=srcPrefix.slice(0,-1);
-          if (srcName !== id) {
+          const srcName=file.name.replace(/-\d{2}-\d{2}-\d{2}\.json$/,"");
+          if (srcName !== label) {
             const go=window.confirm(`This file is from "${srcName}" but you are importing into "${label}".\n\nContinue?`);
             if (!go) { input.value=""; return; }
           }
@@ -1982,6 +1982,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
