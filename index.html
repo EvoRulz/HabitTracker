@@ -452,7 +452,7 @@ input[type="checkbox"]:hover {
     }
     .tumb-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(8, 1fr);
       gap: 0;
       border: 1px solid #444;
       border-top: none;
@@ -466,19 +466,22 @@ input[type="checkbox"]:hover {
       border-right: 1px solid #333;
       position: relative;
       overflow: hidden;
-      min-height: 88px;
+      min-height: 72px;
     }
     .tumb-col:last-child { border-right: none; }
     .tumb-col-label {
-      font-size: 10px;
+      font-size: 8px;
       color: #666;
       text-align: center;
-      padding: 3px 2px 2px;
+      padding: 2px 1px;
       background: #111;
       border-bottom: 1px solid #222;
-      letter-spacing: 0.05em;
+      letter-spacing: 0;
       text-transform: uppercase;
       user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .tumb-window {
       flex: 1;
@@ -787,14 +790,14 @@ input[type="checkbox"]:hover {
     // Clock config: 9 tumbler indices
     // [dayName, day, month, year, hour, minute, second, ms, ampm]
     // Stored as JSON array in _clockTumbler
-    const TUMBLER_DEFAULTS = [6, 1, 1, 1, 2, 1, 1, 0, 0];
+    const TUMBLER_DEFAULTS = [6, 1, 1, 1, 2, 1, 1, 0];
     // dayName options: 0=blank,1="",2="",3="",4="",5="Mon",6="Monday"  (indices map to DAY_OPTS below)
     // We encode choices per-column as indices into the column's options array.
 
     let tumblerCfg = TUMBLER_DEFAULTS.slice();
     try {
       const s = JSON.parse(localStorage.getItem("_clockTumbler"));
-      if (Array.isArray(s) && s.length === 9) tumblerCfg = s;
+      if (Array.isArray(s) && s.length === 8) tumblerCfg = s;
     } catch {}
 
     window._clockGet = () => ({ tumblerCfg: tumblerCfg.slice() });
@@ -803,14 +806,13 @@ input[type="checkbox"]:hover {
     // Col definitions: [label, options[]]
     // Each option is a display string (empty string = blank/off)
     const COLS = [
-      { label:"Day name",  opts:["—","F","Fr","Mon","Mond","Monda","Monday"] },
-      { label:"Day #",     opts:["—","d","dd"] },
+      { label:"DoW",  opts:["—","F","Fr","Mon","Mond","Monda","Monday"] },
+      { label:"Day",     opts:["—","d","dd"] },
       { label:"Month",     opts:["—","m","mm"] },
       { label:"Year",      opts:["—","yy","yyyy"] },
       { label:"Hour",      opts:["—","12h","12hh","24h","24hh"] },
       { label:"Minutes",   opts:["—","MM"] },
       { label:"Seconds",   opts:["—","SS"] },
-      { label:"Millis",    opts:["—","mmm"] },
       { label:"am/pm",     opts:["—","am/pm"] },
     ];
     window._CLOCK_COLS = COLS;
@@ -866,9 +868,7 @@ input[type="checkbox"]:hover {
       // Seconds
       const secStr = cfg[6] === 0 ? "" : se;
       // Millis
-      const msStr  = cfg[7] === 0 ? "" : ms;
-      // ampm
-      const amStr  = cfg[8] === 0 ? "" : ampm;
+      const amStr  = cfg[7] === 0 ? "" : ampm;
 
       // Build date line
       const dateParts = [dayNameStr, [dayNumStr, moStr, yrStr].filter(Boolean).join("/")].filter(Boolean);
@@ -879,7 +879,7 @@ input[type="checkbox"]:hover {
       if (minStr) timeParts.push(minStr);
       if (secStr) timeParts.push(secStr);
       const timeBase = timeParts.filter(Boolean).join(":");
-      const timeLine = [timeBase, msStr ? "."+msStr : "", amStr ? " "+amStr : ""].join("").trim();
+      const timeLine = [timeBase, amStr ? " "+amStr : ""].join("").trim();
 
       return { dateLine, timeLine };
     }
@@ -1837,7 +1837,7 @@ function appExport() {
     btnStyle = Object.assign({}, BTN_STYLE_DEFAULTS);
     localStorage.removeItem("_btnStyle");
     localStorage.removeItem("_clockTumbler");
-    window._clockSet([6, 1, 1, 1, 2, 1, 1, 0, 0]);
+    window._clockSet([6, 1, 1, 1, 2, 1, 1, 0]);
     if (window._tumblerRefresh) window._tumblerRefresh();
     setColorValue('s-bg',              btnStyle.bg);
     setColorValue('s-fg',              btnStyle.fg);
@@ -1856,7 +1856,7 @@ function appExport() {
     document.getElementById("s-sliderr").value = btnStyle.sliderR;
     document.getElementById("s-font").value    = btnStyle.font;
     applyBtnStyle();
-    window._clockSet([6, 1, 1, 1, 2, 1, 1, 0, 0]);
+    window._clockSet([6, 1, 1, 1, 2, 1, 1, 0]);
     settingsUpdatePreview();
   }
   function settingsUpdatePreview() {
@@ -2325,15 +2325,14 @@ function appExport() {
       else if (cfg[4]===4) hrStr = String(h24).padStart(2,"0");
       const minStr = cfg[5] === 0 ? "" : mi;
       const secStr = cfg[6] === 0 ? "" : se;
-      const msStr  = cfg[7] === 0 ? "" : ms;
-      const amStr  = cfg[8] === 0 ? "" : ampm;
+      const amStr  = cfg[7] === 0 ? "" : ampm;
       const dateParts = [dayNameStr, [dayNumStr, moStr, yrStr].filter(Boolean).join("/")].filter(Boolean);
       const dateLine = dateParts.join(" ");
       let timeParts = [hrStr];
       if (minStr) timeParts.push(minStr);
       if (secStr) timeParts.push(secStr);
       const timeBase = timeParts.filter(Boolean).join(":");
-      const timeLine = [timeBase, msStr ? "."+msStr : "", amStr ? " "+amStr : ""].join("").trim();
+      const timeLine = [timeBase, amStr ? " "+amStr : ""].join("").trim();
       const fullStr = [dateLine, timeLine].filter(Boolean).join("\n");
       preview.textContent = fullStr || "(nothing selected)";
       COLS.forEach((col, ci) => renderCol(ci));
@@ -2361,8 +2360,7 @@ function appExport() {
       }
       if (ci === 5) return mi;
       if (ci === 6) return se;
-      if (ci === 7) return ms;
-      if (ci === 8) return ampm;
+      if (ci === 7) return ampm;
       return "—";
     }
 
