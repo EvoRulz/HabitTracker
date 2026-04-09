@@ -550,7 +550,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;color:#888">v150</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v151</span></div>
   <div class="top-item" data-item="date"><span id="live-date" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time"><span id="live-time" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -2491,12 +2491,14 @@ function appExport() {
     }
 
     window._tumblerRefresh = () => { buildTumbler(); };
+  (function(){const V_COLORS=["#FF6B6B","#FFD93D","#6BCB77","#4D96FF","#FF922B","#CC5DE8","#20C997","#F06595"];const el=document.getElementById("app-version");if(el){const n=parseInt(el.textContent.replace("v",""))||0;el.style.color=V_COLORS[n%V_COLORS.length];}})();
     buildTumbler();
     setInterval(renderPreviews, 1000);
   })();
 </script>
 </body>
 </html>
+
 
 
 
