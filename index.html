@@ -445,7 +445,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v135</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v136</span></div>
   <div class="top-item" data-item="date"><span id="live-date" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time"><span id="live-time" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -1698,32 +1698,28 @@ function formatCustomDate(date, format) {
   const daysShort = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   
   let result = format;
-  result = result.replace(/DD/g, days[date.getDay()]);
-  result = result.replace(/D/g, daysShort[date.getDay()]);
-  result = result.replace(/dd/g, pad(date.getDate()));
-  result = result.replace(/d/g, date.getDate());
-  result = result.replace(/mm/g, pad(date.getMonth() + 1));
-  result = result.replace(/m/g, date.getMonth() + 1);
-  result = result.replace(/yyyy/g, date.getFullYear());
-  result = result.replace(/yy/g, String(date.getFullYear()).slice(-2));
-  
-  const h24 = date.getHours();
-  const h12 = h24 % 12 || 12;
-  const ampm = h24 >= 12 ? 'pm' : 'am';
-  const AMPM = h24 >= 12 ? 'PM' : 'AM';
-  
-  result = result.replace(/HH/g, pad(h24));
-  result = result.replace(/H/g, h24);
-  result = result.replace(/hh/g, pad(h12));
-  result = result.replace(/h/g, h12);
-  result = result.replace(/MM/g, pad(date.getMinutes()));
-  result = result.replace(/M/g, date.getMinutes());
-  result = result.replace(/SS/g, pad(date.getSeconds()));
-  result = result.replace(/S/g, date.getSeconds());
-  result = result.replace(/A/g, AMPM);
-  result = result.replace(/a/g, ampm);
-  
-  return result;
+  const tokens = {
+    'DD':   days[date.getDay()],
+    'D':    daysShort[date.getDay()],
+    'dd':   pad(date.getDate()),
+    'd':    String(date.getDate()),
+    'mm':   pad(date.getMonth() + 1),
+    'm':    String(date.getMonth() + 1),
+    'yyyy': String(date.getFullYear()),
+    'yy':   String(date.getFullYear()).slice(-2),
+    'HH':   pad(h24),
+    'H':    String(h24),
+    'hh':   pad(h12),
+    'h':    String(h12),
+    'MM':   pad(date.getMinutes()),
+    'M':    String(date.getMinutes()),
+    'SS':   pad(date.getSeconds()),
+    'S':    String(date.getSeconds()),
+    'A':    AMPM,
+    'a':    ampm,
+  };
+
+  return format.replace(/DD|D|dd|d|mm|m|yyyy|yy|HH|H|hh|h|MM|M|SS|S|A|a/g, match => tokens[match]);
 }
 
 function updateClockDemo() {
@@ -2216,6 +2212,7 @@ function updateClockDemo() {
 </script>
 </body>
 </html>
+
 
 
 
