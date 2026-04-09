@@ -412,7 +412,7 @@
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v113</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v114</span></div>
   <div class="top-item" data-item="date"><span id="live-date" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time"><span id="live-time" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -1900,7 +1900,6 @@ function appExport() {
   applySettingsGroupOrder();
   // ── Manage Habits ──────────────────────────────────────────
   function manageOpen() {
-    _manageJustOpened = true;
     manageRenderList();
     document.getElementById("manage-overlay").classList.add("active");
   }
@@ -1988,14 +1987,13 @@ function appExport() {
     input.value = "";
     manageRenderList();
   }
-  let _manageJustOpened = false;
   document.getElementById("manage-overlay").addEventListener("click", e => {
-    if (_manageJustOpened) { _manageJustOpened = false; return; }
-    if (e.target === document.getElementById("manage-overlay")) manageClose();
-  });
+  if (e.target === document.getElementById("manage-overlay")) manageClose();
+});
 </script>
 </body>
 </html>
+
 
 
 
