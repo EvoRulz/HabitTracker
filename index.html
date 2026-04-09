@@ -445,7 +445,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v127</span></div>
+  <div class="top-item" data-item="version"><span style="font-size:14px;color:#888">v128</span></div>
   <div class="top-item" data-item="date"><span id="live-date" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time"><span id="live-time" style="font-size:13px;color:#666;letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -476,7 +476,7 @@ input[type="checkbox"]:hover {
     <h2>Manage Habits</h2>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
       <input type="checkbox" id="manage-select-all" onchange="manageToggleSelectAll()">
-      <label for="manage-select-all" style="font-size:13px;color:#bbb;margin:0;padding:6px 10px;flex:1">Select All</label>
+      <label for="manage-select-all" style="flex:1;background:#111;color:#bbb;border-radius:4px;padding:6px 10px;font-size:13px;outline:none;margin:0">Select All</label>
     </div>
     <div id="manage-list"></div>
     <div id="manage-add-row">
@@ -2147,6 +2147,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
