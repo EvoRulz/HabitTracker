@@ -644,7 +644,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v274</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v275</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -2819,26 +2819,21 @@ function appExport() {
         el.textContent = item.label;
         el.style.width = iW + 'px';
         el.style.pointerEvents = 'none';
+        el.style.webkitTapHighlightColor = 'transparent';
         el.onclick = () => { cfIdx = i; cfRender(); cfLoadPickersForId(cfActiveId()); };
         stage.appendChild(el);
       });
 
       cfRender();
 
-      // Transparent capture overlay — sits on top of all cf-items so pointer
-      // events are never stolen by child buttons
-      const overlay = document.createElement('div');
-      Object.assign(overlay.style, {
-        position: 'absolute', inset: '0', zIndex: '100',
-        background: 'transparent', touchAction: 'none',
-      });
       stage.style.position = 'relative';
-      stage.appendChild(overlay);
+      stage.style.touchAction = 'none';
 
       let dragStartX = null;
       let dragStartIdx = null;
       let animId = null;
       let displayIdx = cfIdx;
+      let didDrag = false;
 
       function springTo(target) {
         if (animId) cancelAnimationFrame(animId);
@@ -2862,42 +2857,64 @@ function appExport() {
         animId = requestAnimationFrame(step);
       }
 
-      overlay.addEventListener('pointerdown', e => {
+      stage.addEventListener('pointerdown', e => {
         dragStartX = e.clientX;
         dragStartIdx = displayIdx;
+        didDrag = false;
         if (animId) { cancelAnimationFrame(animId); animId = null; }
-        overlay.setPointerCapture(e.pointerId);
+        stage.setPointerCapture(e.pointerId);
         e.preventDefault();
       });
 
-      overlay.addEventListener('pointermove', e => {
+      stage.addEventListener('pointermove', e => {
         if (dragStartX === null) return;
-        e.preventDefault();
         const dx = e.clientX - dragStartX;
+        if (Math.abs(dx) > 4) didDrag = true;
+        if (!didDrag) return;
+        e.preventDefault();
         const n = cfItems().length;
         displayIdx = Math.max(0, Math.min(dragStartIdx + (-dx / 80), n - 1));
         cfIdx = displayIdx;
         cfRenderAt(displayIdx);
       });
 
-      overlay.addEventListener('pointerup', e => {
+      stage.addEventListener('pointerup', e => {
         if (dragStartX === null) return;
-        const dx = e.clientX - dragStartX;
+        const wasDrag = didDrag;
         dragStartX = null;
+        didDrag = false;
         const n = cfItems().length;
         const target = Math.max(0, Math.min(Math.round(displayIdx), n - 1));
         cfIdx = target;
         springTo(target);
+        if (!wasDrag) {
+          // find which card was tapped by proximity to tap x
+          const stageRect = stage.getBoundingClientRect();
+          const tapX = e.clientX - stageRect.left;
+          const cardEls = [...stage.querySelectorAll('.cf-item')];
+          let closest = target;
+          let closestDist = Infinity;
+          cardEls.forEach((el, i) => {
+            const r = el.getBoundingClientRect();
+            const cardCx = r.left - stageRect.left + r.width / 2;
+            const dist = Math.abs(tapX - cardCx);
+            if (dist < closestDist) { closestDist = dist; closest = i; }
+          });
+          cfIdx = closest;
+          displayIdx = closest;
+          springTo(closest);
+        }
         cfLoadPickersForId(cfActiveId());
         dragStartIdx = null;
       });
 
-      overlay.addEventListener('pointercancel', () => {
+      stage.addEventListener('pointercancel', () => {
         const n = cfItems().length;
         const target = Math.max(0, Math.min(Math.round(displayIdx), n - 1));
         cfIdx = target;
         springTo(target);
         dragStartX = null;
+        didDrag = false;
         dragStartIdx = null;
       });
     }
@@ -3727,6 +3744,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
