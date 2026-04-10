@@ -644,7 +644,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v261</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v262</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -2429,9 +2429,12 @@ function appExport() {
     const preview = document.getElementById('settings-btn-preview');
     if (preview) preview.style.display = (groupId === 'sg-buttons' && isOpen) ? '' : 'none';
     if (groupId === 'sg-buttons' && isOpen) {
+      const stage = document.getElementById('cf-stage');
+      if (stage) stage.style.visibility = 'hidden';
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           if (window._cfBuild) window._cfBuild();
+          if (stage) stage.style.visibility = '';
         });
       });
     }
@@ -3723,6 +3726,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
