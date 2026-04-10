@@ -644,7 +644,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v211</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v212</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -2796,46 +2796,56 @@ function appExport() {
 
       let ox = null, ot = null, oAnimId = null;
 
+      const DRAG_PX_PER_ITEM = 80; // pixels of finger travel to move one item
+      let dragStartX = null;
+      let dragStartIdx = null;
+
       overlay.addEventListener('pointerdown', e => {
-        ox = e.clientX; ot = Date.now();
+        dragStartX = e.clientX;
+        dragStartIdx = Math.round(cfIdx);
         if (oAnimId) { cancelAnimationFrame(oAnimId); oAnimId = null; }
         overlay.setPointerCapture(e.pointerId);
         e.preventDefault();
       });
 
       overlay.addEventListener('pointermove', e => {
-        if (ox === null) return;
+        if (dragStartX === null) return;
         e.preventDefault();
+        const dx = e.clientX - dragStartX;
+        const n = cfItems().length;
+        // Move cfIdx fluidly with finger, no snapping yet
+        cfIdx = Math.max(0, Math.min(dragStartIdx + (-dx / DRAG_PX_PER_ITEM), n - 1));
+        cfRender();
       });
 
       overlay.addEventListener('pointerup', e => {
-        if (ox === null) return;
-        const dx = e.clientX - ox;
-        const startX = ox;
-        ox = null; ot = null;
+        if (dragStartX === null) return;
+        const dx = e.clientX - dragStartX;
+        dragStartX = null;
 
-        // Tap — no meaningful drag
-        if (Math.abs(dx) < 60) {
-          const els = [...stage.querySelectorAll('.cf-item')];
-          const centreEl = els.find(el => parseInt(el.dataset.cfI) === Math.round(cfIdx));
-          if (centreEl) {
-            const r = centreEl.getBoundingClientRect();
-            const hit = e.clientX >= r.left && e.clientX <= r.right &&
-                        e.clientY >= r.top  && e.clientY <= r.bottom;
-            if (hit) { cfLoadPickersForId(cfActiveId()); }
-          }
-          return;
-        }
-
-        // One step per swipe, full stop
         const n = cfItems().length;
-        const dir = dx < 0 ? 1 : -1;
-        cfIdx = Math.max(0, Math.min(Math.round(cfIdx) + dir, n - 1));
+
+        // Snap to nearest integer index
+        cfIdx = Math.max(0, Math.min(Math.round(cfIdx), n - 1));
         cfRender();
-        cfLoadPickersForId(cfActiveId());
+
+        // If it was a tap (tiny movement) load the centre card pickers
+        if (Math.abs(dx) < 10) {
+          cfLoadPickersForId(cfActiveId());
+        } else {
+          cfLoadPickersForId(cfActiveId());
+        }
+        dragStartIdx = null;
       });
 
-      overlay.addEventListener('pointercancel', () => { ox = null; ot = null; });
+      overlay.addEventListener('pointercancel', () => {
+        // Snap back to nearest on cancel
+        const n = cfItems().length;
+        cfIdx = Math.max(0, Math.min(Math.round(cfIdx), n - 1));
+        cfRender();
+        dragStartX = null;
+        dragStartIdx = null;
+      });
     }
     window._cfBuild = cfBuild;
 
@@ -3663,6 +3673,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
