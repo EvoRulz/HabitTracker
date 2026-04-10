@@ -644,7 +644,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v175</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v176</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -720,6 +720,10 @@ input[type="checkbox"]:hover {
           <button class="cf-arrow" id="cf-next">&#8594;</button>
         </div>
       </div>
+      <div class="color-settings-row">
+        <label>Background colour</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-bg" oninput="onColorPickerChange('s-bg')">
           <input type="range" class="alpha-slider" id="s-bg-alpha" min="0" max="255" value="255" oninput="onAlphaChange('s-bg')">
         </div>
         <div class="hex-copy-row">
@@ -2416,183 +2420,6 @@ function appExport() {
     });
   }
   applyBtnStyle();
-
-  // ── Coverflow button selector ──────────────────────────────
-  (function() {
-    let cfIndex = 0;
-
-    function getCFItems() {
-      // Returns [{id, label}] for all tracker buttons in current DOM order
-      return [...buttonsEl.querySelectorAll('.tracker-btn[data-id]')]
-        .map(b => ({ id: b.dataset.id, label: b.textContent.trim() }));
-    }
-
-    function buildCoverflow() {
-      const wrap = document.getElementById('coverflow-wrap');
-      const label = document.getElementById('coverflow-label');
-      if (!wrap) return;
-      const items = getCFItems();
-      if (!items.length) { wrap.innerHTML = ''; if (label) label.textContent = ''; return; }
-      cfIndex = Math.min(cfIndex, items.length - 1);
-
-      // Clear and rebuild
-      wrap.innerHTML = '';
-      const track = document.createElement('div');
-      track.id = 'coverflow-track';
-      wrap.appendChild(track);
-
-      const W = wrap.offsetWidth || 300;
-      const itemW = Math.min(160, Math.max(80, Math.floor(W * 0.38)));
-      const centerX = W / 2;
-      const SIDE_OFFSET = itemW * 0.62;
-      const SIDE_ANGLE  = 48;
-      const SIDE_SCALE  = 0.72;
-      const FAR_SCALE   = 0.52;
-
-      items.forEach((item, i) => {
-        const el = document.createElement('button');
-        el.className = 'cf-item';
-        el.dataset.cfIdx = i;
-        el.textContent = item.label;
-        el.style.width = itemW + 'px';
-        el.style.background = hex8ToCss(btnStyle.bg);
-        el.style.color      = hex8ToCss(btnStyle.fg);
-        el.style.fontFamily = btnStyle.font;
-        el.onclick = () => { cfIndex = i; renderCoverflow(); };
-        track.appendChild(el);
-      });
-
-      if (label) label.textContent = items[cfIndex]?.label || '';
-      renderCoverflow();
-    }
-
-    function renderCoverflow() {
-      const wrap  = document.getElementById('coverflow-wrap');
-      const label = document.getElementById('coverflow-label');
-      if (!wrap) return;
-      const items = getCFItems();
-      const els   = [...wrap.querySelectorAll('.cf-item')];
-      if (!els.length) return;
-      cfIndex = Math.max(0, Math.min(cfIndex, els.length - 1));
-
-      const W       = wrap.offsetWidth || 300;
-      const itemW   = parseInt(els[0].style.width) || 120;
-      const centerX = W / 2 - itemW / 2;
-      const SIDE_OFFSET = itemW * 0.62;
-      const SIDE_ANGLE  = 48;
-      const SIDE_SCALE  = 0.72;
-      const FAR_SCALE   = 0.52;
-      const NEAR_DIST   = 2;
-
-      els.forEach((el, i) => {
-        const diff = i - cfIndex;
-        const absDiff = Math.abs(diff);
-        let tx, ry, scale, opacity, zIndex;
-
-        if (diff === 0) {
-          tx = centerX;
-          ry = 0;
-          scale = 1;
-          opacity = 1;
-          zIndex = 10;
-        } else if (diff === -1) {
-          tx = centerX - SIDE_OFFSET;
-          ry = SIDE_ANGLE;
-          scale = SIDE_SCALE;
-          opacity = 0.85;
-          zIndex = 7;
-        } else if (diff === 1) {
-          tx = centerX + SIDE_OFFSET;
-          ry = -SIDE_ANGLE;
-          scale = SIDE_SCALE;
-          opacity = 0.85;
-          zIndex = 7;
-        } else if (diff === -2) {
-          tx = centerX - SIDE_OFFSET * 1.7;
-          ry = SIDE_ANGLE + 15;
-          scale = FAR_SCALE;
-          opacity = 0.45;
-          zIndex = 4;
-        } else if (diff === 2) {
-          tx = centerX + SIDE_OFFSET * 1.7;
-          ry = -(SIDE_ANGLE + 15);
-          scale = FAR_SCALE;
-          opacity = 0.45;
-          zIndex = 4;
-        } else {
-          // hide the rest off-center
-          tx = diff < 0 ? -itemW : W + itemW;
-          ry = diff < 0 ? 70 : -70;
-          scale = 0.4;
-          opacity = 0;
-          zIndex = 1;
-        }
-
-        el.style.left      = tx + 'px';
-        el.style.transform = `translateY(-50%) rotateY(${ry}deg) scale(${scale})`;
-        el.style.opacity   = opacity;
-        el.style.zIndex    = zIndex;
-        el.classList.toggle('cf-active', diff === 0);
-        el.style.background = hex8ToCss(btnStyle.bg);
-        el.style.color      = hex8ToCss(btnStyle.fg);
-        el.style.fontFamily = btnStyle.font;
-        if (diff === 0) {
-          el.style.boxShadow = `0 0 18px 5px ${hex8ToCss(btnStyle.glow)}`;
-        } else {
-          el.style.boxShadow = '';
-        }
-      });
-
-      if (label) label.textContent = items[cfIndex]?.label || '';
-    }
-
-    function cfPrev() { if (cfIndex > 0) { cfIndex--; renderCoverflow(); } }
-    function cfNext() {
-      const items = getCFItems();
-      if (cfIndex < items.length - 1) { cfIndex++; renderCoverflow(); }
-    }
-
-    // Swipe support on the coverflow wrap
-    function setupSwipe() {
-      const wrap = document.getElementById('coverflow-wrap');
-      if (!wrap) return;
-      let sx = null;
-      wrap.addEventListener('pointerdown', e => { sx = e.clientX; e.stopPropagation(); });
-      wrap.addEventListener('pointerup', e => {
-        if (sx === null) return;
-        const dx = e.clientX - sx;
-        if (Math.abs(dx) > 30) dx < 0 ? cfNext() : cfPrev();
-        sx = null;
-      });
-    }
-
-    window._cfBuild   = buildCoverflow;
-    window._cfRender  = renderCoverflow;
-    window._cfGetIdx  = () => cfIndex;
-
-    // Expose which habit id is currently focused in the coverflow
-    window._cfActiveId = () => {
-      const items = getCFItems();
-      return items[cfIndex]?.id || null;
-    };
-
-    // Wire up arrows
-    document.addEventListener('DOMContentLoaded', () => {
-      const prev = document.getElementById('cf-prev');
-      const next = document.getElementById('cf-next');
-      if (prev) prev.onclick = cfPrev;
-      if (next) next.onclick = cfNext;
-      setupSwipe();
-    });
-    // Also wire immediately in case DOMContentLoaded already fired
-    setTimeout(() => {
-      const prev = document.getElementById('cf-prev');
-      const next = document.getElementById('cf-next');
-      if (prev && !prev._cfWired) { prev.onclick = cfPrev; prev._cfWired = true; }
-      if (next && !next._cfWired) { next.onclick = cfNext; next._cfWired = true; }
-      setupSwipe();
-    }, 0);
-  })();
   let _appStyleSnapshot = null;
   let _clockSnapshot    = null;
   function toggleSettingsGroup(groupId) {
@@ -3751,6 +3578,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
