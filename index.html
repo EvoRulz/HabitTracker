@@ -640,7 +640,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v322</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v323</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -3010,29 +3010,9 @@ function appExport() {
     }
   });
 
-  document.addEventListener("pointerup", (e) => {
-    if (!drag) return;
-    if (drag.active) {
-      drag.btn.style.visibility = "";
-      drag.ghost.remove();
-      document.body.classList.remove("is-dragging");
-      saveButtonOrder();
-    } else {
-      const currentlyOpen = getActiveSectionId();
-      setActiveSection(currentlyOpen === drag.id ? null : drag.id);
-    }
-    drag = null;
-  });
+  
 
-  document.addEventListener("pointercancel", () => {
-    if (!drag) return;
-    if (drag.active) {
-      drag.btn.style.visibility = "";
-      if (drag.ghost) drag.ghost.remove();
-      document.body.classList.remove("is-dragging");
-    }
-    drag = null;
-  });
+  
 
   // ── Show / Hide Habits ─────────────────────────────────────
   let habitsVisible = localStorage.getItem("_habitsVisible") !== "false";
@@ -3065,7 +3045,7 @@ function appExport() {
     };
   });
 
-  topGrid.addEventListener("pointermove", e => {
+  document.addEventListener("pointermove", e => {
     if (!tdrag) return;
     if (!tdrag.active) {
       if (Math.hypot(e.clientX - tdrag.startX, e.clientY - tdrag.startY) < DRAG_THRESHOLD) return;
@@ -3103,24 +3083,8 @@ function appExport() {
     }
   });
 
-  document.addEventListener("pointerup", (e) => {
-    if (!tdrag) return;
-    if (tdrag.active) {
-      tdrag.item.style.visibility = "";
-      if (tdrag.ghost) tdrag.ghost.remove();
-      saveTopGridOrder();
-    } else {
-      const btn = tdrag.item.querySelector("button");
-      if (btn) btn.click();
-    }
-    tdrag = null;
-  });
-  document.addEventListener("pointercancel", () => {
-    if (!tdrag) return;
-    tdrag.item.style.visibility = "";
-    if (tdrag.ghost) tdrag.ghost.remove();
-    tdrag = null;
-  });
+  
+  
 
   function saveTopGridOrder() {
     const order = [...topGrid.children].map(w => w.dataset.item).filter(Boolean);
@@ -3192,23 +3156,61 @@ function appExport() {
     }
   });
 
-  document.addEventListener('pointerup', () => {
-    if (!sgDrag) return;
-    if (sgDrag.active) {
-      sgDrag.item.style.visibility = '';
-      if (sgDrag.ghost) sgDrag.ghost.remove();
-      saveSettingsGroupOrder();
-    } else {
-      toggleSettingsGroup(sgDrag.item.dataset.group);
+  document.addEventListener("pointerup", (e) => {
+    if (drag) {
+      if (drag.active) {
+        drag.btn.style.visibility = "";
+        drag.ghost.remove();
+        document.body.classList.remove("is-dragging");
+        saveButtonOrder();
+      } else {
+        const currentlyOpen = getActiveSectionId();
+        setActiveSection(currentlyOpen === drag.id ? null : drag.id);
+      }
+      drag = null;
     }
-    sgDrag = null;
+    if (tdrag) {
+      if (tdrag.active) {
+        tdrag.item.style.visibility = "";
+        if (tdrag.ghost) tdrag.ghost.remove();
+        saveTopGridOrder();
+      } else {
+        const btn = tdrag.item.querySelector("button");
+        if (btn) btn.click();
+      }
+      tdrag = null;
+    }
+    if (sgDrag) {
+      if (sgDrag.active) {
+        sgDrag.item.style.visibility = '';
+        if (sgDrag.ghost) sgDrag.ghost.remove();
+        saveSettingsGroupOrder();
+      } else {
+        toggleSettingsGroup(sgDrag.item.dataset.group);
+      }
+      sgDrag = null;
+    }
   });
 
-  document.addEventListener('pointercancel', () => {
-    if (!sgDrag) return;
-    sgDrag.item.style.visibility = '';
-    if (sgDrag.ghost) sgDrag.ghost.remove();
-    sgDrag = null;
+  document.addEventListener("pointercancel", () => {
+    if (drag) {
+      if (drag.active) {
+        drag.btn.style.visibility = "";
+        if (drag.ghost) drag.ghost.remove();
+        document.body.classList.remove("is-dragging");
+      }
+      drag = null;
+    }
+    if (tdrag) {
+      tdrag.item.style.visibility = "";
+      if (tdrag.ghost) tdrag.ghost.remove();
+      tdrag = null;
+    }
+    if (sgDrag) {
+      sgDrag.item.style.visibility = '';
+      if (sgDrag.ghost) sgDrag.ghost.remove();
+      sgDrag = null;
+    }
   });
 
   function saveSettingsGroupOrder() {
@@ -3757,6 +3759,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
