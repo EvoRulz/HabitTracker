@@ -304,13 +304,9 @@
       cursor: inherit;
       padding: 0;
       margin: 0;
-      pointer-events: none;
     }
-    .top-item[data-item="manage-habits"] button {
-    pointer-events: auto;
-    }
-    .top-item[data-item="settings"] button {
-    pointer-events: auto;
+    .top-item button {
+      pointer-events: auto;
     }
     .top-item input[type="file"] { display: none; }
     #settings-overlay {
@@ -644,7 +640,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v319</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v320</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -1035,7 +1031,9 @@ input[type="checkbox"]:hover {
           <button class="copy-btn" onclick="copyHex('s-app-thead',this)">Copy</button>
         </div>
       </div>
-      <div class="color-settings-row">
+      </div>
+
+    <div class="settings-group-content" id="sg-checkboxes">
       <div class="color-settings-row">
         <label>Checked background</label>
         <div class="color-picker-row">
@@ -1088,15 +1086,14 @@ input[type="checkbox"]:hover {
         </div>
       </div>
     </div>
-    
-    </div>
+
     <button id="settings-btn-preview" style="display:none">Preview</button>
     <div id="settings-footer">
       <button id="settings-save" onclick="settingsSave()">Save</button>
       <button id="settings-cancel" onclick="settingsCancel()">Cancel</button>
       <button id="settings-reset" onclick="settingsReset()">Reset</button>
     </div>
-    <div id="settings-footer">
+    <div id="settings-footer-2">
       <button id="settings-export" onclick="settingsExport()">Export</button>
       <button id="settings-import-btn" onclick="document.getElementById('settings-import-file').click()">Import</button>
       <input type="file" id="settings-import-file" accept=".json" style="display:none" onchange="settingsImport(this)">
@@ -1105,6 +1102,9 @@ input[type="checkbox"]:hover {
 </div>
 <script>
   var _settingsOpenTime = 0;
+  let _previewDateCycleStep = 0;
+  let _previewTimeCycleStep = 0;
+  let _btnStylesSnapshot = null;
   // ── Live clock ─────────────────────────────────────────────
   (function() {
     const dateEl = document.getElementById("live-date");
@@ -1112,8 +1112,8 @@ input[type="checkbox"]:hover {
     const DOW_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
     const DOW_LONG  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
-    // Clock config: 9 tumbler indices
-    // [dayName, day, month, year, hour, minute, second, ms, ampm]
+    // Clock config: 8 tumbler indices
+    // [dayName, day, month, year, hour, minute, second, ampm]
     // Stored as JSON array in _clockTumbler
     const TUMBLER_DEFAULTS = [6, 1, 1, 1, 2, 1, 1, 0];
     // dayName options: 0=blank,1="",2="",3="",4="",5="Mon",6="Monday"  (indices map to DAY_OPTS below)
@@ -2248,10 +2248,6 @@ function appExport() {
     appStyle.textColor   = getColorValue("s-app-text");
     appStyle.borderColor = getColorValue("s-app-border");
     appStyle.theadBg     = getColorValue("s-app-thead");
-    appStyle.barSet      = getColorValue("s-app-bar-set");
-    appStyle.barTotal    = getColorValue("s-app-bar-total");
-    appStyle.barStreak   = getColorValue("s-app-bar-streak");
-    appStyle.padding     = Number(document.getElementById("s-app-padding").value);
     collectAppStops();
     applyAppStyle();
   }
@@ -2488,16 +2484,12 @@ function appExport() {
     _s("s-app-img-pos",    appStyle.imgPos);
     _s("s-app-img-repeat", appStyle.imgRepeat);
     _s("s-app-img-attach", appStyle.imgAttach);
-    _s("s-app-padding",    appStyle.padding);
     setColorValue("s-app-pat-color",  appStyle.patColor);
     setColorValue("s-app-pat-bg",     appStyle.patBg);
     setColorValue("s-app-img-tint",   appStyle.imgTint);
     setColorValue("s-app-text",       appStyle.textColor);
     setColorValue("s-app-border",     appStyle.borderColor);
     setColorValue("s-app-thead",      appStyle.theadBg);
-    setColorValue("s-app-bar-set",    appStyle.barSet);
-    setColorValue("s-app-bar-total",  appStyle.barTotal);
-    setColorValue("s-app-bar-streak", appStyle.barStreak);
     const isGrad = appStyle.bgType.startsWith("gradient");
     const isPat  = appStyle.bgType.startsWith("pattern");
     const isImg  = appStyle.bgType === "image";
@@ -2842,7 +2834,6 @@ function appExport() {
         el.dataset.cfI = i;
         el.textContent = item.label;
         el.style.width = iW + 'px';
-        el.style.pointerEvents = 'none';
         el.style.webkitTapHighlightColor = 'transparent';
         el.onclick = () => { cfIdx = i; cfRender(); cfLoadPickersForId(cfActiveId()); };
         stage.appendChild(el);
@@ -3062,6 +3053,7 @@ function appExport() {
     const item = e.target.closest(".top-item");
     if (!item) return;
     if (tdrag) return;
+    e.preventDefault();
     const rect = item.getBoundingClientRect();
     tdrag = {
       item, startX: e.clientX, startY: e.clientY,
@@ -3763,6 +3755,7 @@ function appExport() {
 </script>
 </body>
 </html>
+
 
 
 
