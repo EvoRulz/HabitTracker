@@ -290,6 +290,8 @@
     }
     .top-item:active { cursor: grabbing; }
     .top-item[data-item="clear-all"] { background: #5a1a1a; color: #ff9999; }
+    .top-item[data-item="export-all"] button { background: var(--export-all-bg, #444); color: var(--export-all-fg, #fff); font-family: var(--export-all-font, sans-serif); }
+    .top-item[data-item="export-all"] button.active { background: var(--export-all-active-bg, #555) !important; box-shadow: 0 0 16px 5px var(--export-all-glow, rgba(150,90,255,0.65)); }
     .top-item[data-item="title"],
     .top-item[data-item="version"],
     .top-item[data-item="date"],
@@ -644,7 +646,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v338</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v340</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -652,7 +654,7 @@ input[type="checkbox"]:hover {
       <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8.325 2.317a1.75 1.75 0 0 1 3.35 0l.07.254a1.75 1.75 0 0 0 2.494 1.08l.235-.127a1.75 1.75 0 0 1 2.369 2.369l-.127.235a1.75 1.75 0 0 0 1.08 2.494l.254.07a1.75 1.75 0 0 1 0 3.35l-.254.07a1.75 1.75 0 0 0-1.08 2.494l.127.235a1.75 1.75 0 0 1-2.369 2.369l-.235-.127a1.75 1.75 0 0 0-2.494 1.08l-.07.254a1.75 1.75 0 0 1-3.35 0l-.07-.254a1.75 1.75 0 0 0-2.494-1.08l-.235.127a1.75 1.75 0 0 1-2.369-2.369l.127-.235a1.75 1.75 0 0 0-1.08-2.494l-.254-.07a1.75 1.75 0 0 1 0-3.35l.254-.07a1.75 1.75 0 0 0 1.08-2.494l-.127-.235a1.75 1.75 0 0 1 2.369-2.369l.235.127a1.75 1.75 0 0 0 2.494-1.08l.07-.254ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
     </button>
   </div>
-  <div class="top-item" data-item="export-all"><button class="app-btn" onclick="appExport()">Export All</button></div>
+  <div class="top-item" data-item="export-all"><button class="app-btn" onclick="appExport()" onpointerdown="this.classList.add('active')" onpointerup="this.classList.remove('active')" onpointerleave="this.classList.remove('active')">Export All</button></div>
   <div class="top-item" data-item="import-all">
     <button class="app-btn" onclick="document.getElementById('app-import-file').click()">Import All</button>
     <input type="file" id="app-import-file" accept=".json" style="display:none" onchange="appImport(this)">
@@ -2400,6 +2402,17 @@ function appExport() {
     document.documentElement.style.setProperty("--clock-date-size",      btnStyle.clockDateSize + "px");
     document.documentElement.style.setProperty("--clock-time-size",      btnStyle.clockTimeSize + "px");
     document.documentElement.style.setProperty("--clock-bg",             hex8ToCss(btnStyle.clockBg));
+    // Per-button override for Export All
+    const _exportAllBtn = document.querySelector('.top-item[data-item="export-all"] button');
+    if (_exportAllBtn && _btnStyles['top-export-all']) {
+      const _s = _btnStyleFor('top-export-all');
+      _exportAllBtn.style.setProperty('--export-all-bg',        hex8ToCss(_s.bg));
+      _exportAllBtn.style.setProperty('--export-all-fg',        hex8ToCss(_s.fg));
+      _exportAllBtn.style.setProperty('--export-all-glow',      hex8ToCss(_s.glow));
+      _exportAllBtn.style.setProperty('--export-all-active-bg', hex8ToCss(_s.activeBg));
+      _exportAllBtn.style.setProperty('--export-all-font',      _s.font);
+    }
+
     // Per-button overrides — applied as inline styles on each .tracker-btn
     buttonsEl.querySelectorAll(".tracker-btn[data-id]").forEach(btn => {
       const s = _btnStyleFor(btn.dataset.id);
@@ -2409,20 +2422,6 @@ function appExport() {
       btn.style.setProperty("--btn-active-bg", hex8ToCss(s.activeBg));
       btn.style.setProperty("--btn-font",      s.font);
       btn.style.fontFamily = s.font;
-    });
-    // Per-button overrides for top-grid buttons
-    topGrid.querySelectorAll(".top-item").forEach(item => {
-      const dataItem = item.dataset.item;
-      if (!dataItem || dataItem === 'title' || dataItem === 'version' || dataItem === 'date' || dataItem === 'time') return;
-      const id = 'top-' + dataItem;
-      if (!_btnStyles[id]) return;
-      const s = _btnStyleFor(id);
-      const btn = item.querySelector('button');
-      if (btn) {
-        btn.style.background = hex8ToCss(s.bg);
-        btn.style.color      = hex8ToCss(s.fg);
-        btn.style.fontFamily = s.font;
-      }
     });
   }
   applyBtnStyle();
@@ -2723,19 +2722,8 @@ function appExport() {
     { selector: '#settings-cog', id: 'settings-cog', label: 'Settings' },
     { selector: '.app-btn', id: null, getAllWithClass: true, labels: ['Export All', 'Import All', 'Export Layout', 'Import Layout', 'Clear All', 'My Files', 'Hide/Show Habits', 'Manage Habits'] }
   ];  
-  // Add top-grid buttons
-  topGrid.querySelectorAll('.top-item').forEach(item => {
-    const dataItem = item.dataset.item;
-    if (dataItem === 'title' || dataItem === 'version' || dataItem === 'date' || dataItem === 'time') return;
-    const btn = item.querySelector('button');
-    if (btn) {
-      items.push({
-        id: 'top-' + dataItem,
-        label: btn.textContent.trim() || dataItem,
-        isTopGrid: true
-      });
-    }
-  });
+  // Add Export All top-grid button
+  items.push({ id: 'top-export-all', label: 'Export All', isTopGrid: true });
 
   // Add habit buttons
   [...buttonsEl.querySelectorAll('.tracker-btn[data-id]')].forEach(b => {
@@ -3785,6 +3773,8 @@ function appExport() {
 </script>
 </body>
 </html>
+
+
 
 
 
