@@ -647,7 +647,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v344</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v345</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -2470,16 +2470,26 @@ function appExport() {
     document.documentElement.style.setProperty("--clock-date-size",      btnStyle.clockDateSize + "px");
     document.documentElement.style.setProperty("--clock-time-size",      btnStyle.clockTimeSize + "px");
     document.documentElement.style.setProperty("--clock-bg",             hex8ToCss(btnStyle.clockBg));
-    // Per-button override for Export All
-    const _exportAllBtn = document.querySelector('.top-item[data-item="export-all"] button');
-    if (_exportAllBtn && _btnStyles['top-export-all']) {
-      const _s = _btnStyleFor('top-export-all');
-      _exportAllBtn.style.setProperty('--export-all-bg',        hex8ToCss(_s.bg));
-      _exportAllBtn.style.setProperty('--export-all-fg',        hex8ToCss(_s.fg));
-      _exportAllBtn.style.setProperty('--export-all-glow',      hex8ToCss(_s.glow));
-      _exportAllBtn.style.setProperty('--export-all-active-bg', hex8ToCss(_s.activeBg));
-      _exportAllBtn.style.setProperty('--export-all-font',      _s.font);
-    }
+    // Per-button overrides for top-grid buttons
+    const topGridMap = [
+      { id: 'top-export-all',    selector: '.top-item[data-item="export-all"] button' },
+      { id: 'top-import-all',    selector: '.top-item[data-item="import-all"] button' },
+      { id: 'top-export-layout', selector: '.top-item[data-item="export-layout"] button' },
+      { id: 'top-import-layout', selector: '.top-item[data-item="import-layout"] button' },
+      { id: 'top-clear-all',     selector: '.top-item[data-item="clear-all"] button' },
+      { id: 'top-my-files',      selector: '.top-item[data-item="my-files"] button' },
+      { id: 'top-hide-habits',   selector: '.top-item[data-item="hide-habits"] button' },
+      { id: 'top-date',          selector: '.top-item[data-item="date"] span' },
+      { id: 'top-time',          selector: '.top-item[data-item="time"] span' },
+    ];
+    topGridMap.forEach(({ id, selector }) => {
+      const el = document.querySelector(selector);
+      if (!el) return;
+      const _s = _btnStyleFor(id);
+      el.style.background = hex8ToCss(_s.bg);
+      el.style.color      = hex8ToCss(_s.fg);
+      el.style.fontFamily = _s.font;
+    });
 
     // Per-button overrides — applied as inline styles on each .tracker-btn
     buttonsEl.querySelectorAll(".tracker-btn[data-id]").forEach(btn => {
@@ -3883,6 +3893,7 @@ items.push({ id: 'top-time',           label: 'Time',           isTopGrid: true 
 </script>
 </body>
 </html>
+
 
 
 
