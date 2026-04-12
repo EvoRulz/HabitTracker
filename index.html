@@ -291,7 +291,13 @@
     .top-item:active { cursor: grabbing; }
     .top-item[data-item="clear-all"] { background: #5a1a1a; color: #ff9999; }
     .top-item[data-item="export-all"] { background: transparent !important; padding: 0 !important; }
-    .top-item[data-item="export-all"] button { background: var(--export-all-bg, #444); color: var(--export-all-fg, #fff); font-family: var(--export-all-font, sans-serif); width: 100%; height: 100%; border-radius: 6px; }
+    .top-item[data-item="export-all"] button    { background: var(--export-all-bg, #444); color: var(--export-all-fg, #fff); font-family: var(--export-all-font, sans-serif); width: 100%; height: 100%; border-radius: 6px; }
+.top-item[data-item="import-all"] button    { background: var(--import-all-bg, #444); color: var(--import-all-fg, #fff); font-family: var(--import-all-font, sans-serif); width: 100%; height: 100%; border-radius: 6px; }
+.top-item[data-item="export-layout"] button { background: var(--export-layout-bg, #444); color: var(--export-layout-fg, #fff); font-family: var(--export-layout-font, sans-serif); width: 100%; height: 100%; border-radius: 6px; }
+.top-item[data-item="import-layout"] button { background: var(--import-layout-bg, #444); color: var(--import-layout-fg, #fff); font-family: var(--import-layout-font, sans-serif); width: 100%; height: 100%; border-radius: 6px; }
+.top-item[data-item="clear-all"] button     { background: var(--clear-all-bg, #5a1a1a); color: var(--clear-all-fg, #ff9999); font-family: var(--clear-all-font, sans-serif); width: 100%; height: 100%; border-radius: 6px; }
+.top-item[data-item="my-files"] button      { background: var(--my-files-bg, #444); color: var(--my-files-fg, #fff); font-family: var(--my-files-font, sans-serif); width: 100%; height: 100%; border-radius: 6px; }
+.top-item[data-item="hide-habits"] button   { background: var(--hide-habits-bg, #444); color: var(--hide-habits-fg, #fff); font-family: var(--hide-habits-font, sans-serif); width: 100%; height: 100%; border-radius: 6px; }
     .top-item[data-item="export-all"] button.active { background: var(--export-all-active-bg, #555) !important; box-shadow: 0 0 16px 5px var(--export-all-glow, rgba(150,90,255,0.65)); }
     .top-item[data-item="title"],
     .top-item[data-item="version"],
@@ -647,7 +653,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v345</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v346</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -2472,24 +2478,27 @@ function appExport() {
     document.documentElement.style.setProperty("--clock-bg",             hex8ToCss(btnStyle.clockBg));
     // Per-button overrides for top-grid buttons
     const topGridMap = [
-      { id: 'top-export-all',    selector: '.top-item[data-item="export-all"] button' },
-      { id: 'top-import-all',    selector: '.top-item[data-item="import-all"] button' },
-      { id: 'top-export-layout', selector: '.top-item[data-item="export-layout"] button' },
-      { id: 'top-import-layout', selector: '.top-item[data-item="import-layout"] button' },
-      { id: 'top-clear-all',     selector: '.top-item[data-item="clear-all"] button' },
-      { id: 'top-my-files',      selector: '.top-item[data-item="my-files"] button' },
-      { id: 'top-hide-habits',   selector: '.top-item[data-item="hide-habits"] button' },
-      { id: 'top-date',          selector: '.top-item[data-item="date"] span' },
-      { id: 'top-time',          selector: '.top-item[data-item="time"] span' },
+      { id: 'top-export-all',    el: '.top-item[data-item="export-all"]',    prefix: '--export-all' },
+      { id: 'top-import-all',    el: '.top-item[data-item="import-all"]',    prefix: '--import-all' },
+      { id: 'top-export-layout', el: '.top-item[data-item="export-layout"]', prefix: '--export-layout' },
+      { id: 'top-import-layout', el: '.top-item[data-item="import-layout"]', prefix: '--import-layout' },
+      { id: 'top-clear-all',     el: '.top-item[data-item="clear-all"]',     prefix: '--clear-all' },
+      { id: 'top-my-files',      el: '.top-item[data-item="my-files"]',      prefix: '--my-files' },
+      { id: 'top-hide-habits',   el: '.top-item[data-item="hide-habits"]',   prefix: '--hide-habits' },
     ];
-    topGridMap.forEach(({ id, selector }) => {
-      const el = document.querySelector(selector);
+    topGridMap.forEach(({ id, el: sel, prefix }) => {
+      const el = document.querySelector(sel);
       if (!el) return;
       const _s = _btnStyleFor(id);
-      el.style.background = hex8ToCss(_s.bg);
-      el.style.color      = hex8ToCss(_s.fg);
-      el.style.fontFamily = _s.font;
+      el.style.setProperty(prefix + '-bg',   hex8ToCss(_s.bg));
+      el.style.setProperty(prefix + '-fg',   hex8ToCss(_s.fg));
+      el.style.setProperty(prefix + '-font', _s.font);
     });
+    // Date and time spans get direct inline styles
+    const _dateSpan = document.querySelector('.top-item[data-item="date"] span');
+    const _timeSpan = document.querySelector('.top-item[data-item="time"] span');
+    if (_dateSpan) { const _s = _btnStyleFor('top-date'); _dateSpan.style.color = hex8ToCss(_s.fg); }
+    if (_timeSpan) { const _s = _btnStyleFor('top-time'); _timeSpan.style.color = hex8ToCss(_s.fg); }
 
     // Per-button overrides — applied as inline styles on each .tracker-btn
     buttonsEl.querySelectorAll(".tracker-btn[data-id]").forEach(btn => {
@@ -3893,6 +3902,7 @@ items.push({ id: 'top-time',           label: 'Time',           isTopGrid: true 
 </script>
 </body>
 </html>
+
 
 
 
