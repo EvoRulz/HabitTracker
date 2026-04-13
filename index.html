@@ -90,7 +90,7 @@
 </head>
 <body>
   <div style="text-align:right;font-size:13px;margin-bottom:16px;">
-  <span id="app-version">v20</span>
+  <span id="app-version">v21</span>
 </div>
 
 <div class="section">
@@ -216,17 +216,21 @@
   ];
 
   const tuning = { stepTx: 0.55, maxAngle: 89, scaleFalloff: 0.05, opacityFalloff: 0.10, duration: 20, cardW: 0.36 };
-  const style = {
-    regular: { bg: "#444444FF", fg: "#FFFFFFFF", glow: "#9659FFFF" },
-    toggleHide: { bg: "#3A1A1AFF", fg: "#FF9999FF", glow: "#FF6464FF" },
-    toggleShow: { bg: "#1A3A1AFF", fg: "#99FF99FF", glow: "#64FF64FF" },
-    font: "sans-serif"
-  };
-  function getActiveStyle() {
+  const globalFont = { value: "sans-serif" };
+  const itemStyles = {};
+  const toggleHideStyle = { bg: "#3A1A1AFF", fg: "#FF9999FF", glow: "#FF6464FF" };
+  const toggleShowStyle = { bg: "#1A3A1AFF", fg: "#99FF99FF", glow: "#64FF64FF" };
+
+  function getStyleForItem(item) {
+    if (!item) return { bg: "#444444FF", fg: "#FFFFFFFF", glow: "#9659FFFF" };
+    if (item.isToggle) return hideHabits ? toggleShowStyle : toggleHideStyle;
+    if (!itemStyles[item.id]) itemStyles[item.id] = { bg: "#444444FF", fg: "#FFFFFFFF", glow: "#9659FFFF" };
+    return itemStyles[item.id];
+  }
+
+  function getCenteredItem() {
     const displayItems = getDisplayItems();
-    const center = displayItems[Math.round(cfIdx)];
-    if (center && center.isToggle) return hideHabits ? style.toggleShow : style.toggleHide;
-    return style.regular;
+    return displayItems[Math.round(cfIdx)] || null;
   }
 
   let cfIdx = 0;
@@ -315,18 +319,18 @@
     updateDebug();
   }
   function syncColors() {
-    const active = getActiveStyle();
-    active.bg   = getColorValue("s-bg");
-    active.fg   = getColorValue("s-fg");
-    active.glow = getColorValue("s-glow");
-    style.font  = document.getElementById("s-font").value;
+    const item = getCenteredItem();
+    const cs = getStyleForItem(item);
+    cs.bg   = getColorValue("s-bg");
+    cs.fg   = getColorValue("s-fg");
+    cs.glow = getColorValue("s-glow");
+    globalFont.value = document.getElementById("s-font").value;
     updateAlphaSliderBg("s-bg");
     updateAlphaSliderBg("s-fg");
     updateAlphaSliderBg("s-glow");
     cfRender();
     updateDebug();
   }
-
   // ── Items list UI ──────────────────────────────────────────
   function renderItemsList() {
     const list = document.getElementById("items-list");
@@ -430,21 +434,16 @@
       const t = d - d0;
       const kf = t === 0 ? cfKeyframe(d0) : cfInterp(cfKeyframe(d0), cfKeyframe(d1), t);
       const isCenter = Math.abs(d) < 0.5;
-      let cardStyle;
-      if (item && item.isToggle) {
-        cardStyle = hideHabits ? style.toggleShow : style.toggleHide;
-      } else {
-        cardStyle = style.regular;
-      }
-      el.style.background  = isCenter ? hex8ToCss(cardStyle.bg)  : "#1c1c2e";
-      el.style.color       = isCenter ? hex8ToCss(cardStyle.fg)  : "#888888";
-      el.style.fontFamily  = style.font;
+      const cs = getStyleForItem(item);
+      el.style.background  = hex8ToCss(cs.bg);
+      el.style.color       = hex8ToCss(cs.fg);
+      el.style.fontFamily  = globalFont.value;
       el.style.left        = kf.tx + "px";
       el.style.transform   = `translateY(-50%) rotateY(${kf.ry}deg) scale(${kf.sc})`;
       el.style.opacity     = kf.op;
       el.style.zIndex      = kf.zi;
       el.style.width       = iW + "px";
-      el.style.boxShadow   = isCenter ? `0 0 22px 6px ${hex8ToCss(cardStyle.glow)}` : "none";
+      el.style.boxShadow   = isCenter ? `0 0 22px 6px ${hex8ToCss(cs.glow)}` : "none";
     });
     if (label) label.textContent = items[cfIdx]?.label || "";
   }
@@ -625,20 +624,19 @@
     cfRender();
     updateDebug();
   }
-
   function updateControlsForCenter() {
-    const active = getActiveStyle();
+    const item = getCenteredItem();
+    const cs = getStyleForItem(item);
     const hint = document.getElementById("active-card-hint");
-    const displayItems = getDisplayItems();
-    const center = displayItems[Math.round(cfIdx)];
-    if (center && center.isToggle) {
+    if (item && item.isToggle) {
       hint.textContent = hideHabits ? "Toggle - Show Habits" : "Toggle - Hide Habits";
     } else {
-      hint.textContent = "Regular card";
+      hint.textContent = item ? item.label : "Regular card";
     }
-    setColorValue("s-bg",   active.bg);
-    setColorValue("s-fg",   active.fg);
-    setColorValue("s-glow", active.glow);
+    setColorValue("s-bg",   cs.bg);
+    setColorValue("s-fg",   cs.fg);
+    setColorValue("s-glow", cs.glow);
+    document.getElementById("s-font").value = globalFont.value;
   }
   // ── Init ───────────────────────────────────────────────────
   updateAlphaSliderBg("s-bg");
@@ -657,6 +655,7 @@
 </script>
 </body>
 </html>
+
 
 
 
