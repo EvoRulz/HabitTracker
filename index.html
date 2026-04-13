@@ -90,7 +90,7 @@
 </head>
 <body>
   <div style="text-align:right;font-size:13px;margin-bottom:16px;">
-  <span id="app-version">v12</span>
+  <span id="app-version">v13</span>
 </div>
 
 <div class="section">
@@ -519,11 +519,13 @@ let hideHabits = false;
     let touchStartX = null;
     let touchStartIdx = null;
     let touchDidDrag = false;
+    let touchHandled = false;
 
     stage.addEventListener("touchstart", e => {
       touchStartX = e.touches[0].clientX;
       touchStartIdx = cfIdx;
       touchDidDrag = false;
+      touchHandled = false;
       displayIdx = cfIdx;
       if (animId) { cancelAnimationFrame(animId); animId = null; }
       e.preventDefault();
@@ -551,7 +553,7 @@ let hideHabits = false;
       const target = Math.max(0, Math.min(Math.round(displayIdx), n - 1));
       cfIdx = target;
       if (!wasDrag) {
-        handleTap(endX);
+        if (!touchHandled) { touchHandled = true; handleTap(endX); }
         return;
       }
       springTo(target);
@@ -623,5 +625,6 @@ let hideHabits = false;
 </script>
 </body>
 </html>
+
 
 
