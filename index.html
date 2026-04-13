@@ -90,7 +90,7 @@
 </head>
 <body>
   <div style="text-align:right;font-size:13px;margin-bottom:16px;">
-  <span id="app-version">v15</span>
+  <span id="app-version">v16</span>
 </div>
 
 <div class="section">
@@ -444,8 +444,8 @@
   }
 
   function cfBuild() {
-    const stage = document.getElementById("cf-stage");
-    if (!stage) return;
+    const existingStage = document.getElementById("cf-stage");
+    if (!existingStage) return;
     stage.innerHTML = "";
     if (!items.length) return;
     const W = stage.offsetWidth || 300;
@@ -462,6 +462,9 @@
     });
 
     if (animId) { cancelAnimationFrame(animId); animId = null; }
+    const oldStage = document.getElementById("cf-stage");
+    const stage = oldStage.cloneNode(false);
+    oldStage.parentNode.replaceChild(stage, oldStage);
     displayIdx = cfIdx;
     let dragStartX = null;
     let dragStartIdx = null;
@@ -630,6 +633,7 @@
 </script>
 </body>
 </html>
+
 
 
 
