@@ -90,7 +90,7 @@
 </head>
 <body>
   <div style="text-align:right;font-size:13px;margin-bottom:16px;">
-  <span id="app-version">v5</span>
+  <span id="app-version">v6</span>
 </div>
 
 <div class="section">
@@ -568,34 +568,6 @@
       dragStartIdx = null;
     });
 
-    stage.addEventListener("pointercancel", e => {
-      if (e.pointerType === "touch") return;
-      const n      = items.length;
-      const target = Math.max(0, Math.min(Math.round(displayIdx), n - 1));
-      cfIdx = target;
-      springTo(target);
-      dragStartX = null; didDrag = false; dragStartIdx = null;
-    });
-      dragStartX   = e.clientX;
-      dragStartIdx = cfIdx;
-      didDrag      = false;
-      if (animId) { cancelAnimationFrame(animId); animId = null; }
-      stage.setPointerCapture(e.pointerId);
-      e.preventDefault();
-    });
-
-    stage.addEventListener("pointermove", e => {
-      if (dragStartX === null) return;
-      const dx = e.clientX - dragStartX;
-      if (Math.abs(dx) > 4) didDrag = true;
-      if (!didDrag) return;
-      e.preventDefault();
-      const n = items.length;
-      displayIdx = Math.max(0, Math.min(dragStartIdx + (-dx / 60), n - 1));
-      cfIdx = displayIdx;
-      cfRenderAt(displayIdx);
-    });
-
     stage.addEventListener("pointerup", e => {
       if (dragStartX === null) return;
       const wasDrag = didDrag;
@@ -648,6 +620,7 @@
 </script>
 </body>
 </html>
+
 
 
 
