@@ -90,7 +90,7 @@
 </head>
 <body>
   <div style="text-align:right;font-size:13px;margin-bottom:16px;">
-  <span id="app-version">v11</span>
+  <span id="app-version">v12</span>
 </div>
 
 <div class="section">
@@ -504,6 +504,7 @@ let hideHabits = false;
         if (dist < closestDist) { closestDist = dist; closest = i; }
       });
       if (displayItems[closest] && displayItems[closest].isToggle) {
+        console.log("TOGGLE TAPPED, hideHabits was:", hideHabits);
         hideHabits = !hideHabits;
         const togglePos = Math.floor(items.length / 2);
         cfIdx = togglePos;
@@ -622,4 +623,5 @@ let hideHabits = false;
 </script>
 </body>
 </html>
+
 
