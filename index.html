@@ -90,7 +90,7 @@
 </head>
 <body>
   <div style="text-align:right;font-size:13px;margin-bottom:16px;">
-  <span id="app-version">v7</span>
+  <span id="app-version">v8</span>
 </div>
 
 <div class="section">
@@ -529,23 +529,25 @@ let hideHabits = false;
       springTo(target);
       if (!wasDrag) {
         const stageRect = stage.getBoundingClientRect();
-        const tapX = e.changedTouches[0].clientX - stageRect.left;
-        const cardEls = [...stage.querySelectorAll(".cf-item")];
+        const tapX      = e.changedTouches[0].clientX - stageRect.left;
+        const cardEls   = [...stage.querySelectorAll(".cf-item")];
         let closest = target, closestDist = Infinity;
         cardEls.forEach((el, i) => {
-          const r = el.getBoundingClientRect();
+          const r      = el.getBoundingClientRect();
           const cardCx = r.left - stageRect.left + r.width / 2;
-          const dist = Math.abs(tapX - cardCx);
+          const dist   = Math.abs(tapX - cardCx);
           if (dist < closestDist) { closestDist = dist; closest = i; }
         });
         if (displayItems[closest] && displayItems[closest].isToggle) {
           hideHabits = !hideHabits;
           cfBuild();
-        } else {
-          cfIdx      = closest;
-          displayIdx = closest;
-          springTo(closest);
+          return;
         }
+        cfIdx      = closest;
+        displayIdx = closest;
+        springTo(closest);
+        touchStartIdx = null;
+        return;
       }
       touchStartIdx = null;
     }, { passive: false });
@@ -585,50 +587,26 @@ let hideHabits = false;
       springTo(target);
       if (!wasDrag) {
         const stageRect = stage.getBoundingClientRect();
-        const tapX = e.clientX - stageRect.left;
-        const cardEls = [...stage.querySelectorAll(".cf-item")];
+        const tapX      = e.clientX - stageRect.left;
+        const cardEls   = [...stage.querySelectorAll(".cf-item")];
         let closest = target, closestDist = Infinity;
         cardEls.forEach((el, i) => {
-          const r = el.getBoundingClientRect();
+          const r      = el.getBoundingClientRect();
           const cardCx = r.left - stageRect.left + r.width / 2;
-          const dist = Math.abs(tapX - cardCx);
+          const dist   = Math.abs(tapX - cardCx);
           if (dist < closestDist) { closestDist = dist; closest = i; }
         });
         if (displayItems[closest] && displayItems[closest].isToggle) {
           hideHabits = !hideHabits;
           cfBuild();
-        } else {
-          cfIdx      = closest;
-          displayIdx = closest;
-          springTo(closest);
+          dragStartIdx = null;
+          return;
         }
-      }
-      dragStartIdx = null;
-    });
-
-    stage.addEventListener("pointerup", e => {
-      if (dragStartX === null) return;
-      const wasDrag = didDrag;
-      dragStartX = null;
-      didDrag = false;
-      const n = displayItems.length;
-      const target = Math.max(0, Math.min(Math.round(displayIdx), n - 1));
-      cfIdx = target;
-      springTo(target);
-      if (!wasDrag) {
-        const stageRect = stage.getBoundingClientRect();
-        const tapX = e.clientX - stageRect.left;
-        const cardEls = [...stage.querySelectorAll(".cf-item")];
-        let closest = target, closestDist = Infinity;
-        cardEls.forEach((el, i) => {
-          const r = el.getBoundingClientRect();
-          const cardCx = r.left - stageRect.left + r.width / 2;
-          const dist = Math.abs(tapX - cardCx);
-          if (dist < closestDist) { closestDist = dist; closest = i; }
-        });
-        cfIdx = closest;
+        cfIdx      = closest;
         displayIdx = closest;
         springTo(closest);
+        dragStartIdx = null;
+        return;
       }
       dragStartIdx = null;
     });
@@ -658,3 +636,4 @@ let hideHabits = false;
 </script>
 </body>
 </html>
+
