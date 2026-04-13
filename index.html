@@ -90,7 +90,7 @@
 </head>
 <body>
   <div style="text-align:right;font-size:13px;margin-bottom:16px;">
-  <span id="app-version">v14</span>
+  <span id="app-version">v15</span>
 </div>
 
 <div class="section">
@@ -218,7 +218,9 @@
   const style = { bg: "#444444FF", fg: "#FFFFFFFF", glow: "#9659FFFF", font: "sans-serif" };
 
   let cfIdx = 0;
-let hideHabits = false;
+  let animId = null;
+  let displayIdx = 0;
+  let hideHabits = false;
 
   // ── Colour helpers ─────────────────────────────────────────
   function hex8ToComponents(hex) {
@@ -459,11 +461,11 @@ let hideHabits = false;
       stage.appendChild(el);
     });
 
+    if (animId) { cancelAnimationFrame(animId); animId = null; }
+    displayIdx = cfIdx;
     let dragStartX = null;
     let dragStartIdx = null;
-    let displayIdx = cfIdx;
     let didDrag = false;
-    let animId = null;
 
     function springTo(target) {
       if (animId) cancelAnimationFrame(animId);
@@ -628,6 +630,7 @@ let hideHabits = false;
 </script>
 </body>
 </html>
+
 
 
 
