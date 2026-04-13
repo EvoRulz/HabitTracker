@@ -90,7 +90,7 @@
 </head>
 <body>
   <div style="text-align:right;font-size:13px;margin-bottom:16px;">
-  <span id="app-version">v3</span>
+  <span id="app-version">v4</span>
 </div>
 
 <div class="section">
@@ -424,7 +424,7 @@
       el.dataset.cfI = i;
       el.textContent = item.label;
       el.style.width = iW + "px";
-      el.style.pointerEvents = "none";
+      el.style.pointerEvents = "auto";
       stage.appendChild(el);
     });
 
@@ -481,7 +481,7 @@
       if (!didDrag) return;
       e.preventDefault();
       const n = items.length;
-      displayIdx = Math.max(0, Math.min(dragStartIdx + (-dx / 80), n - 1));
+      displayIdx = Math.max(0, Math.min(dragStartIdx + (-dx / 60), n - 1));
       cfIdx = displayIdx;
       cfRenderAt(displayIdx);
     });
@@ -538,4 +538,5 @@
 </script>
 </body>
 </html>
+
 
