@@ -90,13 +90,132 @@
 </head>
 <body>
   <div style="text-align:right;font-size:13px;margin-bottom:16px;">
-  <span id="app-version">v17</span>
+  <span id="app-version">v18</span>
 </div>
 
 <div class="section">
   <h2>Coverflow Preview</h2>
   <div id="cf-label"></div>
   <div id="cf-stage"></div>
+</div>
+
+<div class="section">
+  <h2>Active card colours</h2>
+
+  <p style="font-size:11px;color:#555;margin-bottom:8px;letter-spacing:0.05em;text-transform:uppercase;">Regular cards</p>
+  <div class="color-row">
+    <label>Background</label>
+    <div class="color-picker-row">
+      <input type="color" id="s-bg" value="#444444" oninput="syncColors()">
+      <input type="range" class="alpha-slider" id="s-bg-alpha" min="0" max="255" value="255" oninput="syncColors()">
+    </div>
+    <div class="hex-row">
+      <input type="text" class="hex-input" id="s-bg-hex" maxlength="9" oninput="onHexInput('s-bg')" value="#444444FF">
+      <button class="copy-btn" onclick="copyHex('s-bg', this)">Copy</button>
+    </div>
+  </div>
+  <div class="color-row">
+    <label>Text</label>
+    <div class="color-picker-row">
+      <input type="color" id="s-fg" value="#ffffff" oninput="syncColors()">
+      <input type="range" class="alpha-slider" id="s-fg-alpha" min="0" max="255" value="255" oninput="syncColors()">
+    </div>
+    <div class="hex-row">
+      <input type="text" class="hex-input" id="s-fg-hex" maxlength="9" oninput="onHexInput('s-fg')" value="#FFFFFFFF">
+      <button class="copy-btn" onclick="copyHex('s-fg', this)">Copy</button>
+    </div>
+  </div>
+  <div class="color-row">
+    <label>Glow</label>
+    <div class="color-picker-row">
+      <input type="color" id="s-glow" value="#9659ff" oninput="syncColors()">
+      <input type="range" class="alpha-slider" id="s-glow-alpha" min="0" max="255" value="255" oninput="syncColors()">
+    </div>
+    <div class="hex-row">
+      <input type="text" class="hex-input" id="s-glow-hex" maxlength="9" oninput="onHexInput('s-glow')" value="#9659FFFF">
+      <button class="copy-btn" onclick="copyHex('s-glow', this)">Copy</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>Font</label>
+    <select id="s-font" onchange="syncColors()">
+      <option value="sans-serif" selected>Sans-serif</option>
+      <option value="serif">Serif</option>
+      <option value="monospace">Monospace</option>
+      <option value="cursive">Cursive</option>
+      <option value="fantasy">Fantasy</option>
+    </select>
+  </div>
+
+  <p style="font-size:11px;color:#555;margin-top:14px;margin-bottom:8px;letter-spacing:0.05em;text-transform:uppercase;">Toggle — "Hide Habits" (center)</p>
+  <div class="color-row">
+    <label>Background</label>
+    <div class="color-picker-row">
+      <input type="color" id="t-hide-bg" value="#3a1a1a" oninput="syncColors()">
+      <input type="range" class="alpha-slider" id="t-hide-bg-alpha" min="0" max="255" value="255" oninput="syncColors()">
+    </div>
+    <div class="hex-row">
+      <input type="text" class="hex-input" id="t-hide-bg-hex" maxlength="9" oninput="onHexInput('t-hide-bg')" value="#3A1A1AFF">
+      <button class="copy-btn" onclick="copyHex('t-hide-bg', this)">Copy</button>
+    </div>
+  </div>
+  <div class="color-row">
+    <label>Text</label>
+    <div class="color-picker-row">
+      <input type="color" id="t-hide-fg" value="#ff9999" oninput="syncColors()">
+      <input type="range" class="alpha-slider" id="t-hide-fg-alpha" min="0" max="255" value="255" oninput="syncColors()">
+    </div>
+    <div class="hex-row">
+      <input type="text" class="hex-input" id="t-hide-fg-hex" maxlength="9" oninput="onHexInput('t-hide-fg')" value="#FF9999FF">
+      <button class="copy-btn" onclick="copyHex('t-hide-fg', this)">Copy</button>
+    </div>
+  </div>
+  <div class="color-row">
+    <label>Glow</label>
+    <div class="color-picker-row">
+      <input type="color" id="t-hide-glow" value="#ff6464" oninput="syncColors()">
+      <input type="range" class="alpha-slider" id="t-hide-glow-alpha" min="0" max="255" value="255" oninput="syncColors()">
+    </div>
+    <div class="hex-row">
+      <input type="text" class="hex-input" id="t-hide-glow-hex" maxlength="9" oninput="onHexInput('t-hide-glow')" value="#FF6464FF">
+      <button class="copy-btn" onclick="copyHex('t-hide-glow', this)">Copy</button>
+    </div>
+  </div>
+
+  <p style="font-size:11px;color:#555;margin-top:14px;margin-bottom:8px;letter-spacing:0.05em;text-transform:uppercase;">Toggle — "Show Habits" (center)</p>
+  <div class="color-row">
+    <label>Background</label>
+    <div class="color-picker-row">
+      <input type="color" id="t-show-bg" value="#1a3a1a" oninput="syncColors()">
+      <input type="range" class="alpha-slider" id="t-show-bg-alpha" min="0" max="255" value="255" oninput="syncColors()">
+    </div>
+    <div class="hex-row">
+      <input type="text" class="hex-input" id="t-show-bg-hex" maxlength="9" oninput="onHexInput('t-show-bg')" value="#1A3A1AFF">
+      <button class="copy-btn" onclick="copyHex('t-show-bg', this)">Copy</button>
+    </div>
+  </div>
+  <div class="color-row">
+    <label>Text</label>
+    <div class="color-picker-row">
+      <input type="color" id="t-show-fg" value="#99ff99" oninput="syncColors()">
+      <input type="range" class="alpha-slider" id="t-show-fg-alpha" min="0" max="255" value="255" oninput="syncColors()">
+    </div>
+    <div class="hex-row">
+      <input type="text" class="hex-input" id="t-show-fg-hex" maxlength="9" oninput="onHexInput('t-show-fg')" value="#99FF99FF">
+      <button class="copy-btn" onclick="copyHex('t-show-fg', this)">Copy</button>
+    </div>
+  </div>
+  <div class="color-row">
+    <label>Glow</label>
+    <div class="color-picker-row">
+      <input type="color" id="t-show-glow" value="#64ff64" oninput="syncColors()">
+      <input type="range" class="alpha-slider" id="t-show-glow-alpha" min="0" max="255" value="255" oninput="syncColors()">
+    </div>
+    <div class="hex-row">
+      <input type="text" class="hex-input" id="t-show-glow-hex" maxlength="9" oninput="onHexInput('t-show-glow')" value="#64FF64FF">
+      <button class="copy-btn" onclick="copyHex('t-show-glow', this)">Copy</button>
+    </div>
+  </div>
 </div>
 
 <div class="section">
@@ -151,53 +270,6 @@
 </div>
 
 <div class="section">
-  <h2>Active card colours</h2>
-  <div class="color-row">
-    <label>Background</label>
-    <div class="color-picker-row">
-      <input type="color" id="s-bg" value="#444444" oninput="syncColors()">
-      <input type="range" class="alpha-slider" id="s-bg-alpha" min="0" max="255" value="255" oninput="syncColors()">
-    </div>
-    <div class="hex-row">
-      <input type="text" class="hex-input" id="s-bg-hex" maxlength="9" oninput="onHexInput('s-bg')" value="#444444FF">
-      <button class="copy-btn" onclick="copyHex('s-bg', this)">Copy</button>
-    </div>
-  </div>
-  <div class="color-row">
-    <label>Text</label>
-    <div class="color-picker-row">
-      <input type="color" id="s-fg" value="#ffffff" oninput="syncColors()">
-      <input type="range" class="alpha-slider" id="s-fg-alpha" min="0" max="255" value="255" oninput="syncColors()">
-    </div>
-    <div class="hex-row">
-      <input type="text" class="hex-input" id="s-fg-hex" maxlength="9" oninput="onHexInput('s-fg')" value="#FFFFFFFF">
-      <button class="copy-btn" onclick="copyHex('s-fg', this)">Copy</button>
-    </div>
-  </div>
-  <div class="color-row">
-    <label>Glow</label>
-    <div class="color-picker-row">
-      <input type="color" id="s-glow" value="#9659ff" oninput="syncColors()">
-      <input type="range" class="alpha-slider" id="s-glow-alpha" min="0" max="255" value="255" oninput="syncColors()">
-    </div>
-    <div class="hex-row">
-      <input type="text" class="hex-input" id="s-glow-hex" maxlength="9" oninput="onHexInput('s-glow')" value="#9659FFFF">
-      <button class="copy-btn" onclick="copyHex('s-glow', this)">Copy</button>
-    </div>
-  </div>
-  <div class="row">
-    <label>Font</label>
-    <select id="s-font" onchange="syncColors()">
-      <option value="sans-serif" selected>Sans-serif</option>
-      <option value="serif">Serif</option>
-      <option value="monospace">Monospace</option>
-      <option value="cursive">Cursive</option>
-      <option value="fantasy">Fantasy</option>
-    </select>
-  </div>
-</div>
-
-<div class="section">
   <h2>Debug state</h2>
   <div class="debug-box" id="debug-box">-</div>
 </div>
@@ -215,7 +287,9 @@
   ];
 
   const tuning = { stepTx: 0.55, maxAngle: 89, scaleFalloff: 0.05, opacityFalloff: 0.10, duration: 20, cardW: 0.36 };
-  const style = { bg: "#444444FF", fg: "#FFFFFFFF", glow: "#9659FFFF", font: "sans-serif" };
+  const style = { bg: "#444444FF", fg: "#FFFFFFFF", glow: "#9659FFFF", font: "sans-serif",
+    tHideBg: "#3A1A1AFF", tHideFg: "#FF9999FF", tHideGlow: "#FF6464FF",
+    tShowBg: "#1A3A1AFF", tShowFg: "#99FF99FF", tShowGlow: "#64FF64FF" };
 
   let cfIdx = 0;
   let animId = null;
@@ -307,9 +381,21 @@
     style.fg = getColorValue("s-fg");
     style.glow = getColorValue("s-glow");
     style.font = document.getElementById("s-font").value;
+    style.tHideBg   = getColorValue("t-hide-bg");
+    style.tHideFg   = getColorValue("t-hide-fg");
+    style.tHideGlow = getColorValue("t-hide-glow");
+    style.tShowBg   = getColorValue("t-show-bg");
+    style.tShowFg   = getColorValue("t-show-fg");
+    style.tShowGlow = getColorValue("t-show-glow");
     updateAlphaSliderBg("s-bg");
     updateAlphaSliderBg("s-fg");
     updateAlphaSliderBg("s-glow");
+    updateAlphaSliderBg("t-hide-bg");
+    updateAlphaSliderBg("t-hide-fg");
+    updateAlphaSliderBg("t-hide-glow");
+    updateAlphaSliderBg("t-show-bg");
+    updateAlphaSliderBg("t-show-fg");
+    updateAlphaSliderBg("t-show-glow");
     cfRender();
     updateDebug();
   }
@@ -418,10 +504,10 @@
       const kf = t === 0 ? cfKeyframe(d0) : cfInterp(cfKeyframe(d0), cfKeyframe(d1), t);
       if (item && item.isToggle) {
         el.style.background = Math.abs(d) < 0.5
-          ? (hideHabits ? "#1a3a1a" : "#3a1a1a")
+          ? (hideHabits ? hex8ToCss(style.tShowBg) : hex8ToCss(style.tHideBg))
           : "#1c1c2e";
         el.style.color = Math.abs(d) < 0.5
-          ? (hideHabits ? "#99ff99" : "#ff9999")
+          ? (hideHabits ? hex8ToCss(style.tShowFg) : hex8ToCss(style.tHideFg))
           : "#888888";
         el.style.fontFamily = style.font;
       } else {
@@ -436,7 +522,7 @@
       el.style.width = iW + "px";
       el.style.boxShadow = Math.abs(d) < 0.5
         ? (item && item.isToggle
-            ? `0 0 22px 6px ${hideHabits ? "rgba(100,255,100,0.5)" : "rgba(255,100,100,0.5)"}`
+            ? `0 0 22px 6px ${hideHabits ? hex8ToCss(style.tShowGlow) : hex8ToCss(style.tHideGlow)}`
             : `0 0 22px 6px ${hex8ToCss(style.glow)}`)
         : "none";
     });
@@ -622,6 +708,12 @@
   updateAlphaSliderBg("s-bg");
   updateAlphaSliderBg("s-fg");
   updateAlphaSliderBg("s-glow");
+  updateAlphaSliderBg("t-hide-bg");
+  updateAlphaSliderBg("t-hide-fg");
+  updateAlphaSliderBg("t-hide-glow");
+  updateAlphaSliderBg("t-show-bg");
+  updateAlphaSliderBg("t-show-fg");
+  updateAlphaSliderBg("t-show-glow");
   renderItemsList();
   cfBuild();
   updateDebug();
@@ -629,6 +721,7 @@
 </script>
 </body>
 </html>
+
 
 
 
