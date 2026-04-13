@@ -90,7 +90,7 @@
 </head>
 <body>
   <div style="text-align:right;font-size:13px;margin-bottom:16px;">
-  <span id="app-version">v2</span>
+  <span id="app-version">v3</span>
 </div>
 
 <div class="section">
@@ -467,7 +467,7 @@
 
     stage.addEventListener("pointerdown", e => {
       dragStartX   = e.clientX;
-      dragStartIdx = displayIdx;
+      dragStartIdx = cfIdx;
       didDrag      = false;
       if (animId) { cancelAnimationFrame(animId); animId = null; }
       stage.setPointerCapture(e.pointerId);
@@ -538,3 +538,4 @@
 </script>
 </body>
 </html>
+
