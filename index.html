@@ -660,7 +660,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v355</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v356</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -2321,10 +2321,10 @@ function appExport() {
     appStyle.textColor   = getColorValue("s-app-text");
     appStyle.borderColor = getColorValue("s-app-border");
     appStyle.theadBg     = getColorValue("s-app-thead");
-    appStyle.barSet      = getColorValue("s-app-bar-set");
-    appStyle.barTotal    = getColorValue("s-app-bar-total");
-    appStyle.barStreak   = getColorValue("s-app-bar-streak");
-    appStyle.padding     = Number(document.getElementById("s-app-padding").value);
+    if (document.getElementById("s-app-bar-set"))    appStyle.barSet    = getColorValue("s-app-bar-set");
+    if (document.getElementById("s-app-bar-total"))  appStyle.barTotal  = getColorValue("s-app-bar-total");
+    if (document.getElementById("s-app-bar-streak")) appStyle.barStreak = getColorValue("s-app-bar-streak");
+    if (document.getElementById("s-app-padding"))    appStyle.padding   = Number(document.getElementById("s-app-padding").value);
     collectAppStops();
     applyAppStyle();
   }
@@ -2576,16 +2576,16 @@ function appExport() {
     _s("s-app-img-pos",    appStyle.imgPos);
     _s("s-app-img-repeat", appStyle.imgRepeat);
     _s("s-app-img-attach", appStyle.imgAttach);
-    _s("s-app-padding",    appStyle.padding);
+    if (document.getElementById("s-app-padding")) _s("s-app-padding", appStyle.padding);
     setColorValue("s-app-pat-color",  appStyle.patColor);
     setColorValue("s-app-pat-bg",     appStyle.patBg);
     setColorValue("s-app-img-tint",   appStyle.imgTint);
     setColorValue("s-app-text",       appStyle.textColor);
     setColorValue("s-app-border",     appStyle.borderColor);
     setColorValue("s-app-thead",      appStyle.theadBg);
-    setColorValue("s-app-bar-set",    appStyle.barSet);
-    setColorValue("s-app-bar-total",  appStyle.barTotal);
-    setColorValue("s-app-bar-streak", appStyle.barStreak);
+    if (document.getElementById("s-app-bar-set"))    setColorValue("s-app-bar-set",    appStyle.barSet);
+    if (document.getElementById("s-app-bar-total"))  setColorValue("s-app-bar-total",  appStyle.barTotal);
+    if (document.getElementById("s-app-bar-streak")) setColorValue("s-app-bar-streak", appStyle.barStreak);
     const isGrad = appStyle.bgType.startsWith("gradient");
     const isPat  = appStyle.bgType.startsWith("pattern");
     const isImg  = appStyle.bgType === "image";
@@ -3976,6 +3976,7 @@ items.push({ id: 'top-time',           label: 'Time',           isTopGrid: true 
 </script>
 </body>
 </html>
+
 
 
 
