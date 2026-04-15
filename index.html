@@ -660,7 +660,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v370</span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v371</span></div>
   <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -3003,8 +3003,9 @@ items.push({ id: 'top-hide-habits', label: 'Hide Habits', isTopGrid: true });
       if (label) label.textContent = items[cfIdx]?.label || '';
     }
     window._cfRender = cfRender;
-
-    function cfBuild() {
+    let _cfPointerAC = null;
+    let _cfAnimId = null;
+    function cfBuild(){
       const stage = document.getElementById('cf-stage');
       if (!stage) return;
       const items = window._cfItems();
@@ -3039,34 +3040,20 @@ items.push({ id: 'top-hide-habits', label: 'Hide Habits', isTopGrid: true });
 
       cfRender();
 
-      stage.style.position = 'relative';
       stage.style.touchAction = 'none';
-      const tapZone = document.createElement('div');
-      Object.assign(tapZone.style, {
-        position: 'absolute', top: '0', height: '100%',
-        zIndex: '101', pointerEvents: 'none',
-        webkitTapHighlightColor: hex8ToCss(btnStyle.tapHighlight),
-        borderRadius: '6px',
-      });
-      stage.appendChild(tapZone);
-      function updateTapZone() {
-        const W = stage.offsetWidth || 300;
-        const iW = Math.min(150, Math.max(70, Math.floor(W * cfTuning.cardW)));
-        const cx = W / 2;
-        tapZone.style.width = iW + 'px';
-        tapZone.style.left = (cx - iW / 2) + 'px';
-      }
-      updateTapZone();
+
+      if (_cfAnimId) { cancelAnimationFrame(_cfAnimId); _cfAnimId = null; }
+      if (_cfPointerAC) _cfPointerAC.abort();
+      _cfPointerAC = new AbortController();
+      const sig = _cfPointerAC.signal;
 
       let dragStartX = null;
       let dragStartIdx = null;
-      let animId = null;
       let displayIdx = cfIdx;
       let didDrag = false;
-      let pointerCaptured = false;
 
       function springTo(target) {
-        if (animId) cancelAnimationFrame(animId);
+        if (_cfAnimId) cancelAnimationFrame(_cfAnimId);
         const startIdx = displayIdx;
         const startTime = performance.now();
         const duration = cfTuning.duration;
@@ -3076,30 +3063,25 @@ items.push({ id: 'top-hide-habits', label: 'Hide Habits', isTopGrid: true });
           displayIdx = startIdx + (target - startIdx) * ease;
           cfRenderAt(displayIdx);
           if (t < 1) {
-            animId = requestAnimationFrame(step);
+            _cfAnimId = requestAnimationFrame(step);
           } else {
             displayIdx = target;
             cfIdx = target;
             cfRenderAt(displayIdx);
-            animId = null;
-            updateTapZone();
+            _cfAnimId = null;
           }
         }
-        animId = requestAnimationFrame(step);
+        _cfAnimId = requestAnimationFrame(step);
       }
 
       stage.addEventListener('pointerdown', e => {
-        if (pointerCaptured) return;
-        tapZone.style.pointerEvents = 'auto';
-        requestAnimationFrame(() => { tapZone.style.pointerEvents = 'none'; });
         dragStartX = e.clientX;
         dragStartIdx = displayIdx;
         didDrag = false;
-        if (animId) { cancelAnimationFrame(animId); animId = null; }
+        if (_cfAnimId) { cancelAnimationFrame(_cfAnimId); _cfAnimId = null; }
         stage.setPointerCapture(e.pointerId);
-        pointerCaptured = true;
         e.preventDefault();
-      });
+      }, { signal: sig });
 
       stage.addEventListener('pointermove', e => {
         if (dragStartX === null) return;
@@ -3111,23 +3093,23 @@ items.push({ id: 'top-hide-habits', label: 'Hide Habits', isTopGrid: true });
         displayIdx = Math.max(0, Math.min(dragStartIdx + (-dx / 80), n - 1));
         cfIdx = displayIdx;
         cfRenderAt(displayIdx);
-      });
+      }, { signal: sig });
 
       stage.addEventListener('pointerup', e => {
         if (dragStartX === null) return;
         const wasDrag = didDrag;
+        const upX = e.clientX;
         dragStartX = null;
         didDrag = false;
         const n = window._cfItems().length;
         const target = Math.max(0, Math.min(Math.round(displayIdx), n - 1));
         cfIdx = target;
-        springTo(target);
-        let closest = target;
         if (!wasDrag) {
           const stageRect = stage.getBoundingClientRect();
-          const tapX = e.clientX - stageRect.left;
+          const tapX = upX - stageRect.left;
           const cardEls = [...stage.querySelectorAll('.cf-item')];
           let closestDist = Infinity;
+          let closest = target;
           cardEls.forEach((el, i) => {
             const r = el.getBoundingClientRect();
             const cardCx = r.left - stageRect.left + r.width / 2;
@@ -3137,29 +3119,26 @@ items.push({ id: 'top-hide-habits', label: 'Hide Habits', isTopGrid: true });
           cfIdx = closest;
           displayIdx = closest;
           springTo(closest);
+          const tappedItem = window._cfItems()[closest];
+          if (tappedItem && tappedItem.id === 'top-hide-habits') {
+            toggleHabits();
+          } else {
+            cfLoadPickersForId(cfActiveId());
+          }
+        } else {
+          springTo(target);
+          dragStartIdx = null;
         }
-        const tappedItem = window._cfItems()[closest];
-        if (!wasDrag && tappedItem && tappedItem.id === 'top-hide-habits') {
-          window._cfHideInProgress = true;
-          cfIdx = 0;
-          cfRender();
-          window._cfHideInProgress = false;
-          toggleHabits();
-        } else if (!wasDrag) {
-          cfLoadPickersForId(cfActiveId());
-        }
-        dragStartIdx = null;
-        pointerCaptured = false;
-      });
+      }, { signal: sig });
 
       stage.addEventListener('pointercancel', () => {
+        if (dragStartX === null) return;
         const n = window._cfItems().length;
         const target = Math.max(0, Math.min(Math.round(displayIdx), n - 1));
         cfIdx = target;
         springTo(target);
         dragStartX = null; didDrag = false; dragStartIdx = null;
-        pointerCaptured = false;
-      });
+      }, { signal: sig });
     }
     window._cfBuild = cfBuild;
     new ResizeObserver(() => { if (window._cfBuild) { const saved = cfIdx; window._cfBuild(); cfIdx = saved; cfRender(); } }).observe(document.getElementById('cf-stage'));
@@ -3995,6 +3974,7 @@ items.push({ id: 'top-hide-habits', label: 'Hide Habits', isTopGrid: true });
 </script>
 </body>
 </html>
+
 
 
 
