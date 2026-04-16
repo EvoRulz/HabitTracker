@@ -661,9 +661,9 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v482</span></div>
-  <div class="top-item" data-item="date" style="background:var(--clock-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
-  <div class="top-item" data-item="time" style="background:var(--clock-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
+  <div class="top-item" data-item="version"><span id="app-version" style="font-size:14px;">v483</span></div>
+  <div class="top-item" data-item="date" style="background:var(--clock-date-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
+  <div class="top-item" data-item="time" style="background:var(--clock-time-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
     <button id="settings-cog" onclick="settingsOpen()" title="Button style settings">
       <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8.325 2.317a1.75 1.75 0 0 1 3.35 0l.07.254a1.75 1.75 0 0 0 2.494 1.08l.235-.127a1.75 1.75 0 0 1 2.369 2.369l-.127.235a1.75 1.75 0 0 0 1.08 2.494l.254.07a1.75 1.75 0 0 1 0 3.35l-.254.07a1.75 1.75 0 0 0-1.08 2.494l.127.235a1.75 1.75 0 0 1-2.369 2.369l-.235-.127a1.75 1.75 0 0 0-2.494 1.08l-.07.254a1.75 1.75 0 0 1-3.35 0l-.07-.254a1.75 1.75 0 0 0-2.494-1.08l-.235.127a1.75 1.75 0 0 1-2.369-2.369l.127-.235a1.75 1.75 0 0 0-1.08-2.494l-.254-.07a1.75 1.75 0 0 1 0-3.35l.254-.07a1.75 1.75 0 0 0 1.08-2.494l-.127-.235a1.75 1.75 0 0 1 2.369-2.369l.235.127a1.75 1.75 0 0 0 2.494-1.08l.07-.254ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
@@ -2414,7 +2414,6 @@ function appExport() {
     const a = slider ? parseInt(slider.value).toString(16).padStart(2,'0').toUpperCase() : 'FF';
     if (hexEl) hexEl.value = '#'+h+a;
   updateAlphaSliderBg(id);
-  if (id === 's-clock-bg') { const _cId = window._cfActiveId ? window._cfActiveId() : null; if (_cId === 'top-date' || _cId === 'top-time') setColorValue('s-bg', '#'+h+a); }
   settingsChange();
 }
 function onAlphaChange(id) {
@@ -2425,7 +2424,6 @@ function onAlphaChange(id) {
     const a = parseInt(slider.value).toString(16).padStart(2,'0').toUpperCase();
     if (hexEl) hexEl.value = '#'+h+a;
   updateAlphaSliderBg(id);
-  if (id === 's-clock-bg') { const _cId = window._cfActiveId ? window._cfActiveId() : null; if (_cId === 'top-date' || _cId === 'top-time') setColorValue('s-bg', '#'+h+a); }
   settingsChange();
 }
 function onHexInput(id) {
@@ -2484,11 +2482,13 @@ function onHexInput(id) {
     document.documentElement.style.setProperty("--checkbox-mark",        hex8ToCss(btnStyle.checkboxMark));
     document.documentElement.style.setProperty("--checkbox-border",      hex8ToCss(btnStyle.checkboxBorder));
     document.documentElement.style.setProperty("--checkbox-bg",          hex8ToCss(btnStyle.checkboxBg));
-    document.documentElement.style.setProperty("--clock-date-color",     hex8ToCss(btnStyle.clockDateColor));
-    document.documentElement.style.setProperty("--clock-time-color",     hex8ToCss(btnStyle.clockTimeColor));
+    document.documentElement.style.setProperty("--clock-date-color",     hex8ToCss(_btnStyleFor('top-date').fg));
+    document.documentElement.style.setProperty("--clock-time-color",     hex8ToCss(_btnStyleFor('top-time').fg));
     document.documentElement.style.setProperty("--clock-date-size",      btnStyle.clockDateSize + "px");
     document.documentElement.style.setProperty("--clock-time-size",      btnStyle.clockTimeSize + "px");
     document.documentElement.style.setProperty("--clock-bg",             hex8ToCss(btnStyle.clockBg));
+    document.documentElement.style.setProperty("--clock-date-bg",        hex8ToCss(_btnStyleFor('top-date').bg));
+    document.documentElement.style.setProperty("--clock-time-bg",        hex8ToCss(_btnStyleFor('top-time').bg));
     // Per-button overrides for top-grid buttons
     const topGridMap = [
       { id: 'top-export-all',    el: '.top-item[data-item="export-all"]',    prefix: '--export-all' },
@@ -2518,8 +2518,8 @@ function onHexInput(id) {
     // Date and time spans get direct inline styles
     const _dateSpan = document.querySelector('.top-item[data-item="date"] span');
     const _timeSpan = document.querySelector('.top-item[data-item="time"] span');
-    if (_dateSpan) { _dateSpan.style.color = hex8ToCss(btnStyle.clockDateColor); }
-    if (_timeSpan) { _timeSpan.style.color = hex8ToCss(btnStyle.clockTimeColor); }
+    if (_dateSpan) { _dateSpan.style.color = hex8ToCss(_btnStyleFor('top-date').fg); }
+    if (_timeSpan) { _timeSpan.style.color = hex8ToCss(_btnStyleFor('top-time').fg); }
 
     // Per-button overrides — applied as inline styles on each .tracker-btn
     buttonsEl.querySelectorAll(".tracker-btn[data-id]").forEach(btn => {
@@ -2747,11 +2747,8 @@ function onHexInput(id) {
     const _cfId = window._cfActiveId ? window._cfActiveId() : null;
     // Only update per-button colours/font — never touch global btnStyle for these
     if (_cfId) {
-      const _isClockBtn = _cfId === 'top-date' || _cfId === 'top-time';
-      const _clockBgVal = _isClockBtn ? getColorValue('s-bg') : getColorValue('s-clock-bg');
-      if (_isClockBtn) setColorValue('s-clock-bg', _clockBgVal);
       _btnStyles[_cfId] = {
-        bg:       _isClockBtn ? _clockBgVal : getColorValue('s-bg'),
+        bg:       getColorValue('s-bg'),
         fg:       getColorValue('s-fg'),
         glow:     getColorValue('s-glow'),
         activeBg: getColorValue('s-activebg'),
@@ -2759,7 +2756,7 @@ function onHexInput(id) {
         font:          document.getElementById("s-font").value,
         clockDateColor: getColorValue('s-clock-date-color'),
         clockTimeColor: getColorValue('s-clock-time-color'),
-        clockBg:        _clockBgVal,
+        clockBg:        getColorValue('s-clock-bg'),
         clockDateSize:  Number(document.getElementById("s-clock-date-size").value),
         clockTimeSize:  Number(document.getElementById("s-clock-time-size").value),
       };
@@ -2919,8 +2916,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
 
     function cfLoadPickersForId(id) {
   const s = _btnStyleFor(id);
-  const isClockBtn = id === 'top-date' || id === 'top-time';
-  setColorValue('s-bg',       isClockBtn ? (s.clockBg || btnStyle.clockBg) : s.bg);
+  setColorValue('s-bg',       s.bg);
   setColorValue('s-fg',       s.fg);
   setColorValue('s-glow',     s.glow);
   setColorValue('s-activebg', s.activeBg);
@@ -2983,8 +2979,9 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
         const s  = _btnStyleFor(items[i].id);
         const isClockItem = items[i].id === 'top-date' || items[i].id === 'top-time';
         if (isClockItem) {
-          el.style.background = hex8ToCss(btnStyle.clockBg);
-          el.style.color      = items[i].id === 'top-date' ? hex8ToCss(btnStyle.clockDateColor) : hex8ToCss(btnStyle.clockTimeColor);
+          const _cs = _btnStyleFor(items[i].id);
+          el.style.background = hex8ToCss(_cs.bg);
+          el.style.color      = hex8ToCss(_cs.fg);
           el.style.fontSize   = (items[i].id === 'top-date' ? btnStyle.clockDateSize : btnStyle.clockTimeSize) + 'px';
           el.style.fontFamily = 'sans-serif';
           const now = new Date();
@@ -3765,7 +3762,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
       const previewDate = document.createElement("div");
       previewDate.className = "top-item";
       previewDate.dataset.previewItem = "date";
-      previewDate.style.cssText = "background:var(--clock-bg,transparent);display:flex;align-items:center;justify-content:center;min-height:44px;box-sizing:border-box;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;";
+      previewDate.style.cssText = "background:var(--clock-date-bg,transparent);display:flex;align-items:center;justify-content:center;min-height:44px;box-sizing:border-box;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;";
       const previewDateSpan = document.createElement("span");
       previewDateSpan.id = "tumb-preview-date";
       previewDateSpan.style.cssText = "font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;line-height:1.3;text-align:center;pointer-events:none;";
@@ -3775,7 +3772,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
       const previewTime = document.createElement("div");
       previewTime.className = "top-item";
       previewTime.dataset.previewItem = "time";
-      previewTime.style.cssText = "background:var(--clock-bg,transparent);display:flex;align-items:center;justify-content:center;min-height:44px;box-sizing:border-box;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;";
+      previewTime.style.cssText = "background:var(--clock-time-bg,transparent);display:flex;align-items:center;justify-content:center;min-height:44px;box-sizing:border-box;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;";
       const previewTimeSpan = document.createElement("span");
       previewTimeSpan.id = "tumb-preview-time";
       previewTimeSpan.style.cssText = "font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;line-height:1.3;text-align:center;pointer-events:none;";
@@ -4047,6 +4044,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
 </script>
 </body>
 </html>
+
 
 
 
