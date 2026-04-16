@@ -3013,10 +3013,8 @@ items.push({ id: habitsVisible ? 'top-hide-habits' : 'top-show-habits', label: h
       const items = window._cfItems();
       stage.innerHTML = '';
       if (!items.length) return;
-      const hideIdx = items.findIndex(it => it.id === 'top-hide-habits' || it.id === 'top-show-habits');
-      if (items[cfIdx]?.id === 'top-hide-habits' || items[cfIdx]?.id === 'top-show-habits') {
-        cfIdx = hideIdx >= 0 ? hideIdx : cfIdx;
-      }
+      const hideIdx = items.findIndex(it => it.id === 'top-hide-habits');
+      cfIdx = !habitsVisible ? (hideIdx >= 0 ? hideIdx : 0) : (hideIdx >= 0 ? hideIdx : 0);
       const W  = stage.offsetWidth || 300;
       const iW = Math.min(150, Math.max(70, Math.floor(W * cfTuning.cardW)));
       items.forEach((item, i) => {
