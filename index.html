@@ -665,7 +665,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v509</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
+  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v510</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
   <div class="top-item" data-item="date" style="background:var(--clock-date-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-time-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -913,6 +913,28 @@ input[type="checkbox"]:hover {
         <div class="hex-copy-row">
           <input type="text" class="hex-input" id="s-clock-time-bg-hex" maxlength="9" oninput="onHexInput('s-clock-time-bg')" spellcheck="false" autocomplete="off">
           <button class="copy-btn" onclick="copyHex('s-clock-time-bg',this)">Copy</button>
+        </div>
+      </div>
+      <div class="color-settings-row">
+        <label>Date glow</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-clock-date-glow" oninput="onColorPickerChange('s-clock-date-glow')">
+          <input type="range" class="alpha-slider" id="s-clock-date-glow-alpha" min="0" max="255" value="0" oninput="onAlphaChange('s-clock-date-glow')">
+        </div>
+        <div class="hex-copy-row">
+          <input type="text" class="hex-input" id="s-clock-date-glow-hex" maxlength="9" oninput="onHexInput('s-clock-date-glow')" spellcheck="false" autocomplete="off">
+          <button class="copy-btn" onclick="copyHex('s-clock-date-glow',this)">Copy</button>
+        </div>
+      </div>
+      <div class="color-settings-row">
+        <label>Time glow</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-clock-time-glow" oninput="onColorPickerChange('s-clock-time-glow')">
+          <input type="range" class="alpha-slider" id="s-clock-time-glow-alpha" min="0" max="255" value="0" oninput="onAlphaChange('s-clock-time-glow')">
+        </div>
+        <div class="hex-copy-row">
+          <input type="text" class="hex-input" id="s-clock-time-glow-hex" maxlength="9" oninput="onHexInput('s-clock-time-glow')" spellcheck="false" autocomplete="off">
+          <button class="copy-btn" onclick="copyHex('s-clock-time-glow',this)">Copy</button>
         </div>
       </div>
       </div>
@@ -2456,6 +2478,24 @@ function appExport() {
       document.getElementById('s-fg').value = picker.value;
       document.getElementById('s-fg-alpha').value = slider ? slider.value : 255;
       updateAlphaSliderBg('s-fg');
+    } else if (id === 's-clock-date-glow' && _cfId === 'top-date') {
+      document.getElementById('s-glow').value = picker.value;
+      document.getElementById('s-glow-alpha').value = slider ? slider.value : 255;
+      updateAlphaSliderBg('s-glow');
+    } else if (id === 's-clock-time-glow' && _cfId === 'top-time') {
+      document.getElementById('s-glow').value = picker.value;
+      document.getElementById('s-glow-alpha').value = slider ? slider.value : 255;
+      updateAlphaSliderBg('s-glow');
+    } else if (id === 's-glow' && _cfId === 'top-date') {
+      const _dg = document.getElementById('s-clock-date-glow');
+      const _dga = document.getElementById('s-clock-date-glow-alpha');
+      if (_dg) { _dg.value = picker.value; updateAlphaSliderBg('s-clock-date-glow'); }
+      if (_dga) _dga.value = slider ? slider.value : 255;
+    } else if (id === 's-glow' && _cfId === 'top-time') {
+      const _tg = document.getElementById('s-clock-time-glow');
+      const _tga = document.getElementById('s-clock-time-glow-alpha');
+      if (_tg) { _tg.value = picker.value; updateAlphaSliderBg('s-clock-time-glow'); }
+      if (_tga) _tga.value = slider ? slider.value : 255;
     }
     settingsChange();
 }
@@ -2484,6 +2524,24 @@ function onAlphaChange(id) {
       document.getElementById('s-bg').value = document.getElementById('s-clock-time-bg').value;
       document.getElementById('s-bg-alpha').value = document.getElementById('s-clock-time-bg-alpha').value;
       updateAlphaSliderBg('s-bg');
+    } else if (id === 's-clock-date-glow' && _cfId === 'top-date') {
+      document.getElementById('s-glow').value = document.getElementById('s-clock-date-glow').value;
+      document.getElementById('s-glow-alpha').value = document.getElementById('s-clock-date-glow-alpha').value;
+      updateAlphaSliderBg('s-glow');
+    } else if (id === 's-clock-time-glow' && _cfId === 'top-time') {
+      document.getElementById('s-glow').value = document.getElementById('s-clock-time-glow').value;
+      document.getElementById('s-glow-alpha').value = document.getElementById('s-clock-time-glow-alpha').value;
+      updateAlphaSliderBg('s-glow');
+    } else if (id === 's-glow' && _cfId === 'top-date') {
+      const _dg = document.getElementById('s-clock-date-glow');
+      const _dga = document.getElementById('s-clock-date-glow-alpha');
+      if (_dg) { _dg.value = document.getElementById('s-glow').value; updateAlphaSliderBg('s-clock-date-glow'); }
+      if (_dga) _dga.value = slider.value;
+    } else if (id === 's-glow' && _cfId === 'top-time') {
+      const _tg = document.getElementById('s-clock-time-glow');
+      const _tga = document.getElementById('s-clock-time-glow-alpha');
+      if (_tg) { _tg.value = document.getElementById('s-glow').value; updateAlphaSliderBg('s-clock-time-glow'); }
+      if (_tga) _tga.value = slider.value;
     }
     settingsChange();
 }
@@ -2590,6 +2648,10 @@ function onHexInput(id) {
     const _timeSpan = document.querySelector('.top-item[data-item="time"] span');
     if (_dateSpan) { _dateSpan.style.color = hex8ToCss(_btnStyleFor('top-date').fg); }
     if (_timeSpan) { _timeSpan.style.color = hex8ToCss(_btnStyleFor('top-time').fg); }
+    const _dateItemGlow = document.querySelector('.top-item[data-item="date"]');
+    const _timeItemGlow = document.querySelector('.top-item[data-item="time"]');
+    if (_dateItemGlow) _dateItemGlow.style.setProperty('--btn-glow', hex8ToCss(_btnStyleFor('top-date').glow || '#00000000'));
+    if (_timeItemGlow) _timeItemGlow.style.setProperty('--btn-glow', hex8ToCss(_btnStyleFor('top-time').glow || '#00000000'));
     const _versionColor = hex8ToCss(_btnStyleFor('top-version').fg);
     const _versionItem = document.querySelector('.top-item[data-item="version"]');
     if (_versionItem) {
@@ -2677,6 +2739,8 @@ function onHexInput(id) {
     setColorValue('s-clock-date-bg',    _btnStyleFor('top-date').bg);
     setColorValue('s-clock-time-bg',    _btnStyleFor('top-time').bg);
     setColorValue('s-clock-bg',         btnStyle.clockBg);
+    setColorValue('s-clock-date-glow',  _btnStyleFor('top-date').glow || '#00000000');
+    setColorValue('s-clock-time-glow',  _btnStyleFor('top-time').glow || '#00000000');
     document.getElementById("s-clock-date-size").value = _btnStyles['top-date']?.clockDateSize ?? btnStyle.clockDateSize;
     document.getElementById("s-clock-time-size").value = _btnStyles['top-time']?.clockTimeSize ?? btnStyle.clockTimeSize;
     document.getElementById("s-font").value    = btnStyle.font;
@@ -2854,6 +2918,8 @@ function onHexInput(id) {
         });
         setColorValue('s-clock-date-color', dateColor);
         updateAlphaSliderBg('s-clock-date-color');
+        setColorValue('s-clock-date-glow', getColorValue('s-glow'));
+        updateAlphaSliderBg('s-clock-date-glow');
       } else if (_cfId === 'top-time') {
         // s-fg is the time color; keep clock picker in sync
         const timeColor = getColorValue('s-fg');
@@ -2866,6 +2932,8 @@ function onHexInput(id) {
         });
         setColorValue('s-clock-time-color', timeColor);
         updateAlphaSliderBg('s-clock-time-color');
+        setColorValue('s-clock-time-glow', getColorValue('s-glow'));
+        updateAlphaSliderBg('s-clock-time-glow');
       } else {
         _btnStyles[_cfId] = {
           bg: getColorValue('s-bg'), fg: getColorValue('s-fg'),
@@ -2894,6 +2962,7 @@ function onHexInput(id) {
       _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
         bg: getColorValue('s-clock-date-bg'),
         fg: getColorValue('s-clock-date-color'),
+        glow: getColorValue('s-clock-date-glow'),
         clockDateSize: Number(document.getElementById("s-clock-date-size").value),
       });
     }
@@ -2901,6 +2970,7 @@ function onHexInput(id) {
       _btnStyles['top-time'] = Object.assign(_btnStyles['top-time'] || {}, {
         bg: getColorValue('s-clock-time-bg'),
         fg: getColorValue('s-clock-time-color'),
+        glow: getColorValue('s-clock-time-glow'),
         clockTimeSize: Number(document.getElementById("s-clock-time-size").value),
       });
     }
@@ -2910,6 +2980,7 @@ const cfDateColor = getColorValue('s-clock-date-color');
 _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
   bg: getColorValue('s-clock-date-bg'),
   fg: cfDateColor,
+  glow: getColorValue('s-clock-date-glow'),
   clockDateSize: Number(document.getElementById("s-clock-date-size").value),
 });
 }
@@ -2968,6 +3039,8 @@ _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
     setColorValue('s-clock-date-bg',    _btnStyleFor('top-date').bg);
     setColorValue('s-clock-time-bg',    _btnStyleFor('top-time').bg);
     setColorValue('s-clock-bg',         btnStyle.clockBg);
+    setColorValue('s-clock-date-glow',  _btnStyleFor('top-date').glow || '#00000000');
+    setColorValue('s-clock-time-glow',  _btnStyleFor('top-time').glow || '#00000000');
     document.getElementById("s-clock-date-size").value = _btnStyles['top-date']?.clockDateSize ?? btnStyle.clockDateSize;
     document.getElementById("s-clock-time-size").value = _btnStyles['top-time']?.clockTimeSize ?? btnStyle.clockTimeSize;
     applyBtnStyle();
@@ -3080,12 +3153,16 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
     updateAlphaSliderBg('s-clock-date-color');
     setColorValue('s-clock-date-bg', s.bg);
     updateAlphaSliderBg('s-clock-date-bg');
+    setColorValue('s-clock-date-glow', s.glow || '#00000000');
+    updateAlphaSliderBg('s-clock-date-glow');
     document.getElementById("s-clock-date-size").value = _btnStyles['top-date']?.clockDateSize ?? btnStyle.clockDateSize;
   } else if (id === 'top-time') {
     setColorValue('s-clock-time-color', s.fg);
     updateAlphaSliderBg('s-clock-time-color');
     setColorValue('s-clock-time-bg', s.bg);
     updateAlphaSliderBg('s-clock-time-bg');
+    setColorValue('s-clock-time-glow', s.glow || '#00000000');
+    updateAlphaSliderBg('s-clock-time-glow');
     document.getElementById("s-clock-time-size").value = _btnStyles['top-time']?.clockTimeSize ?? btnStyle.clockTimeSize;
   }
   settingsUpdatePreview();
@@ -4219,6 +4296,7 @@ fetch('./index.html').then(r=>r.text()).then(t=>{const el=document.getElementByI
 </script>
 </body>
 </html>
+
 
 
 
