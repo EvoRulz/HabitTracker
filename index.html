@@ -668,7 +668,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v515</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
+  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v516</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
   <div class="top-item" data-item="date" style="background:var(--clock-date-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-time-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -2601,6 +2601,7 @@ function onHexInput(id) {
     const base = { bg: btnStyle.bg, fg: btnStyle.fg, glow: btnStyle.glow, activeGlow: btnStyle.activeGlow || btnStyle.glow, activeBg: btnStyle.activeBg, font: btnStyle.font, tap: btnStyle.tap };
     const TOP_GRID_DEFAULTS = {
       'top-clear-all':     { bg: '#5a1a1aFF', fg: '#ff9999FF' },
+      'top-settings':      { bg: '#2a2a2aFF', fg: '#999999FF' },
       'top-date':          { bg: '#00000000', fg: '#666666FF', glow: '#00000000' },
       'top-time':          { bg: '#00000000', fg: '#666666FF', glow: '#00000000' },
       'top-manage-habits': { bg: '#444444FF', fg: '#FFFFFFFF' },
@@ -2641,6 +2642,7 @@ function onHexInput(id) {
       { id: 'top-clear-all',     el: '.top-item[data-item="clear-all"]',     prefix: '--clear-all' },
       { id: 'top-my-files',      el: '.top-item[data-item="my-files"]',      prefix: '--my-files' },
       { id: 'top-manage-habits', el: '.top-item[data-item="manage-habits"]', prefix: '--manage-habits' },
+      { id: 'top-settings',      el: '.top-item[data-item="settings"]',      prefix: '--settings' },
     ];
     topGridMap.forEach(({ id, el: sel, prefix }) => {
       const el = document.querySelector(sel);
@@ -2651,6 +2653,14 @@ function onHexInput(id) {
       el.style.setProperty(prefix + '-font', _s.font);
       el.style.setProperty(prefix + '-glow', hex8ToCss(_s.glow));
     });
+    const _cogEl = document.getElementById('settings-cog');
+    if (_cogEl) {
+      const _ss = _btnStyleFor('top-settings');
+      _cogEl.style.background   = hex8ToCss(_ss.bg);
+      _cogEl.style.color        = hex8ToCss(_ss.fg);
+      _cogEl.style.borderColor  = hex8ToCss(_ss.fg);
+      _cogEl.style.boxShadow    = '';
+    }
     // Hide habits button: style depends on current visibility state
     const _habEl = document.querySelector('.top-item[data-item="hide-habits"]');
     if (_habEl) {
@@ -3123,6 +3133,7 @@ _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
     { selector: '.app-btn', id: null, getAllWithClass: true, labels: ['Export All', 'Import All', 'Export Layout', 'Import Layout', 'Clear All', 'My Files', 'Hide/Show Habits', 'Manage Habits'] }
   ];  
   // Add Export All top-grid button
+  items.push({ id: 'top-settings',       label: 'Settings',       isTopGrid: true });
   items.push({ id: 'top-export-all',     label: 'Export All',     isTopGrid: true });
 items.push({ id: 'top-import-all',     label: 'Import All',     isTopGrid: true });
 items.push({ id: 'top-export-layout',  label: 'Export Layout',  isTopGrid: true });
@@ -3308,6 +3319,8 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
         el.style.transform = `translateY(-50%) rotateY(${kf.ry}deg) scale(${kf.sc})`;
         el.style.opacity   = kf.op;
         el.style.zIndex    = kf.zi;
+        const isCircle = items[i].id === 'top-settings';
+        el.style.borderRadius = isCircle ? '50%' : '6px';
         el.style.boxShadow = Math.abs(d) < 0.5 ? `0 0 22px 6px ${hex8ToCss(s.glow)}` : `0 0 10px 3px ${hex8ToCss(s.glow)}`;
       });
       if (label) label.textContent = items[cfIdx]?.label || '';
@@ -4328,6 +4341,7 @@ fetch('./index.html').then(r=>r.text()).then(t=>{const el=document.getElementByI
 </script>
 </body>
 </html>
+
 
 
 
