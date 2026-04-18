@@ -467,7 +467,9 @@ function onHexInput(id) {
     buttonsEl.style.setProperty("--btn-glow",      hex8ToCss(btnStyle.glow));
     buttonsEl.style.setProperty("--btn-active-glow", hex8ToCss(btnStyle.activeGlow || btnStyle.glow));
     buttonsEl.style.setProperty("--btn-active-bg", hex8ToCss(btnStyle.activeBg));
-    document.documentElement.style.setProperty("--btn-radius",           (btnStyle.btnRadius ?? 6) + 'px');
+    const _cfIdNow = window._cfActiveId ? window._cfActiveId() : null;
+const _activeRadius = (_cfIdNow && _btnStyles[_cfIdNow]?.btnRadius != null) ? _btnStyles[_cfIdNow].btnRadius : (btnStyle.btnRadius ?? 6);
+document.documentElement.style.setProperty("--btn-radius", _activeRadius + 'px');
     document.documentElement.style.setProperty("--slider-border-color",  hex8ToCss(btnStyle.sliderBorder));
     document.documentElement.style.setProperty("--slider-h",             btnStyle.sliderH + "px");
     document.documentElement.style.setProperty("--slider-r",             btnStyle.sliderR + "px");
@@ -618,8 +620,9 @@ function onHexInput(id) {
     document.getElementById("s-clock-date-size").value = _btnStyles['top-date']?.clockDateSize ?? btnStyle.clockDateSize;
     document.getElementById("s-clock-time-size").value = _btnStyles['top-time']?.clockTimeSize ?? btnStyle.clockTimeSize;
     document.getElementById("s-font").value    = btnStyle.font;
-    document.getElementById("s-radius").value  = String(btnStyle.btnRadius ?? 6);
-    const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textContent = (btnStyle.btnRadius ?? 6) + "px";
+    const _initRadius = (_initId && _btnStyles[_initId]?.btnRadius != null) ? _btnStyles[_initId].btnRadius : (btnStyle.btnRadius ?? 6);
+document.getElementById("s-radius").value  = String(_initRadius);
+const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textContent = _initRadius + "px";
     // Populate App panel
     const _s = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
     _s("s-app-bg-type",    appStyle.bgType);
@@ -822,7 +825,12 @@ function onHexInput(id) {
       _saveBtnStyles();
     }
     // Non-per-button properties always update globally
-    btnStyle.btnRadius      = Number(document.getElementById("s-radius").value);
+    if (!_cfId) btnStyle.btnRadius = Number(document.getElementById("s-radius").value);
+else {
+  _btnStyles[_cfId] = Object.assign(_btnStyles[_cfId] || {}, {
+    btnRadius: Number(document.getElementById("s-radius").value)
+  });
+}
     btnStyle.tap            = getColorValue('s-tap');
     btnStyle.glow           = getColorValue('s-glow');
     btnStyle.activeGlow     = getColorValue('s-activeglow');
@@ -913,7 +921,8 @@ _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
     document.getElementById("s-sliderr").value = btnStyle.sliderR;
     document.getElementById("s-font").value    = btnStyle.font;
     document.getElementById("s-radius").value  = String(BTN_STYLE_DEFAULTS.btnRadius ?? 6);
-    const _rvDef = document.getElementById("s-radius-val"); if (_rvDef) _rvDef.textContent = (BTN_STYLE_DEFAULTS.btnRadius ?? 6) + "px";
+const _rvDef = document.getElementById("s-radius-val"); if (_rvDef) _rvDef.textContent = (BTN_STYLE_DEFAULTS.btnRadius ?? 6) + "px";
+_btnStyles = {};
     setColorValue('s-clock-date-color', _btnStyleFor('top-date').fg);
     setColorValue('s-clock-time-color', _btnStyleFor('top-time').fg);
     setColorValue('s-clock-date-bg',    _btnStyleFor('top-date').bg);
@@ -940,7 +949,7 @@ _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
     p.textContent = activeItem ? activeItem.label : document.getElementById("s-font").selectedOptions[0].text;
     p.style.setProperty("--preview-glow",      hex8ToCss(s.glow));
     p.style.setProperty("--preview-active-bg", hex8ToCss(s.activeBg));
-    p.style.borderRadius = (btnStyle.btnRadius ?? 6) + 'px';
+    p.style.borderRadius = ((_cfId && _btnStyles[_cfId]?.btnRadius != null) ? _btnStyles[_cfId].btnRadius : (btnStyle.btnRadius ?? 6)) + 'px';
     p.style.padding = '12px 20px';
     p.style.border = 'none';
     p.style.cursor = 'pointer';
