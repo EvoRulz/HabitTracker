@@ -669,7 +669,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v526</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
+  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v527</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
   <div class="top-item" data-item="date" style="background:var(--clock-date-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-time-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -2714,6 +2714,8 @@ function onHexInput(id) {
       el.style.setProperty(prefix + '-fg',   hex8ToCss(_s.fg));
       el.style.setProperty(prefix + '-font', _s.font);
       el.style.setProperty(prefix + '-glow', hex8ToCss(_s.glow));
+      const _btnEl = el.querySelector('button');
+      if (_btnEl) _btnEl.style.borderRadius = (_s.btnRadius !== undefined ? _s.btnRadius : (btnStyle.btnRadius ?? 6)) + "px";
     });
     const _cogEl = document.getElementById('settings-cog');
     if (_cogEl) {
@@ -2722,6 +2724,7 @@ function onHexInput(id) {
       _cogEl.style.color        = hex8ToCss(_ss.fg);
       _cogEl.style.borderColor  = hex8ToCss(_ss.fg);
       _cogEl.style.boxShadow    = `0 0 16px 5px ${hex8ToCss(_ss.glow)}`;
+      _cogEl.style.borderRadius = (_ss.btnRadius !== undefined ? _ss.btnRadius : (btnStyle.btnRadius ?? 6)) + "px";
     }
     // Hide habits button: style depends on current visibility state
     const _habEl = document.querySelector('.top-item[data-item="hide-habits"]');
@@ -2768,6 +2771,7 @@ function onHexInput(id) {
       btn.style.setProperty("--btn-active-bg", hex8ToCss(s.activeBg));
       btn.style.setProperty("--btn-font",      s.font);
       btn.style.fontFamily = s.font;
+      btn.style.borderRadius = (s.btnRadius !== undefined ? s.btnRadius : (btnStyle.btnRadius ?? 6)) + "px";
     });
   }
   applyBtnStyle(true);
@@ -4436,6 +4440,7 @@ fetch('./index.html').then(r=>r.text()).then(t=>{const el=document.getElementByI
 </script>
 </body>
 </html>
+
 
 
 
