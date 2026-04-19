@@ -360,6 +360,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
       try { await ImgDB.del("bgImage"); } catch {}
     }
     localStorage.setItem("_clockTumbler", JSON.stringify(window._clockGet().tumblerCfg));
+    applyBtnStyle();
     settingsClose();
   }
   function settingsCancel() {
@@ -481,12 +482,12 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
         setColorValue('s-clock-time-glow', getColorValue('s-glow'));
         updateAlphaSliderBg('s-clock-time-glow');
       } else {
-        _btnStyles[_cfId] = {
+        _btnStyles[_cfId] = Object.assign(_btnStyles[_cfId] || {}, {
           bg: getColorValue('s-bg'), fg: getColorValue('s-fg'),
           glow: getColorValue('s-glow'), activeGlow: getColorValue('s-activeglow'),
           activeBg: getColorValue('s-activebg'),
           tap: getColorValue('s-tap'), font: document.getElementById("s-font").value,
-        };
+        });
       }
       _saveBtnStyles();
     }
