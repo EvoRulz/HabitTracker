@@ -378,6 +378,7 @@
         requestAnimationFrame(() => requestAnimationFrame(syncPreviewSizes));
       }
     }).observe(_settingsOverlayEl, { attributes: true, attributeFilter: ["class"] });
+if(_btnStyles['top-version']) delete _btnStyles['top-version'].fg;
 fetch('./index.html').then(r=>r.text()).then(t=>{
   const el=document.getElementById('app-stats');
   if(el){
