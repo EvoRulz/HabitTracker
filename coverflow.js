@@ -175,7 +175,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
           el.style.background = hex8ToCss(_cs.bg);
           el.style.color      = hex8ToCss(_cs.fg);
           el.style.fontSize   = (items[i].id === 'top-date' ? btnStyle.clockDateSize : btnStyle.clockTimeSize) + 'px';
-          el.style.fontFamily = 'sans-serif';
+          el.style.fontFamily = _btnStyleFor(items[i].id).font || 'sans-serif';
           const now = new Date();
           const cfg = window._clockGet().tumblerCfg;
           // Build a live value string for this clock item

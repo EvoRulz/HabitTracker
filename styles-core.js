@@ -300,8 +300,8 @@
     }
     const _dateSpan = document.querySelector('.top-item[data-item="date"] span');
     const _timeSpan = document.querySelector('.top-item[data-item="time"] span');
-    if (_dateSpan) { _dateSpan.style.color = hex8ToCss(_btnStyleFor('top-date').fg); }
-    if (_timeSpan) { _timeSpan.style.color = hex8ToCss(_btnStyleFor('top-time').fg); }
+    if (_dateSpan) { _dateSpan.style.color = hex8ToCss(_btnStyleFor('top-date').fg); _dateSpan.style.fontFamily = _btnStyleFor('top-date').font; }
+    if (_timeSpan) { _timeSpan.style.color = hex8ToCss(_btnStyleFor('top-time').fg); _timeSpan.style.fontFamily = _btnStyleFor('top-time').font; }
     const _dateTopItem = document.querySelector('.top-item[data-item="date"]');
     const _timeTopItem = document.querySelector('.top-item[data-item="time"]');
     if (_dateTopItem) _dateTopItem.style.borderRadius = (_btnStyles['top-date']?.btnRadius ?? btnStyle.btnRadius ?? 6) + 'px';
@@ -317,6 +317,8 @@
       _versionItem.style.setProperty('--btn-glow', hex8ToCss(_btnStyleFor('top-version').glow));
       _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').bg);
       const _vBtn = _versionItem.querySelector('div');
+      const _vNumSpan = document.getElementById('app-version');
+      if (_vNumSpan) _vNumSpan.style.fontFamily = _btnStyleFor('top-version').font;
     if (_vBtn) {
       _vBtn.addEventListener('pointerdown', () => { _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').tap); });
       _vBtn.addEventListener('pointerup', () => {
