@@ -343,9 +343,9 @@
       btn.style.setProperty("--btn-active-glow", hex8ToCss(s.activeGlow || s.glow));
       btn.style.setProperty("--btn-active-bg", hex8ToCss(s.activeBg));
       btn.style.setProperty("--btn-font",      s.font);
-      btn.style.fontFamily = s.font;
-      console.log('font for', btn.dataset.id, ':', s.font);
-      btn.style.setProperty("font-family", s.font);
+      const _cleanFont = s.font.replace(/'/g, '"');
+      btn.style.fontFamily = _cleanFont;
+      btn.style.setProperty("font-family", _cleanFont);
       btn.style.borderRadius = (s.btnRadius ?? btnStyle.btnRadius ?? 6) + 'px';
     });
   }
