@@ -378,7 +378,25 @@
         requestAnimationFrame(() => requestAnimationFrame(syncPreviewSizes));
       }
     }).observe(_settingsOverlayEl, { attributes: true, attributeFilter: ["class"] });
-fetch('./index.html').then(r=>r.text()).then(t=>{const el=document.getElementById('app-stats');if(el){el.innerHTML=t.split('\n').length.toLocaleString()+' lines<br>'+t.length.toLocaleString()+' chars';el.style.color=hex8ToCss(_btnStyleFor('top-version').fg);el.style.opacity='0.4';}}).catch(()=>{});
+fetch('./index.html').then(r=>r.text()).then(t=>{
+  const el=document.getElementById('app-stats');
+  if(el){
+    el.innerHTML=t.split('\n').length.toLocaleString()+' lines<br>'+t.length.toLocaleString()+' chars';
+    el.style.color=hex8ToCss(_btnStyleFor('top-version').fg);
+    el.style.opacity='0.4';
+  }
+  const vEl=document.getElementById('app-version');
+  if(vEl){
+    const vNum=parseInt(vEl.textContent.replace('v',''))||0;
+    const vColors=['#00FFFFFF','#FF00FFFF','#FFFF00FF'];
+    const autoColor=vColors[vNum%3];
+    if(true){
+      _btnStyles['top-version']=Object.assign(_btnStyles['top-version']||{},{fg:autoColor});
+      _saveBtnStyles();
+      applyBtnStyle();
+    }
+  }
+}).catch(()=>{});
     buildTumbler();
     requestAnimationFrame(syncPreviewSizes);
     new ResizeObserver(() => syncPreviewSizes()).observe(document.getElementById("top-grid"));
