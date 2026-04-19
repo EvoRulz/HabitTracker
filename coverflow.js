@@ -101,6 +101,8 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
     setColorValue('s-clock-date-glow', s.glow || '#00000000');
     updateAlphaSliderBg('s-clock-date-glow');
     document.getElementById("s-clock-date-size").value = _btnStyles['top-date']?.clockDateSize ?? btnStyle.clockDateSize;
+    const _cdrV = _btnStyles['top-date']?.btnRadius ?? btnStyle.btnRadius ?? 6;
+    const _cdrEl = document.getElementById("s-clock-date-radius"); if (_cdrEl) { _cdrEl.value = String(_cdrV); const _cdrvEl = document.getElementById("s-clock-date-radius-val"); if (_cdrvEl) _cdrvEl.textContent = _cdrV + "px"; }
   } else if (id === 'top-time') {
     setColorValue('s-clock-time-color', s.fg);
     updateAlphaSliderBg('s-clock-time-color');
@@ -109,6 +111,8 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
     setColorValue('s-clock-time-glow', s.glow || '#00000000');
     updateAlphaSliderBg('s-clock-time-glow');
     document.getElementById("s-clock-time-size").value = _btnStyles['top-time']?.clockTimeSize ?? btnStyle.clockTimeSize;
+    const _ctrV = _btnStyles['top-time']?.btnRadius ?? btnStyle.btnRadius ?? 6;
+    const _ctrEl = document.getElementById("s-clock-time-radius"); if (_ctrEl) { _ctrEl.value = String(_ctrV); const _ctrvEl = document.getElementById("s-clock-time-radius-val"); if (_ctrvEl) _ctrvEl.textContent = _ctrV + "px"; }
   }
   settingsUpdatePreview();
 }
