@@ -392,8 +392,7 @@ fetch('./index.html').then(r=>r.text()).then(t=>{
     const autoColor=vColors[vNum%3];
     const _lastStyledVer=parseInt(localStorage.getItem('_lastStyledVersion')||'0');
     if(vNum!==_lastStyledVer){
-      const _oldFg=_btnStyles['top-version']?.fg||null;
-      if(_oldFg)localStorage.setItem('_versionPrevFg',_oldFg);
+      try{const _rawSaved=JSON.parse(localStorage.getItem('_btnStyles'));const _oldFg=_rawSaved?.['top-version']?.fg||null;if(_oldFg)localStorage.setItem('_versionPrevFg',_oldFg);}catch{}
       _btnStyles['top-version']=Object.assign({},_btnStyles['top-version']||{},{fg:autoColor});
       localStorage.setItem('_btnStyles',JSON.stringify(_btnStyles));
       localStorage.setItem('_lastStyledVersion',String(vNum));
