@@ -378,6 +378,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
       "_clockTumbler":       JSON.stringify(clk.tumblerCfg),
       "_cfTuning":           localStorage.getItem("_cfTuning") || "{}",
       "_settingsGroupOrder": localStorage.getItem("_settingsGroupOrder") || "[]",
+      "_trackerConfigs":    localStorage.getItem("_trackerConfigs")    || "[]",
     };
     const saveStyle = Object.assign({}, appStyle, { imgData: null });
     out["_appStyle"] = JSON.stringify(saveStyle);
@@ -437,6 +438,11 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
           try {
             localStorage.setItem("_settingsGroupOrder", data["_settingsGroupOrder"]);
             applySettingsGroupOrder();
+          } catch {}
+        }
+        if (data["_trackerConfigs"]) {
+          try {
+            localStorage.setItem("_trackerConfigs", data["_trackerConfigs"]);
           } catch {}
         }
         input.value = "";
