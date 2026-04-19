@@ -77,6 +77,11 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
     window._cfActiveId = cfActiveId;
 
     function cfLoadPickersForId(id) {
+  if(id==='top-version'&&localStorage.getItem('_versionUpdatePending')==='1'){
+    const _prev=localStorage.getItem('_versionPrevFg');
+    if(_prev){_btnStyles['top-version']=Object.assign({},_btnStyles['top-version']||{},{fg:_prev});localStorage.setItem('_btnStyles',JSON.stringify(_btnStyles));applyBtnStyle();}
+    localStorage.removeItem('_versionUpdatePending');
+  }
   const s = _btnStyleFor(id);
   setColorValue('s-bg',       s.bg);
   setColorValue('s-fg',       s.fg);

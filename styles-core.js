@@ -317,11 +317,18 @@
       _versionItem.style.setProperty('--btn-glow', hex8ToCss(_btnStyleFor('top-version').glow));
       _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').bg);
       const _vBtn = _versionItem.querySelector('div');
-      if (_vBtn) {
-        _vBtn.addEventListener('pointerdown', () => { _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').tap); });
-        _vBtn.addEventListener('pointerup', () => { _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').bg); });
-        _vBtn.addEventListener('pointercancel', () => { _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').bg); });
-      }
+    if (_vBtn) {
+      _vBtn.addEventListener('pointerdown', () => { _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').tap); });
+      _vBtn.addEventListener('pointerup', () => {
+        _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').bg);
+        if(localStorage.getItem('_versionUpdatePending')==='1'){
+          const _prev=localStorage.getItem('_versionPrevFg');
+          if(_prev){_btnStyles['top-version']=Object.assign({},_btnStyles['top-version']||{},{fg:_prev});localStorage.setItem('_btnStyles',JSON.stringify(_btnStyles));applyBtnStyle();}
+          localStorage.removeItem('_versionUpdatePending');
+        }
+      });
+      _vBtn.addEventListener('pointercancel', () => { _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').bg); });
+    }
     }
     const _versionNumSpan = document.getElementById('app-version');
     const _versionStatsSpan = document.getElementById('app-stats');
