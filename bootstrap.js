@@ -73,6 +73,7 @@
     btn.className   = "tracker-btn";
     btn.dataset.id  = config.id;
     btn.textContent = config.label;
+    btn.style.fontFamily = _btnStyleFor(config.id).font;
     btn.addEventListener('pointerdown', () => {
       const _s = _btnStyleFor(config.id);
       btn.style.background = hex8ToCss(_s.tap || btnStyle.tap);

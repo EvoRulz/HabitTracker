@@ -345,6 +345,7 @@
       btn.style.setProperty("--btn-font",      s.font);
       btn.style.fontFamily = s.font;
       btn.style.setProperty("font-family", s.font);
+      btn.setAttribute("style", btn.getAttribute("style") + `;font-family:${s.font}`);
       btn.style.borderRadius = (s.btnRadius ?? btnStyle.btnRadius ?? 6) + 'px';
     });
   }
