@@ -90,6 +90,7 @@
     habitsVisible = !habitsVisible;
     if (!habitsVisible) setActiveSection(null);
     buttonsEl.style.display = habitsVisible ? "" : "none";
+    if (habitsVisible) { buttonsEl.style.gridAutoRows = ''; equalizeButtonSizes(); }
     document.getElementById("hide-habits-btn").textContent = habitsVisible ? "Hide Habits" : "Show Habits";
     localStorage.setItem("_habitsVisible", habitsVisible);
     applyBtnStyle();

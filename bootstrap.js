@@ -114,8 +114,8 @@
     _eqFrame = requestAnimationFrame(() => {
       const btns = [...buttonsEl.querySelectorAll('.tracker-btn')];
       if (!btns.length) return;
-      buttonsEl.style.gridAutoRows = '';
       const maxH = Math.max(...btns.map(b => b.offsetHeight));
+      if (maxH > 0) buttonsEl.style.gridAutoRows = maxH + 'px';
       buttonsEl.style.gridAutoRows = maxH + 'px';
     });
   }
