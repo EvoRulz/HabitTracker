@@ -453,7 +453,7 @@ function onHexInput(id) {
       'top-date':          { bg: '#00000000', fg: '#666666FF', glow: '#00000000' },
       'top-time':          { bg: '#00000000', fg: '#666666FF', glow: '#00000000' },
       'top-manage-habits': { bg: '#444444FF', fg: '#FFFFFFFF' },
-      'top-version':       { bg: '#00000000', fg: '#FFFFFFFF' },
+      'top-version':       { bg: '#444444FF', fg: '#FFFFFFFF' },
       };
     return Object.assign({}, base, TOP_GRID_DEFAULTS[id] || {}, _btnStyles[id] || {});
   }
