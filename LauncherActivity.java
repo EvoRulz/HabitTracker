@@ -21,29 +21,11 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.webkit.JavascriptInterface;
-import android.content.pm.ActivityInfo;
 public class LauncherActivity
         extends com.google.androidbrowserhelper.trusted.LauncherActivity {
-    public static LauncherActivity instance;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        instance = this;
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-    }
-
-    public void lockOrientation() {
-        int current = getResources().getConfiguration().orientation;
-        if (current == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
-    }
-
-    public void unlockOrientation() {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 
@@ -51,7 +33,6 @@ public class LauncherActivity
     protected void onNewIntent(Intent intent) {
         Uri data = intent.getData();
         // Intercept myfiles:// URLs and launch Samsung My Files natively
-        
         if (data != null && "myfiles".equals(data.getScheme())) {
             if ("downloads".equals(data.getHost())) {
                 try {
