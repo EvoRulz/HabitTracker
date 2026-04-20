@@ -167,11 +167,7 @@
     } else {
       const btn = tdrag.item.querySelector("button");
       // Skip re-triggering for manage-habits since it already fires directly
-      if (tdrag.item.dataset.item === "orient-lock") {
-        toggleOrientLock();
-      } else if (btn && tdrag.item.dataset.item !== "manage-habits") {
-        btn.click();
-      }
+      if (btn && tdrag.item.dataset.item !== "manage-habits") btn.click();
     }
     tdrag = null;
   });
