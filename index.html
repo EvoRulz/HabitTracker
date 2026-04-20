@@ -272,6 +272,17 @@
     #settings-cog:hover { background: #3a3a3a; color: #fff; }
     #settings-cog svg { width: 16px; height: 16px; fill: currentColor; }
 
+    #orient-lock-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #2a2a2a; border: 1px solid #444;
+      color: #999; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s, border-color 0.2s; padding: 0; flex-shrink: 0;
+    }
+    #orient-lock-btn:hover { background: #3a3a3a; color: #fff; }
+    #orient-lock-btn svg { width: 16px; height: 16px; fill: currentColor; }
+    .top-item[data-item="orient-lock"] { background: transparent; padding: 4px 8px; }
+
     #top-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -678,7 +689,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v583</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
+  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v584</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
   <div class="top-item" data-item="date" style="background:var(--clock-date-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-time-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -700,6 +711,11 @@ input[type="checkbox"]:hover {
   <div class="top-item" data-item="my-files"><button class="app-btn" onclick="openMyFiles()">My Files</button></div>
   <div class="top-item" data-item="hide-habits"><button class="app-btn" id="hide-habits-btn" onclick="toggleHabits()">Hide Habits</button></div>
   <div class="top-item" data-item="manage-habits"><button class="app-btn" onclick="manageOpen()">Manage Habits</button></div>
+  <div class="top-item" data-item="orient-lock">
+    <button id="orient-lock-btn" onclick="toggleOrientLock()" title="Lock screen orientation">
+      <svg id="orient-lock-icon" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"></svg>
+    </button>
+  </div>
 </div>
 <div id="buttons"></div>
 <div id="sections"></div>
@@ -1289,6 +1305,7 @@ input[type="checkbox"]:hover {
 <script src="font.js"></script>
 </body>
 </html>
+
 
 
 

@@ -63,6 +63,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
 
   items.push({ id: 'top-hide-habits', label: 'Hide Habits', isTopGrid: true });
   items.push({ id: 'top-manage-habits', label: 'Manage Habits', isTopGrid: true });
+  items.push({ id: 'top-orient-lock', label: _orientLocked ? 'Unlock Orient' : 'Lock Orient', isTopGrid: true });
   // Add habit buttons
   [...buttonsEl.querySelectorAll('.tracker-btn[data-id]')].forEach(b => {
     items.push({ id: b.dataset.id, label: b.textContent.trim(), isHabit: true });

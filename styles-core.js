@@ -229,6 +229,7 @@
       'top-date':          { bg: '#00000000', fg: '#666666FF', glow: '#00000000' },
       'top-time':          { bg: '#00000000', fg: '#666666FF', glow: '#00000000' },
       'top-manage-habits': { bg: '#444444FF', fg: '#FFFFFFFF' },
+      'top-orient-lock':   { bg: '#2a2a2aFF', fg: '#999999FF', glow: '#00000000' },
       'top-version':       { bg: '#444444FF', fg: '#FFFFFFFF' },
       };
     return Object.assign({}, base, TOP_GRID_DEFAULTS[id] || {}, _btnStyles[id] || {});
@@ -265,6 +266,7 @@
       { id: 'top-clear-all',     el: '.top-item[data-item="clear-all"]',     prefix: '--clear-all' },
       { id: 'top-my-files',      el: '.top-item[data-item="my-files"]',      prefix: '--my-files' },
       { id: 'top-manage-habits', el: '.top-item[data-item="manage-habits"]', prefix: '--manage-habits' },
+      { id: 'top-orient-lock',    el: '.top-item[data-item="orient-lock"]',    prefix: '--orient-lock' },
       { id: 'top-settings',      el: '.top-item[data-item="settings"]',      prefix: '--settings' },
     ];
     topGridMap.forEach(({ id, el: sel, prefix }) => {
@@ -278,6 +280,13 @@
       const _btn = el.querySelector('button');
       if (_btn) _btn.style.borderRadius = (_s.btnRadius ?? btnStyle.btnRadius ?? 6) + 'px';
     });
+    const _olBtn = document.getElementById('orient-lock-btn');
+    if (_olBtn) {
+      const _ols = _btnStyleFor('top-orient-lock');
+      _olBtn.style.background = hex8ToCss(_ols.bg);
+      if (!_orientLocked) { _olBtn.style.color = hex8ToCss(_ols.fg); _olBtn.style.borderColor = hex8ToCss(_ols.fg); }
+      _olBtn.style.boxShadow = `0 0 16px 5px ${hex8ToCss(_ols.glow)}`;
+    }
     const _cogEl = document.getElementById('settings-cog');
     if (_cogEl) {
       const _ss = _btnStyleFor('top-settings');

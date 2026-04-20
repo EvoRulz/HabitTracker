@@ -54,3 +54,29 @@
   document.getElementById("confirm-overlay").addEventListener("click", e => {
     if (e.target === document.getElementById("confirm-overlay")) confirmCancel();
   });
+  // ── Orientation lock ───────────────────────────────────────
+let _orientLocked = false;
+const _LOCK_PATH   = '<path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1zm3 8V5.5a3 3 0 1 0-6 0V9h6z" clip-rule="evenodd"/>';
+const _UNLOCK_PATH = '<path fill-rule="evenodd" d="M14.5 1A4.5 4.5 0 0 0 10 5.5V9H3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1.5V5.5a3 3 0 1 1 6 0v2.75a.75.75 0 0 0 1.5 0V5.5A4.5 4.5 0 0 0 14.5 1z" clip-rule="evenodd"/>';
+function _updateOrientBtn() {
+  const icon = document.getElementById('orient-lock-icon');
+  const btn  = document.getElementById('orient-lock-btn');
+  if (!icon || !btn) return;
+  icon.innerHTML = _orientLocked ? _LOCK_PATH : _UNLOCK_PATH;
+  btn.style.color = _orientLocked ? '#99ff99' : '';
+  btn.style.borderColor = _orientLocked ? '#99ff99' : '';
+}
+function toggleOrientLock() {
+  if (_orientLocked) {
+    try { screen.orientation.unlock(); } catch(e) {}
+    _orientLocked = false;
+  } else {
+    const t = (screen.orientation && screen.orientation.type) || '';
+    const target = t.includes('landscape') ? 'landscape' : 'portrait';
+    try { screen.orientation.lock(target).catch(function(){}); } catch(e) {}
+    _orientLocked = true;
+  }
+  _updateOrientBtn();
+  if (window._cfRender) window._cfRender();
+}
+_updateOrientBtn();
