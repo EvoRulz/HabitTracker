@@ -80,6 +80,15 @@ function toggleOrientLock() {
   _orientLocked = true;
   _updateOrientBtn();
   if (window._cfRender) window._cfRender();
-  try { screen.orientation.lock(target).catch(() => {}); } catch(e) {}
+  const lockOrientation = () => {
+    try { screen.orientation.lock(target).catch(() => {}); } catch(e) {}
+  };
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen({ navigationUI: 'hide' })
+      .then(lockOrientation)
+      .catch(lockOrientation);
+  } else {
+    lockOrientation();
+  }
 }
 _updateOrientBtn();
