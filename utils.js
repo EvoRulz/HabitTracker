@@ -66,7 +66,7 @@ function _updateOrientBtn() {
   btn.style.color = _orientLocked ? '#99ff99' : '';
   btn.style.borderColor = _orientLocked ? '#99ff99' : '';
 }
-async function toggleOrientLock() {
+function toggleOrientLock() {
   if (_orientLocked) {
     try { screen.orientation.unlock(); } catch(e) {}
     _orientLocked = false;
@@ -75,21 +75,15 @@ async function toggleOrientLock() {
     return;
   }
   const t = (screen.orientation && screen.orientation.type) || 'portrait-primary';
-  const target = t.startsWith('landscape') ? 'landscape-primary' : 'portrait-primary';
-  try {
-    await screen.orientation.lock(target);
+  const target = t.startsWith('landscape') ? 'landscape' : 'portrait';
+  screen.orientation.lock(target).then(() => {
     _orientLocked = true;
-  } catch(e) {
-    try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen().catch(() => {});
-      }
-      await screen.orientation.lock(target);
-      _orientLocked = true;
-    } catch(e2) {
-      _orientLocked = false;
-    }
-  }
-  _updateOrientBtn();
-  if (window._cfRender) window._cfRender();
+    _updateOrientBtn();
+    if (window._cfRender) window._cfRender();
+  }).catch(() => {
+    _orientLocked = false;
+    _updateOrientBtn();
+    if (window._cfRender) window._cfRender();
+  });
 }
+_updateOrientBtn();
