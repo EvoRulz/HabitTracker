@@ -68,7 +68,8 @@ function _updateOrientBtn() {
 }
 function toggleOrientLock() {
   if (_orientLocked) {
-    const _ola = document.createElement('a'); _ola.href = 'orientlock://unlock'; document.body.appendChild(_ola); _ola.click(); document.body.removeChild(_ola);
+    try { screen.orientation.unlock(); } catch(e) {}
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     _orientLocked = false;
     _updateOrientBtn();
     if (window._cfRender) window._cfRender();
@@ -79,6 +80,7 @@ function toggleOrientLock() {
   _orientLocked = true;
   _updateOrientBtn();
   if (window._cfRender) window._cfRender();
-  const _ola = document.createElement('a'); _ola.href = 'orientlock://lock?type=' + target; document.body.appendChild(_ola); _ola.click(); document.body.removeChild(_ola);
+  (document.fullscreenElement ? Promise.resolve() : document.documentElement.requestFullscreen().catch(() => {}))
+    .then(() => screen.orientation.lock(target).catch(() => {}));
 }
 _updateOrientBtn();
