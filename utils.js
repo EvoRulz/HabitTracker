@@ -68,7 +68,6 @@ function _updateOrientBtn() {
 }
 document.addEventListener('DOMContentLoaded', _updateOrientBtn);
 async function toggleOrientLock() {
-  alert('toggle called');
   if (_orientLocked) {
     try {
       try { screen.orientation.unlock(); } catch(e) {}
@@ -80,13 +79,14 @@ async function toggleOrientLock() {
   }
   const t = (screen.orientation && screen.orientation.type) || 'portrait-primary';
   const target = t.startsWith('landscape') ? 'landscape' : 'portrait';
-  if (window.AndroidOrientation) {
-    window.AndroidOrientation.lock(target);
+  try {
+    await screen.orientation.lock(target);
     _orientLocked = true;
     _updateOrientBtn();
     if (window._cfRender) window._cfRender();
-  } else {
-    alert('AndroidOrientation bridge not available');
+  } catch(e) {
+    _orientLocked = false;
+    _updateOrientBtn();
   }
   return;
   _updateOrientBtn();
