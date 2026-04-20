@@ -56,6 +56,44 @@
   });
   // ── Orientation lock ───────────────────────────────────────
 let _orientLocked = false;
+let _lockedAngle = 0;
+
+function _applyOrientTransform(angle) {
+  const isSwapped = angle === 90 || angle === 270;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  if (isSwapped) {
+    document.body.style.transform = `rotate(${angle}deg)`;
+    document.body.style.width = vh + 'px';
+    document.body.style.height = vw + 'px';
+    document.body.style.transformOrigin = 'top left';
+    document.body.style.position = 'fixed';
+    document.body.style.top = angle === 90 ? '0' : vw + 'px';
+    document.body.style.left = angle === 90 ? vh + 'px' : '0';
+  } else if (angle === 180) {
+    document.body.style.transform = 'rotate(180deg)';
+    document.body.style.transformOrigin = 'center center';
+    document.body.style.width = '';
+    document.body.style.height = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+  } else {
+    document.body.style.transform = '';
+    document.body.style.width = '';
+    document.body.style.height = '';
+    document.body.style.transformOrigin = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+  }
+}
+
+function _onOrientChange() {
+  if (!_orientLocked) return;
+  const current = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+  const diff = ((_lockedAngle - current) + 360) % 360;
+  _applyOrientTransform(diff);
+}
 const _LOCK_PATH   = '<path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1zm3 8V5.5a3 3 0 1 0-6 0V9h6z" clip-rule="evenodd"/>';
 const _UNLOCK_PATH = '<path fill-rule="evenodd" d="M14.5 1A4.5 4.5 0 0 0 10 5.5V9H3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1.5V5.5a3 3 0 1 1 6 0v2.75a.75.75 0 0 0 1.5 0V5.5A4.5 4.5 0 0 0 14.5 1z" clip-rule="evenodd"/>';
 function _updateOrientBtn() {
@@ -68,27 +106,19 @@ function _updateOrientBtn() {
 }
 function toggleOrientLock() {
   if (_orientLocked) {
-    try { screen.orientation.unlock(); } catch(e) {}
-    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     _orientLocked = false;
+    window.removeEventListener('orientationchange', _onOrientChange);
+    screen.orientation && screen.orientation.removeEventListener('change', _onOrientChange);
+    _applyOrientTransform(0);
     _updateOrientBtn();
     if (window._cfRender) window._cfRender();
     return;
   }
-  const t = (screen.orientation && screen.orientation.type) || 'portrait-primary';
-  const target = t.startsWith('landscape') ? 'landscape' : 'portrait';
+  _lockedAngle = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
   _orientLocked = true;
   _updateOrientBtn();
   if (window._cfRender) window._cfRender();
-  const lockOrientation = () => {
-    try { screen.orientation.lock(target).catch(() => {}); } catch(e) {}
-  };
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen({ navigationUI: 'hide' })
-      .then(lockOrientation)
-      .catch(lockOrientation);
-  } else {
-    lockOrientation();
-  }
+  window.addEventListener('orientationchange', _onOrientChange);
+  screen.orientation && screen.orientation.addEventListener('change', _onOrientChange);
 }
 _updateOrientBtn();
