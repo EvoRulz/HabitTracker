@@ -110,6 +110,7 @@ function toggleOrientLock() {
     window.removeEventListener('orientationchange', _onOrientChange);
     screen.orientation && screen.orientation.removeEventListener('change', _onOrientChange);
     _applyOrientTransform(0);
+    try { if (window.Android) window.Android.unlockOrientation(); } catch(e) {}
     _updateOrientBtn();
     if (window._cfRender) window._cfRender();
     return;
@@ -120,5 +121,6 @@ function toggleOrientLock() {
   if (window._cfRender) window._cfRender();
   window.addEventListener('orientationchange', _onOrientChange);
   screen.orientation && screen.orientation.addEventListener('change', _onOrientChange);
+  try { if (window.Android) window.Android.lockOrientation(); } catch(e) {}
 }
 _updateOrientBtn();
