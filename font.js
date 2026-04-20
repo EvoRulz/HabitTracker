@@ -42,7 +42,6 @@
     var idx = getIdx();
     var prev = ((idx - 1) + opts.length) % opts.length;
     var next = (idx + 1) % opts.length;
-    var aUp = null;
     var win = document.createElement('div');
     win.className = 'tumb-window';
     win.style.height = '52px';
@@ -57,10 +56,7 @@
       el.style.fontFamily = spec.opt.value;
       win.appendChild(el);
     });
-    var aDown = null;
-    wrap.appendChild(aUp);
     wrap.appendChild(win);
-    wrap.appendChild(aDown);
     var startY = null, lastY = null, accumY = 0, moved = false;
     var STEP = 28;
     win.addEventListener('pointerdown', function(e) {
@@ -86,8 +82,7 @@
     win.addEventListener('pointercancel', function() {
       startY = null; lastY = null; accumY = 0; moved = false;
     });
-    aUp.addEventListener('click', function() { setIdx(getIdx() - 1); });
-    aDown.addEventListener('click', function() { setIdx(getIdx() + 1); });
+    
   }
   window.fontPickerSync   = function() { render(); };
   window.fontPickerToggle = function() {};
