@@ -69,9 +69,8 @@ function _updateOrientBtn() {
 document.addEventListener('DOMContentLoaded', _updateOrientBtn);
 async function toggleOrientLock() {
   if (_orientLocked) {
-    try {
-      try { screen.orientation.unlock(); } catch(e) {}
-    } catch(e) {}
+    try { await screen.orientation.unlock(); } catch(e) {}
+    try { document.exitFullscreen && document.exitFullscreen(); } catch(e) {}
     _orientLocked = false;
     _updateOrientBtn();
     if (window._cfRender) window._cfRender();
@@ -79,16 +78,20 @@ async function toggleOrientLock() {
   }
   const t = (screen.orientation && screen.orientation.type) || 'portrait-primary';
   const target = t.startsWith('landscape') ? 'landscape' : 'portrait';
+  let locked = false;
+  try {
+    const el = document.documentElement;
+    if (el.requestFullscreen) await el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+  } catch(e) {}
   try {
     await screen.orientation.lock(target);
-    _orientLocked = true;
-    _updateOrientBtn();
-    if (window._cfRender) window._cfRender();
-  } catch(e) {
-    _orientLocked = false;
-    _updateOrientBtn();
+    locked = true;
+  } catch(e) {}
+  if (!locked && window.AndroidOrientation) {
+    try { window.AndroidOrientation.lock(target); locked = true; } catch(e) {}
   }
-  return;
+  _orientLocked = locked;
   _updateOrientBtn();
   if (window._cfRender) window._cfRender();
 }
