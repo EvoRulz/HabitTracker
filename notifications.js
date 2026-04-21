@@ -57,25 +57,14 @@
       testBtn.textContent = 'Sending...';
       testBtn.disabled = true;
       try {
-        if (Notification.permission !== 'granted') {
-          const perm = await Notification.requestPermission();
-          p.textContent = 'Permission: ' + perm;
-          if (perm !== 'granted') {
-            testBtn.textContent = 'Denied';
-            return;
-          }
-        }
-        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-          const reg = await navigator.serviceWorker.ready;
-          await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
-        } else {
-          new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
-        }
+        const reg = await navigator.serviceWorker.ready;
+        reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
         testBtn.textContent = 'Sent';
-        setTimeout(() => document.body.removeChild(overlay), 1000);
+        setTimeout(() => { if (document.body.contains(overlay)) document.body.removeChild(overlay); }, 1000);
       } catch(e) {
-        testBtn.textContent = 'Error: ' + e.message;
-        p.textContent = 'Error: ' + e.message;
+        p.textContent = 'SW error: ' + e.message;
+        testBtn.textContent = 'Failed';
+        testBtn.disabled = false;
       }
     };
     const okBtn = document.createElement('button');
