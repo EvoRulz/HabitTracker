@@ -53,10 +53,25 @@
     const testBtn = document.createElement('button');
     testBtn.textContent = 'Send Test';
     testBtn.style.cssText = 'padding:7px 16px;background:#1a3a1a;color:#99ff99;border:none;border-radius:4px;cursor:pointer;font-size:13px;';
-    testBtn.onclick = () => {
-      navigator.serviceWorker.ready.then(reg => {
-        reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
-      });
+    testBtn.onclick = async () => {
+      if (Notification.permission === 'granted') {
+        try {
+          const reg = await navigator.serviceWorker.ready;
+          await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+        } catch(e) {
+          new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+        }
+      } else {
+        const p = await Notification.requestPermission();
+        if (p === 'granted') {
+          try {
+            const reg = await navigator.serviceWorker.ready;
+            await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+          } catch(e) {
+            new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+          }
+        }
+      }
       document.body.removeChild(overlay);
     };
     const okBtn = document.createElement('button');

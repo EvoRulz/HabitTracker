@@ -28,6 +28,14 @@ public class LauncherActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        Uri data = intent != null ? intent.getData() : null;
+        if (data != null && "appsettings".equals(data.getScheme())) {
+            Intent settingsIntent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            settingsIntent.setData(Uri.parse("package:io.github.evorulz.twa"));
+            settingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(settingsIntent);
+        }
     }
 
     public class SettingsBridge {
