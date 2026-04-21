@@ -46,8 +46,21 @@ public class LauncherActivity
     @Override
     protected void onStart() {
         super.onStart();
-        WebView wv = findViewById(com.google.androidbrowserhelper.trusted.R.id.webview);
+        android.view.View root = getWindow().getDecorView().getRootView();
+        WebView wv = findWebView(root);
         if (wv != null) wv.addJavascriptInterface(new OrientationBridge(), "AndroidOrientation");
+    }
+
+    private WebView findWebView(android.view.View v) {
+        if (v instanceof WebView) return (WebView) v;
+        if (v instanceof android.view.ViewGroup) {
+            android.view.ViewGroup vg = (android.view.ViewGroup) v;
+            for (int i = 0; i < vg.getChildCount(); i++) {
+                WebView found = findWebView(vg.getChildAt(i));
+                if (found != null) return found;
+            }
+        }
+        return null;
     }
 
     @Override
