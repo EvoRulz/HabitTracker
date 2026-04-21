@@ -45,7 +45,6 @@
     { selector: '.app-btn', id: null, getAllWithClass: true, labels: ['Export All', 'Import All', 'Export Layout', 'Import Layout', 'Clear All', 'My Files', 'Hide/Show Habits', 'Manage Habits'] }
   ];  
   // Add Export All top-grid button
-  items.push({ id: 'top-orient-lock',    label: 'Orient Lock',    isTopGrid: true });
   items.push({ id: 'top-export-all',     label: 'Export All',     isTopGrid: true });
 items.push({ id: 'top-import-all',     label: 'Import All',     isTopGrid: true });
 items.push({ id: 'top-export-layout',  label: 'Export Layout',  isTopGrid: true });
@@ -319,6 +318,9 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
             manageOpen();
           } else if (items[i].id === 'top-hide-habits' || items[i].id === 'top-show-habits') {
             toggleHabits();
+          } else if (items[i].id === 'top-orient-lock') {
+            cfRender();
+            cfLoadPickersForId(cfActiveId());
           } else {
             cfRender();
             cfLoadPickersForId(cfActiveId());
@@ -436,6 +438,9 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
             cfLoadPickersForId(cfActiveId());
           } else if (tappedItem && (tappedItem.id === 'top-hide-habits' || tappedItem.id === 'top-show-habits')) {
             toggleHabits();
+            cfLoadPickersForId(cfActiveId());
+          } else if (tappedItem && tappedItem.id === 'top-orient-lock') {
+            springTo(closest);
             cfLoadPickersForId(cfActiveId());
           } else {
             springTo(closest);
