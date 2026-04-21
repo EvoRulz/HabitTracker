@@ -65,6 +65,25 @@ function _updateOrientBtn() {
   if (typeof applyBtnStyle === 'function') applyBtnStyle();
 }
 document.addEventListener('DOMContentLoaded', _updateOrientBtn);
+async function toggleOrientLockNoFullscreen() {
+  if (_orientLocked) {
+    try { await screen.orientation.unlock(); } catch(e) {}
+    _orientLocked = false;
+    _updateOrientBtn();
+    if (window._cfRender) window._cfRender();
+    return;
+  }
+  const t = (screen.orientation && screen.orientation.type) || 'portrait-primary';
+  const target = t.startsWith('landscape') ? 'landscape' : 'portrait';
+  let locked = false;
+  try { await screen.orientation.lock(target); locked = true; } catch(e) {}
+  if (!locked && window.AndroidOrientation) {
+    try { window.AndroidOrientation.lock(target); locked = true; } catch(e) {}
+  }
+  _orientLocked = locked;
+  _updateOrientBtn();
+  if (window._cfRender) window._cfRender();
+}
 async function toggleOrientLock() {
   if (_orientLocked) {
     try { await screen.orientation.unlock(); } catch(e) {}
