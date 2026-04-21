@@ -43,9 +43,11 @@
     }
   }
   window.notifyTest = function() {
+    alert('Permission state: ' + Notification.permission);
     if (!('Notification' in window)) { alert('Notifications not supported.'); return; }
     if (Notification.permission !== 'granted') {
       Notification.requestPermission().then(p => {
+        alert('Got permission response: ' + p);
         if (p === 'granted') window.notifyTest();
         else alert('Notifications blocked. Enable in app settings.');
       });
