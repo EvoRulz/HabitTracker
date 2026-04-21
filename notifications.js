@@ -43,23 +43,9 @@
     }
   }
   window.notifyTest = function() {
-    alert('Permission state: ' + Notification.permission);
-    if (!('Notification' in window)) { alert('Notifications not supported.'); return; }
-    if (Notification.permission !== 'granted') {
-      Notification.requestPermission().then(p => {
-        alert('Got permission response: ' + p);
-        if (p === 'granted') window.notifyTest();
-        else alert('Notifications blocked. Enable in app settings.');
-      });
-      return;
-    }
-    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.ready.then(reg => {
-        reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
-      });
-    } else {
-      new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
-    }
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+    }).catch(err => { console.error('notifyTest failed:', err); });
   };
   if (!('Notification' in window)) return;
   if (Notification.permission === 'granted') {
