@@ -67,6 +67,11 @@
         const reg = await navigator.serviceWorker.ready;
         p.textContent = 'SW: ' + (reg.active ? reg.active.state : 'none') + ' | ctrl: ' + (navigator.serviceWorker.controller ? 'yes' : 'no');
         try {
+          if (window.AndroidSettings && window.AndroidSettings.showNotification) {
+            window.AndroidSettings.showNotification('Habit Tracker', 'Pushups not done yet today.');
+          } else {
+            window.location.href = 'habitnotify://pushups-not-done';
+          }
           await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test', vibrate: [200], requireInteraction: false });
           testBtn.textContent = 'Sent';
         } catch(e2) {

@@ -113,6 +113,22 @@ public class LauncherActivity
                 startActivity(settingsIntent);
     return;
     }
+
+    if (data != null && "habitnotify".equals(data.getScheme())) {
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel ch = new NotificationChannel("habit_reminders", "Habit Reminders", NotificationManager.IMPORTANCE_DEFAULT);
+                nm.createNotificationChannel(ch);
+            }
+            Notification n = new NotificationCompat.Builder(this, "habit_reminders")
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setContentTitle("Habit Tracker")
+                .setContentText("Pushups not done yet today.")
+                .setAutoCancel(true)
+                .build();
+            nm.notify(1001, n);
+            return;
+        }
         // Intercept myfiles:// URLs and launch Samsung My Files natively
         if (data != null && "myfiles".equals(data.getScheme())) {
             if ("downloads".equals(data.getHost())) {
