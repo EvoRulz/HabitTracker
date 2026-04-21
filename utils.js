@@ -60,11 +60,9 @@ const _LOCK_PATH   = '<path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9
 const _UNLOCK_PATH = '<path fill-rule="evenodd" d="M14.5 1A4.5 4.5 0 0 0 10 5.5V9H3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1.5V5.5a3 3 0 1 1 6 0v2.75a.75.75 0 0 0 1.5 0V5.5A4.5 4.5 0 0 0 14.5 1z" clip-rule="evenodd"/>';
 function _updateOrientBtn() {
   const icon = document.getElementById('orient-lock-icon');
-  const btn  = document.getElementById('orient-lock-btn');
-  if (!icon || !btn) return;
+  if (!icon) return;
   icon.innerHTML = _orientLocked ? _LOCK_PATH : _UNLOCK_PATH;
-  btn.style.color = _orientLocked ? '#99ff99' : '';
-  btn.style.borderColor = _orientLocked ? '#99ff99' : '';
+  if (typeof applyBtnStyle === 'function') applyBtnStyle();
 }
 document.addEventListener('DOMContentLoaded', _updateOrientBtn);
 async function toggleOrientLock() {
