@@ -318,7 +318,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
           } else if (items[i].id === 'top-hide-habits' || items[i].id === 'top-show-habits') {
             toggleHabits();
           } else if (items[i].id === 'top-orient-lock' || items[i].id === 'top-orient-lock-locked') {
-            cfRender(); cfLoadPickersForId(cfActiveId());
+            _orientLocked = !_orientLocked; document.getElementById('orient-lock-icon').innerHTML = _orientLocked ? _LOCK_PATH : _UNLOCK_PATH; cfBuild(); cfLoadPickersForId(cfActiveId());
           } else {
             cfRender();
             cfLoadPickersForId(cfActiveId());
@@ -438,7 +438,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
             toggleHabits();
             cfLoadPickersForId(cfActiveId());
           } else if (tappedItem && (tappedItem.id === 'top-orient-lock' || tappedItem.id === 'top-orient-lock-locked')) {
-            springTo(closest); cfLoadPickersForId(cfActiveId());
+            _orientLocked = !_orientLocked; document.getElementById('orient-lock-icon').innerHTML = _orientLocked ? _LOCK_PATH : _UNLOCK_PATH; cfBuild(); cfLoadPickersForId(cfActiveId());
           } else {
             springTo(closest);
             cfLoadPickersForId(cfActiveId());
