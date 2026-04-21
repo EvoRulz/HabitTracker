@@ -54,25 +54,29 @@
     testBtn.textContent = 'Send Test';
     testBtn.style.cssText = 'padding:7px 16px;background:#1a3a1a;color:#99ff99;border:none;border-radius:4px;cursor:pointer;font-size:13px;';
     testBtn.onclick = async () => {
-      if (Notification.permission === 'granted') {
-        try {
-          const reg = await navigator.serviceWorker.ready;
-          await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
-        } catch(e) {
-          new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
-        }
-      } else {
-        const p = await Notification.requestPermission();
-        if (p === 'granted') {
-          try {
-            const reg = await navigator.serviceWorker.ready;
-            await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
-          } catch(e) {
-            new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+      testBtn.textContent = 'Sending...';
+      testBtn.disabled = true;
+      try {
+        if (Notification.permission !== 'granted') {
+          const perm = await Notification.requestPermission();
+          p.textContent = 'Permission: ' + perm;
+          if (perm !== 'granted') {
+            testBtn.textContent = 'Denied';
+            return;
           }
         }
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          const reg = await navigator.serviceWorker.ready;
+          await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+        } else {
+          new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+        }
+        testBtn.textContent = 'Sent';
+        setTimeout(() => document.body.removeChild(overlay), 1000);
+      } catch(e) {
+        testBtn.textContent = 'Error: ' + e.message;
+        p.textContent = 'Error: ' + e.message;
       }
-      document.body.removeChild(overlay);
     };
     const okBtn = document.createElement('button');
     okBtn.textContent = 'Cancel';
