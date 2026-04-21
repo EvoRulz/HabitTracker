@@ -45,7 +45,7 @@
     { selector: '.app-btn', id: null, getAllWithClass: true, labels: ['Export All', 'Import All', 'Export Layout', 'Import Layout', 'Clear All', 'My Files', 'Hide/Show Habits', 'Manage Habits'] }
   ];  
   // Add Export All top-grid button
-  items.push({ id: 'top-settings',       label: 'Settings',       isTopGrid: true });
+  items.push({ id: 'top-orient-lock',    label: 'Orient Lock',    isTopGrid: true });
   items.push({ id: 'top-export-all',     label: 'Export All',     isTopGrid: true });
 items.push({ id: 'top-import-all',     label: 'Import All',     isTopGrid: true });
 items.push({ id: 'top-export-layout',  label: 'Export Layout',  isTopGrid: true });
