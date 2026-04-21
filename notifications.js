@@ -57,10 +57,20 @@
       testBtn.textContent = 'Sending...';
       testBtn.disabled = true;
       try {
+        if (Notification.permission !== 'granted') {
+          const result = await Notification.requestPermission();
+          p.textContent = 'Permission: ' + result;
+          if (result !== 'granted') { testBtn.textContent = 'No Permission'; testBtn.disabled = false; return; }
+        }
         const reg = await navigator.serviceWorker.ready;
-        p.textContent = 'SW state: ' + (reg.active ? reg.active.state : 'no active SW') + ' | controller: ' + (navigator.serviceWorker.controller ? 'yes' : 'no');
-        reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
-        testBtn.textContent = 'Called';
+        p.textContent = 'SW: ' + (reg.active ? reg.active.state : 'none') + ' | ctrl: ' + (navigator.serviceWorker.controller ? 'yes' : 'no');
+        try {
+          await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+          testBtn.textContent = 'Sent';
+        } catch(e2) {
+          new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+          testBtn.textContent = 'Sent (direct)';
+        }
         testBtn.disabled = false;
       } catch(e) {
         p.textContent = 'Error: ' + e.message;
