@@ -22,6 +22,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import androidx.core.app.NotificationCompat;
 import android.webkit.WebView;
 public class LauncherActivity
         extends com.google.androidbrowserhelper.trusted.LauncherActivity {
@@ -45,6 +49,21 @@ public class LauncherActivity
             i.setData(Uri.parse("package:io.github.evorulz.twa"));
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
+        }
+        @JavascriptInterface
+        public void showNotification(String title, String body) {
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel ch = new NotificationChannel("habit_reminders", "Habit Reminders", NotificationManager.IMPORTANCE_DEFAULT);
+                nm.createNotificationChannel(ch);
+            }
+            Notification n = new NotificationCompat.Builder(LauncherActivity.this, "habit_reminders")
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setAutoCancel(true)
+                .build();
+            nm.notify(1001, n);
         }
     }
 

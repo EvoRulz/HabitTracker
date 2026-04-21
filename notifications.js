@@ -18,7 +18,9 @@
     if (isPushupsDone()) return;
     const h = new Date().getHours();
     if (h < 7 || h >= 23) return;
-    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    if (window.AndroidSettings && window.AndroidSettings.showNotification) {
+      window.AndroidSettings.showNotification('Habit Tracker', 'Pushups not done yet today.');
+    } else if (navigator.serviceWorker && navigator.serviceWorker.controller) {
       navigator.serviceWorker.ready.then(reg => {
         reg.showNotification('Habit Tracker', { body: 'Pushups not done yet today.', icon: './icon-192.png', tag: 'pushups-reminder' });
       });
