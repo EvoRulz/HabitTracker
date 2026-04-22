@@ -355,6 +355,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
   async function settingsSave() {
     localStorage.setItem("_btnStyle",   JSON.stringify(btnStyle));
     localStorage.setItem("_btnStyles",  JSON.stringify(_btnStyles));
+    settingsAppChange();
     try {
       const saveStyle = Object.assign({}, appStyle, { imgData: null });
       localStorage.setItem("_appStyle", JSON.stringify(saveStyle));
