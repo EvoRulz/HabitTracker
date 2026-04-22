@@ -24,51 +24,6 @@
     setInterval(notify, 60 * 60 * 1000);
   }
   window.notifyTest = function() { if (window.notifSendTest) window.notifSendTest(); };
-  window.notifOpenSettings = function() {
-    if (window.AndroidSettings) {
-      window.AndroidSettings.openAppSettings();
-    } else {
-      window.location.href = 'appsettings://open';
-    }
-  };
-  window.notifRefreshPermission = function() {
-    const el = document.getElementById('notif-permission-status');
-    if (el && 'Notification' in window) el.textContent = Notification.permission;
-  };
-  window.notifSendTest = async function() {
-    const statusEl = document.getElementById('notif-status-msg');
-    const btn = document.getElementById('notif-send-test-btn');
-    if (statusEl) statusEl.textContent = 'Sending...';
-    if (btn) { btn.textContent = 'Sending...'; btn.disabled = true; }
-    try {
-      if (Notification.permission !== 'granted') {
-        const result = await Notification.requestPermission();
-        if (window.notifRefreshPermission) window.notifRefreshPermission();
-        if (result !== 'granted') {
-          if (statusEl) statusEl.textContent = 'No permission.';
-          if (btn) { btn.textContent = 'Send Test'; btn.disabled = false; }
-          return;
-        }
-      }
-      const reg = await navigator.serviceWorker.ready;
-      if (statusEl) statusEl.textContent = 'SW: ' + (reg.active ? reg.active.state : 'none') + ' | ctrl: ' + (navigator.serviceWorker.controller ? 'yes' : 'no');
-      try {
-        if (window.AndroidSettings && window.AndroidSettings.showNotification) {
-          window.AndroidSettings.showNotification('Habit Tracker', 'Pushups not done yet today.');
-        } else {
-          window.location.href = 'habitnotify://pushups-not-done';
-        }
-        await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test', vibrate: [200], requireInteraction: false });
-        if (btn) { btn.textContent = 'Sent'; btn.disabled = false; }
-      } catch(e2) {
-        new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
-        if (btn) { btn.textContent = 'Sent (direct)'; btn.disabled = false; }
-      }
-    } catch(e) {
-      if (statusEl) statusEl.textContent = 'Error: ' + e.message;
-      if (btn) { btn.textContent = 'Send Test'; btn.disabled = false; }
-    }
-  };
   if (!('Notification' in window)) return;
   if (Notification.permission === 'granted') {
     schedule();
@@ -76,3 +31,48 @@
     Notification.requestPermission().then(p => { if (p === 'granted') schedule(); });
   }
 })();
+window.notifOpenSettings = function() {
+  if (window.AndroidSettings) {
+    window.AndroidSettings.openAppSettings();
+  } else {
+    window.location.href = 'appsettings://open';
+  }
+};
+window.notifRefreshPermission = function() {
+  const el = document.getElementById('notif-permission-status');
+  if (el && 'Notification' in window) el.textContent = Notification.permission;
+};
+window.notifSendTest = async function() {
+  const statusEl = document.getElementById('notif-status-msg');
+  const btn = document.getElementById('notif-send-test-btn');
+  if (statusEl) statusEl.textContent = 'Sending...';
+  if (btn) { btn.textContent = 'Sending...'; btn.disabled = true; }
+  try {
+    if (Notification.permission !== 'granted') {
+      const result = await Notification.requestPermission();
+      window.notifRefreshPermission();
+      if (result !== 'granted') {
+        if (statusEl) statusEl.textContent = 'No permission.';
+        if (btn) { btn.textContent = 'Send Test'; btn.disabled = false; }
+        return;
+      }
+    }
+    const reg = await navigator.serviceWorker.ready;
+    if (statusEl) statusEl.textContent = 'SW: ' + (reg.active ? reg.active.state : 'none') + ' | ctrl: ' + (navigator.serviceWorker.controller ? 'yes' : 'no');
+    try {
+      if (window.AndroidSettings && window.AndroidSettings.showNotification) {
+        window.AndroidSettings.showNotification('Habit Tracker', 'Pushups not done yet today.');
+      } else {
+        window.location.href = 'habitnotify://pushups-not-done';
+      }
+      await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test', vibrate: [200], requireInteraction: false });
+      if (btn) { btn.textContent = 'Send Test'; btn.disabled = false; }
+    } catch(e2) {
+      new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test' });
+      if (btn) { btn.textContent = 'Send Test'; btn.disabled = false; }
+    }
+  } catch(e) {
+    if (statusEl) statusEl.textContent = 'Error: ' + e.message;
+    if (btn) { btn.textContent = 'Send Test'; btn.disabled = false; }
+  }
+};
