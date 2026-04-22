@@ -17,7 +17,7 @@
     if (isPushupsDone()) return;
     const h = new Date().getHours();
     if (h < 7 || h >= 23) return;
-    window.location.href = 'habitnotify://pushups-not-done';
+    const _na = document.createElement('a'); _na.href = 'habitnotify://pushups-not-done'; _na.click();
 }
   function schedule() {
     notify();
@@ -63,7 +63,7 @@ window.notifSendTest = async function() {
       if (window.AndroidSettings && window.AndroidSettings.showNotification) {
         window.AndroidSettings.showNotification('Habit Tracker', 'Pushups not done yet today.');
       } else {
-        window.location.href = 'habitnotify://pushups-not-done';
+        const _na2 = document.createElement('a'); _na2.href = 'habitnotify://pushups-not-done'; _na2.click();
       }
       await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', tag: 'test', vibrate: [200], requireInteraction: false });
       if (btn) { btn.textContent = 'Send Test'; btn.disabled = false; }
