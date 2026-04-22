@@ -753,8 +753,7 @@ input[type="checkbox"]:hover {
       <div class="settings-group-item" data-group="sg-checkboxes">Checkboxes</div>
       <div class="settings-group-item" data-group="sg-app">App</div>
       <div class="settings-group-item" data-group="sg-notifications">Notifications</div>
-      <div class="empty-slot"></div>
-      <div class="empty-slot"></div>
+      <div class="settings-group-item" data-group="sg-trackers">Habits</div>
       <div class="empty-slot"></div>
       <div class="empty-slot"></div>
     </div>
@@ -1252,6 +1251,63 @@ input[type="checkbox"]:hover {
         </div>
       </div>
       </div>
+      <div class="settings-group-content" id="sg-trackers">
+      <div class="color-settings-row">
+        <label>Total reps bar colour</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-app-bar-total" oninput="onColorPickerChange('s-app-bar-total')">
+          <input type="range" class="alpha-slider" id="s-app-bar-total-alpha" min="0" max="255" value="255" oninput="onAlphaChange('s-app-bar-total')">
+        </div>
+        <div class="hex-copy-row">
+          <input type="text" class="hex-input" id="s-app-bar-total-hex" maxlength="9" oninput="onHexInput('s-app-bar-total')" spellcheck="false" autocomplete="off">
+          <button class="copy-btn" onclick="copyHex('s-app-bar-total',this)">Copy</button>
+        </div>
+      </div>
+      <div class="color-settings-row">
+        <label>Sets bar colour</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-app-bar-set" oninput="onColorPickerChange('s-app-bar-set')">
+          <input type="range" class="alpha-slider" id="s-app-bar-set-alpha" min="0" max="255" value="255" oninput="onAlphaChange('s-app-bar-set')">
+        </div>
+        <div class="hex-copy-row">
+          <input type="text" class="hex-input" id="s-app-bar-set-hex" maxlength="9" oninput="onHexInput('s-app-bar-set')" spellcheck="false" autocomplete="off">
+          <button class="copy-btn" onclick="copyHex('s-app-bar-set',this)">Copy</button>
+        </div>
+      </div>
+      <div class="color-settings-row">
+        <label>Streak bar colour</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-app-bar-streak" oninput="onColorPickerChange('s-app-bar-streak')">
+          <input type="range" class="alpha-slider" id="s-app-bar-streak-alpha" min="0" max="255" value="255" oninput="onAlphaChange('s-app-bar-streak')">
+        </div>
+        <div class="hex-copy-row">
+          <input type="text" class="hex-input" id="s-app-bar-streak-hex" maxlength="9" oninput="onHexInput('s-app-bar-streak')" spellcheck="false" autocomplete="off">
+          <button class="copy-btn" onclick="copyHex('s-app-bar-streak',this)">Copy</button>
+        </div>
+      </div>
+      <div class="color-settings-row">
+        <label>Table background colour</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-app-table-bg" oninput="onColorPickerChange('s-app-table-bg')">
+          <input type="range" class="alpha-slider" id="s-app-table-bg-alpha" min="0" max="255" value="255" oninput="onAlphaChange('s-app-table-bg')">
+        </div>
+        <div class="hex-copy-row">
+          <input type="text" class="hex-input" id="s-app-table-bg-hex" maxlength="9" oninput="onHexInput('s-app-table-bg')" spellcheck="false" autocomplete="off">
+          <button class="copy-btn" onclick="copyHex('s-app-table-bg',this)">Copy</button>
+        </div>
+      </div>
+      <div class="color-settings-row">
+        <label>Table text colour</label>
+        <div class="color-picker-row">
+          <input type="color" id="s-app-table-text" oninput="onColorPickerChange('s-app-table-text')">
+          <input type="range" class="alpha-slider" id="s-app-table-text-alpha" min="0" max="255" value="255" oninput="onAlphaChange('s-app-table-text')">
+        </div>
+        <div class="hex-copy-row">
+          <input type="text" class="hex-input" id="s-app-table-text-hex" maxlength="9" oninput="onHexInput('s-app-table-text')" spellcheck="false" autocomplete="off">
+          <button class="copy-btn" onclick="copyHex('s-app-table-text',this)">Copy</button>
+        </div>
+      </div>
+    </div>
       <div class="settings-group-content" id="sg-notifications">
       <div class="settings-row">
         <label>Permission</label>
