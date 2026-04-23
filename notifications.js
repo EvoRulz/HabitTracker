@@ -71,9 +71,9 @@
   window.notifyTest = function() { if (window.notifSendTest) window.notifSendTest(); };
   if (!('Notification' in window)) return;
   if (Notification.permission === 'granted') {
-    schedule();
+    scheduleNextNotification();
   } else if (Notification.permission !== 'denied') {
-    Notification.requestPermission().then(p => { if (p === 'granted') schedule(); });
+    Notification.requestPermission().then(p => { if (p === 'granted') scheduleNextNotification(); });
   }
 })();
 
