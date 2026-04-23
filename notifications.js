@@ -40,7 +40,7 @@
     if (isPushupsDone()) return;
     const h = new Date().getHours();
     if (h < 7 || h >= 23) return;
-    // notification will be shown here when implemented
+    const _na = document.createElement('a'); _na.href = 'habitnotify://pushups-not-done'; _na.click();
   }
 
   let _notifInterval = null;
@@ -68,13 +68,17 @@
     schedule();
   };
 
-  window.notifyTest = function() { if (window.notifSendTest) window.notifSendTest(); };
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'granted') {
-    scheduleNextNotification();
-  } else if (Notification.permission !== 'denied') {
-    Notification.requestPermission().then(p => { if (p === 'granted') scheduleNextNotification(); });
-  }
+  // Delay initial schedule to avoid triggering on app load
+  setTimeout(() => {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'granted') {
+      scheduleNextNotification();
+    } else if (Notification.permission !== 'denied') {
+      Notification.requestPermission().then(p => { if (p === 'granted') scheduleNextNotification(); });
+    }
+  }, 10000);
+
+  
 })();
 
 window.notifOpenSettings = function() {
