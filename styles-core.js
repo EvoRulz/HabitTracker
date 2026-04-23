@@ -164,10 +164,12 @@
   function applyAppStyle() {
     buildAppBg();
     document.body.style.color   = hex8ToCss(appStyle.textColor);
-    document.querySelectorAll("table").forEach(t => {
-      t.style.background = hex8ToCss(appStyle.tableBg || "#111111FF");
-      t.style.color = hex8ToCss(appStyle.tableText || "#FFFFFFFF");
-    });
+    if (document.querySelectorAll("table").length > 0) {
+      document.querySelectorAll("table").forEach(t => {
+        t.style.background = hex8ToCss(appStyle.tableBg || "#111111FF");
+        t.style.color = hex8ToCss(appStyle.tableText || "#FFFFFFFF");
+      });
+    }
     document.body.style.padding = appStyle.padding + "px";
     document.documentElement.style.setProperty("--app-border-color", hex8ToCss(appStyle.borderColor));
     document.documentElement.style.setProperty("--app-thead-bg",     hex8ToCss(appStyle.theadBg));
