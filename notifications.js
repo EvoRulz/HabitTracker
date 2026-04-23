@@ -40,7 +40,7 @@
     if (isPushupsDone()) return;
     const h = new Date().getHours();
     if (h < 7 || h >= 23) return;
-    const _na = document.createElement('a'); _na.href = 'habitnotify://pushups-not-done'; _na.click();
+    // notification will be shown here when implemented
   }
 
   let _notifInterval = null;
