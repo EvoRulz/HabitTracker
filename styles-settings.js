@@ -170,7 +170,7 @@ function onHexInput(id) {
     buildStopPickers();
     buildAppBg();
   }
-  func{
+  function settingsAppChange() {
     appStyle.bgType   = document.getElementById("s-app-bg-type").value;
     appStyle.gradDir  = document.getElementById("s-app-grad-dir").value;
     appStyle.patColor = getColorValue("s-app-pat-color");
@@ -188,8 +188,6 @@ function onHexInput(id) {
     appStyle.barSet      = getColorValue("s-app-bar-set");
     appStyle.barTotal    = getColorValue("s-app-bar-total");
     appStyle.barStreak   = getColorValue("s-app-bar-streak");
-    appStyle.tableBg     = getColorValue("s-app-table-bg");
-    appStyle.tableText   = getColorValue("s-app-table-text");
     appStyle.padding     = Number(document.getElementById("s-app-padding").value);
     collectAppStops();
     applyAppStyle();
@@ -242,10 +240,6 @@ function onHexInput(id) {
 }
     const item = document.querySelector(`#settings-groups-grid [data-group="${groupId}"]`);
     if (item) item.classList.toggle('sg-active', isOpen);
-    if (groupId === 'sg-notifications' && isOpen) {
-      if (window.notifRefreshPermission) window.notifRefreshPermission();
-      if (window.notifLoadScheduleUI) window.notifLoadScheduleUI();
-    }
     if (groupId === 'sg-buttons' && isOpen) {
       const stage = document.getElementById('cf-stage');
       if (stage) stage.style.visibility = 'hidden';
@@ -314,8 +308,6 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     setColorValue("s-app-bar-set",    appStyle.barSet);
     setColorValue("s-app-bar-total",  appStyle.barTotal);
     setColorValue("s-app-bar-streak", appStyle.barStreak);
-    setColorValue("s-app-table-bg",    appStyle.tableBg || "#111111FF");
-    setColorValue("s-app-table-text",  appStyle.tableText || "#FFFFFFFF");
     const isGrad = appStyle.bgType.startsWith("gradient");
     const isPat  = appStyle.bgType.startsWith("pattern");
     const isImg  = appStyle.bgType === "image";
