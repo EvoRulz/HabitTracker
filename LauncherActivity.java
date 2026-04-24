@@ -198,9 +198,9 @@ public class LauncherActivity
     }
 
     if (data != null && "habitnotify".equals(data.getScheme()) && "myfiles".equals(data.getHost())) {
-            Intent myFilesIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            Intent myFilesIntent = new Intent(Intent.ACTION_VIEW);
             myFilesIntent.setPackage("com.sec.android.app.myfiles");
-            myFilesIntent.setData(android.net.Uri.parse("myfiles://downloads"));
+            myFilesIntent.setData(Uri.parse("myfiles://downloads"));
             myFilesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try { startActivity(myFilesIntent); } catch (Exception ignored) {}
         }
@@ -254,9 +254,9 @@ public class LauncherActivity
             return;
 
         } else if ("myfiles".equals(host)) {
-            Intent myFilesIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            Intent myFilesIntent = new Intent(Intent.ACTION_VIEW);
             myFilesIntent.setPackage("com.sec.android.app.myfiles");
-            myFilesIntent.setData(android.net.Uri.parse("myfiles://downloads"));
+            myFilesIntent.setData(Uri.parse("myfiles://downloads"));
             myFilesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try { startActivity(myFilesIntent); } catch (Exception ignored) {}
             return;
