@@ -15,6 +15,7 @@
  */
 package io.github.evorulz.twa;
 import android.app.AlarmManager;
+import android.content.Context;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -59,7 +60,9 @@ public class LauncherActivity
             PendingIntent pi = PendingIntent.getBroadcast(LauncherActivity.this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             am.cancel(pi);
             if (intervalMs > 0) {
-                am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + intervalMs, intervalMs, pi);
+                LauncherActivity.this.getSharedPreferences("notif", Context.MODE_PRIVATE)
+                    .edit().putLong("intervalMs", intervalMs).apply();
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + intervalMs, pi);
             }
         }
         @JavascriptInterface

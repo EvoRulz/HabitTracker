@@ -1,8 +1,10 @@
 package io.github.evorulz.twa;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,5 +26,14 @@ public class NotificationReceiver extends BroadcastReceiver {
             .setAutoCancel(true)
             .build();
         nm.notify(1002, n);
+
+        long intervalMs = context.getSharedPreferences("notif", Context.MODE_PRIVATE)
+            .getLong("intervalMs", 0);
+        if (intervalMs > 0) {
+            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent i = new Intent(context, NotificationReceiver.class);
+            PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + intervalMs, pi);
+        }
     }
 }
