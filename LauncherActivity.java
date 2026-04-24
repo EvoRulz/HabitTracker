@@ -112,6 +112,7 @@ public class LauncherActivity
             getSharedPreferences("notif", Context.MODE_PRIVATE)
                 .edit().putBoolean("done_" + dateKey, done).apply();
         }
+        @JavascriptInterface
         public void showNotification(String title, String body) {
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

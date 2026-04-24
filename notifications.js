@@ -166,17 +166,14 @@ window.notifMarkDone = function(dateKey, done) {
 };
 
 window.notifSendTest = async function() {
-  const statusEl = document.getElementById('notif-status-msg');
   const btn = document.getElementById('notif-send-test-btn');
-  if (statusEl) statusEl.textContent = '';
   if (btn) { btn.textContent = 'Sent'; btn.disabled = true; setTimeout(() => { btn.textContent = 'Send Test'; btn.disabled = false; }, 1500); }
-  try {
-    const a = document.createElement('a');
-    a.href = 'habitnotify://notify?title=' + encodeURIComponent('Habit Tracker') + '&body=' + encodeURIComponent('Test notification.');
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  } catch(e) {
-    if (statusEl) statusEl.textContent = 'Error: ' + e.message;
+  if (window.AndroidSettings && window.AndroidSettings.showNotification) {
+    window.AndroidSettings.showNotification('Habit Tracker', 'Test notification.');
+  } else {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', vibrate: [200], tag: 'habit-reminder' });
+    } catch(e) {}
   }
 };
