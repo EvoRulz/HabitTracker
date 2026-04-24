@@ -51,7 +51,6 @@
 
   function scheduleNextNotification() {
     if (_notifInterval) clearInterval(_notifInterval);
-    notify();
     _notifInterval = setInterval(() => {
       notify();
     }, getIntervalMs());
