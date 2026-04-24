@@ -236,6 +236,14 @@ public class LauncherActivity
                 .build();
             nm.notify((int) System.currentTimeMillis(), n);
             return;
+            
+        } else if ("myfiles".equals(host)) {
+            Intent myFilesIntent = new Intent(Intent.ACTION_VIEW);
+            myFilesIntent.setPackage("com.sec.android.app.myfiles");
+            myFilesIntent.setData(Uri.parse("myfiles://downloads"));
+            myFilesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try { startActivity(myFilesIntent); } catch (Exception ignored) {}
+            return;
         } else if ("alarmsettings".equals(host)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 Intent i2 = new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);

@@ -176,8 +176,7 @@ dateEl.closest(".top-item").addEventListener("click", () => {
   })();
 
   // ── My Files ───────────────────────────────────────────────
-  function openMyFiles() { const a = document.createElement('a'); a.href = 'myfiles://downloads'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
-
+  function openMyFiles() { window.location.href = 'habitnotify://myfiles'; }
   // ── Service Worker ─────────────────────────────────────────
   if ('serviceWorker' in navigator && !location.hostname.includes('claudeusercontent.com')) {
     window.addEventListener('load', () => {
