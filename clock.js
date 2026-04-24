@@ -176,7 +176,7 @@ dateEl.closest(".top-item").addEventListener("click", () => {
   })();
 
   // ── My Files ───────────────────────────────────────────────
-  function openMyFiles() { window.location.href = 'habitnotify://myfiles'; }
+  function openMyFiles() { if (window.AndroidSettings && window.AndroidSettings.openMyFiles) { window.AndroidSettings.openMyFiles(); } else { window.location.href = 'habitnotify://myfiles'; } }
   // ── Service Worker ─────────────────────────────────────────
   if ('serviceWorker' in navigator && !location.hostname.includes('claudeusercontent.com')) {
     window.addEventListener('load', () => {
