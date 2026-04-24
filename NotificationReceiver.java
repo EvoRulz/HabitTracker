@@ -25,7 +25,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             cal.get(java.util.Calendar.YEAR),
             cal.get(java.util.Calendar.MONTH) + 1,
             cal.get(java.util.Calendar.DAY_OF_MONTH));
-        boolean done = context.getSharedPreferences("notif", Context.MODE_PRIVATE)
+        /*boolean done = context.getSharedPreferences("notif", Context.MODE_PRIVATE)
             .getBoolean("done_" + todayKey, false);
         if (done) {
             long intervalMs2 = context.getSharedPreferences("notif", Context.MODE_PRIVATE)
@@ -41,7 +41,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 }
             }
             return;
-        }
+        }*/
         Notification n = new NotificationCompat.Builder(context, "habit_reminders")
             .setSmallIcon(R.drawable.ic_notification_icon)
             .setContentTitle("Habit Tracker")
