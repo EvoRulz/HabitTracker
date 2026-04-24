@@ -131,7 +131,12 @@ public class LauncherActivity
             AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
             Intent i = new Intent(this, NotificationReceiver.class);
             PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE);
-            if (pi == null) {
+            if (savedInterval == 0) {
+            savedInterval = 60 * 60 * 1000L;
+            getSharedPreferences("notif", Context.MODE_PRIVATE)
+                .edit().putLong("intervalMs", savedInterval).apply();
+        }
+        if (pi == null) {
                 PendingIntent newPi = PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am.canScheduleExactAlarms()) {
                     am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + savedInterval, newPi);
@@ -173,6 +178,30 @@ public class LauncherActivity
     }
 
     if (data != null && "habitnotify".equals(data.getScheme())) {
+        String host = data.getHost();
+        if ("schedule".equals(host)) {
+            String intervalStr = data.getQueryParameter("interval");
+            long intervalMs = 0;
+            try { intervalMs = Long.parseLong(intervalStr); } catch (Exception ignored) {}
+            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+            Intent alarmIntent = new Intent(this, NotificationReceiver.class);
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            am.cancel(pi);
+            getSharedPreferences("notif", Context.MODE_PRIVATE)
+                .edit().putLong("intervalMs", intervalMs).apply();
+            if (intervalMs > 0) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am.canScheduleExactAlarms()) {
+                    am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + intervalMs, pi);
+                } else {
+                    am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + intervalMs, pi);
+                }
+            }
+            return;
+        } else if ("notify".equals(host)) {
+            String title = data.getQueryParameter("title");
+            String body = data.getQueryParameter("body");
+            if (title == null) title = "Habit Tracker";
+            if (body == null) body = "Reminder";
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationChannel ch = new NotificationChannel("habit_reminders", "Habit Reminders", NotificationManager.IMPORTANCE_DEFAULT);
@@ -180,44 +209,28 @@ public class LauncherActivity
             }
             Notification n = new NotificationCompat.Builder(this, "habit_reminders")
                 .setSmallIcon(R.drawable.ic_notification_icon)
-                .setContentTitle("Habit Tracker")
-                .setContentText("Pushups not done yet today.")
+                .setContentTitle(title)
+                .setContentText(body)
                 .setAutoCancel(true)
                 .build();
             nm.notify((int) System.currentTimeMillis(), n);
             return;
-        }
-        // Intercept myfiles:// URLs and launch Samsung My Files natively
-        if (data != null && "myfiles".equals(data.getScheme())) {
-            if ("downloads".equals(data.getHost())) {
-                try {
-                    Intent dlIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
-                    dlIntent.setComponent(new ComponentName(
-                            "com.sec.android.app.myfiles",
-                            "com.sec.android.app.myfiles.external.ui.MainActivity"));
-                    dlIntent.addFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(dlIntent);
-                    return;
-                } catch (Exception ignored) {
-                    // Fall through to plain open
-                }
-            }
-
-            try {
-                Intent myFilesIntent = new Intent(Intent.ACTION_MAIN);
-                myFilesIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-                myFilesIntent.setComponent(new ComponentName(
-                        "com.sec.android.app.myfiles",
-                        "com.sec.android.app.myfiles.external.ui.MainActivity"));
-                myFilesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(myFilesIntent);
-            } catch (Exception ignored) {
-                // My Files not available on this device
+        } else if ("alarmsettings".equals(host)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                Intent i2 = new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                i2.setData(Uri.parse("package:io.github.evorulz.twa"));
+                i2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i2);
+            } else {
+                Intent i2 = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                i2.setData(Uri.parse("package:io.github.evorulz.twa"));
+                i2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i2);
             }
             return;
         }
-        super.onNewIntent(intent);
+        return;
+    }
     }
 
     @Override

@@ -50,9 +50,7 @@
       tag: 'habit-reminder'
     });
   } catch(e) {
-    if (window.AndroidSettings && window.AndroidSettings.showNotification) {
-      window.AndroidSettings.showNotification('Habit Tracker', 'Pushups not done yet today.');
-    }
+    window.location.href = 'habitnotify://notify?title=' + encodeURIComponent('Habit Tracker') + '&body=' + encodeURIComponent('Pushups not done yet today.');
   }
   }
 
@@ -96,9 +94,7 @@ window.notifOpenSettings = function() {
 };
 
 window.notifOpenAlarmSettings = function() {
-  if (window.AndroidSettings) {
-    window.AndroidSettings.openAlarmSettings();
-  }
+  window.location.href = 'habitnotify://alarmsettings';
 };
 
 window.notifRefreshPermission = function() {
@@ -140,9 +136,7 @@ window.notifSaveSchedule = function() {
     (s.minutes || 0) * 60 * 1000 +
     (s.seconds || 0) * 1000
   ) || 60 * 60 * 1000;
-  if (window.AndroidSettings && window.AndroidSettings.scheduleRepeatingNotification) {
-    window.AndroidSettings.scheduleRepeatingNotification(intervalMs);
-  }
+  window.location.href = 'habitnotify://schedule?interval=' + intervalMs;
   const btn = document.getElementById('notif-save-schedule-btn');
   if (btn) { const orig = btn.textContent; btn.textContent = 'Saved'; setTimeout(() => btn.textContent = orig, 1200); }
 };
@@ -182,11 +176,7 @@ window.notifSendTest = async function() {
       await reg.showNotification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png', vibrate: [200], requireInteraction: false });
       if (btn) { btn.textContent = 'Send Test'; btn.disabled = false; }
     } catch(e2) {
-      if (window.AndroidSettings && window.AndroidSettings.showNotification) {
-        window.AndroidSettings.showNotification('Habit Tracker', 'Test notification.');
-      } else {
-        new Notification('Habit Tracker', { body: 'Test notification.', icon: './icon-192.png' });
-      }
+      window.location.href = 'habitnotify://notify?title=' + encodeURIComponent('Habit Tracker') + '&body=' + encodeURIComponent('Test notification.');
       if (btn) { btn.textContent = 'Send Test'; btn.disabled = false; }
     }
   } catch(e) {
