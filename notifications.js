@@ -95,6 +95,12 @@ window.notifOpenSettings = function() {
   }
 };
 
+window.notifOpenAlarmSettings = function() {
+  if (window.AndroidSettings) {
+    window.AndroidSettings.openAlarmSettings();
+  }
+};
+
 window.notifRefreshPermission = function() {
   const el = document.getElementById('notif-permission-status');
   if (el && 'Notification' in window) el.textContent = Notification.permission;

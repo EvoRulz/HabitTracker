@@ -47,6 +47,20 @@ public class LauncherActivity
 
     public class SettingsBridge {
         @JavascriptInterface
+        public void openAlarmSettings() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                Intent i = new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                i.setData(Uri.parse("package:io.github.evorulz.twa"));
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            } else {
+                Intent i = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                i.setData(Uri.parse("package:io.github.evorulz.twa"));
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            }
+        }
+        @JavascriptInterface
         public void openAppSettings() {
             Intent i = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             i.setData(Uri.parse("package:io.github.evorulz.twa"));
