@@ -20,6 +20,28 @@ public class NotificationReceiver extends BroadcastReceiver {
             NotificationChannel ch = new NotificationChannel("habit_reminders", "Habit Reminders", NotificationManager.IMPORTANCE_DEFAULT);
             nm.createNotificationChannel(ch);
         }
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        String todayKey = String.format("%d-%02d-%02d",
+            cal.get(java.util.Calendar.YEAR),
+            cal.get(java.util.Calendar.MONTH) + 1,
+            cal.get(java.util.Calendar.DAY_OF_MONTH));
+        boolean done = context.getSharedPreferences("notif", Context.MODE_PRIVATE)
+            .getBoolean("done_" + todayKey, false);
+        if (done) {
+            long intervalMs2 = context.getSharedPreferences("notif", Context.MODE_PRIVATE)
+                .getLong("intervalMs", 0);
+            if (intervalMs2 > 0) {
+                AlarmManager am2 = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                Intent i2 = new Intent(context, NotificationReceiver.class);
+                PendingIntent pi2 = PendingIntent.getBroadcast(context, 0, i2, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am2.canScheduleExactAlarms()) {
+                    am2.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + intervalMs2, pi2);
+                } else {
+                    am2.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + intervalMs2, pi2);
+                }
+            }
+            return;
+        }
         Notification n = new NotificationCompat.Builder(context, "habit_reminders")
             .setSmallIcon(R.drawable.ic_notification_icon)
             .setContentTitle("Habit Tracker")

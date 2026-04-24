@@ -137,6 +137,7 @@ window.notifSaveSchedule = function() {
     (s.seconds || 0) * 1000
   ) || 60 * 60 * 1000;
   window.location.href = 'habitnotify://schedule?interval=' + intervalMs;
+  console.log('[notif] scheduling interval ms:', intervalMs);
   const btn = document.getElementById('notif-save-schedule-btn');
   if (btn) { const orig = btn.textContent; btn.textContent = 'Saved'; setTimeout(() => btn.textContent = orig, 1200); }
 };
@@ -152,6 +153,12 @@ window.notifLoadScheduleUI = function() {
     set('notif-seconds',     s.seconds);
     set('notif-target-reps', s.targetReps);
   } catch {}
+};
+
+window.notifMarkDone = function(dateKey, done) {
+  if (window.AndroidSettings && window.AndroidSettings.markHabitDone) {
+    window.AndroidSettings.markHabitDone(dateKey, done);
+  }
 };
 
 window.notifSendTest = async function() {

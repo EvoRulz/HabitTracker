@@ -218,6 +218,7 @@
       store[ds].status=el.value; save(ds);
       applyStatusColor(el);
       updateStreakAndTotal(); updateStats();
+      if (window.notifMarkDone) window.notifMarkDone(ds, el.value === 'yes');
     }
     function onReasonInput(ds,el) {
       if (!store[ds]) store[ds]=getRow(ds);
