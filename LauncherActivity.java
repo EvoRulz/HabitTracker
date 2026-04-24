@@ -43,6 +43,14 @@ public class LauncherActivity
             settingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(settingsIntent);
         }
+        if (data != null && "myfiles".equals(data.getScheme())) {
+    Intent myFilesIntent = new Intent(Intent.ACTION_VIEW);
+    myFilesIntent.setPackage("com.sec.android.app.myfiles");
+    myFilesIntent.setData(data);
+    myFilesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    try { startActivity(myFilesIntent); } catch (Exception ignored) {}
+    return;
+}
     }
 
     public class SettingsBridge {
@@ -180,6 +188,15 @@ public class LauncherActivity
                 startActivity(settingsIntent);
     return;
     }
+
+    if (data != null && "myfiles".equals(data.getScheme())) {
+    Intent myFilesIntent = new Intent(Intent.ACTION_VIEW);
+    myFilesIntent.setPackage("com.sec.android.app.myfiles");
+    myFilesIntent.setData(data);
+    myFilesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    try { startActivity(myFilesIntent); } catch (Exception ignored) {}
+    return;
+}
 
     if (data != null && "habitnotify".equals(data.getScheme())) {
         String host = data.getHost();
