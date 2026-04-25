@@ -288,6 +288,9 @@ function onHexInput(id) {
     setColorValue('s-activebg',     _initS.activeBg);
     setColorValue('s-tap',          _initS.tap || btnStyle.tap);
     setColorValue('s-taphighlight', btnStyle.tapHighlight);
+    setColorValue('s-sliderfill',      btnStyle.sliderFill   || '#9659FFFF');
+    setColorValue('s-slidertrack',     btnStyle.sliderTrack  || '#333333FF');
+    setColorValue('s-sliderhandle',    btnStyle.sliderHandle || '#FFFFFFFF');
     setColorValue('s-checkbox-checked', btnStyle.checkboxChecked);
     setColorValue('s-checkbox-mark',    btnStyle.checkboxMark);
     setColorValue('s-checkbox-border',  btnStyle.checkboxBorder);
