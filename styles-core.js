@@ -222,7 +222,8 @@
     const picker = document.getElementById(id);
     const slider = document.getElementById(id+'-alpha');
     if (!picker||!slider) return;
-    slider.style.background = `linear-gradient(to right, transparent, ${picker.value})`;
+    const pct = ((slider.value - (slider.min||0)) / ((slider.max||255) - (slider.min||0))) * 100;
+    slider.style.background = `linear-gradient(to right, ${picker.value} ${pct}%, transparent ${pct}%), linear-gradient(to right, transparent, ${picker.value})`;
   }
 
   // ── Per-button style store ─────────────────────────────────
