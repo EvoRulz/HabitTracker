@@ -19,8 +19,8 @@
     .color-settings-row > label { font-size:13px; color:#bbb; width:100%; }
     .color-picker-row { display:flex; align-items:center; gap:8px; flex:1; }
     .alpha-slider { flex:1; height:var(--slider-h,8px); border-radius:var(--slider-r,4px); cursor:pointer; border:1px solid var(--slider-border-color,#555); outline:none; appearance:none; -webkit-appearance:none; background:var(--slider-track-bg,#333); }
-.alpha-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:14px; height:16px; background:var(--slider-handle-color,#fff); border-radius:3px; cursor:pointer; border:none; }
-.alpha-slider::-moz-range-thumb { width:14px; height:16px; background:var(--slider-handle-color,#fff); border-radius:3px; cursor:pointer; border:none; box-sizing:border-box; }
+.alpha-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:14px; height:var(--slider-handle-h,16px); background:var(--slider-handle-color,#fff); border-radius:var(--slider-handle-r,3%); cursor:pointer; border:none; }
+.alpha-slider::-moz-range-thumb { width:14px; height:var(--slider-handle-h,16px); background:var(--slider-handle-color,#fff); border-radius:var(--slider-handle-r,3%); cursor:pointer; border:none; box-sizing:border-box; }
     .hex-copy-row { display:flex; align-items:center; gap:6px; flex:0 0 auto; }
     .hex-input { flex:none; width:10ch; background:#111; color:#fff; border:1px solid #555; border-radius:4px; padding:4px 8px; font-size:12px; font-family:monospace; outline:none; text-transform:uppercase; letter-spacing:0.04em; }
     .copy-btn { background:#2a2a2a; border:1px solid #555; border-radius:4px; color:#aaa; cursor:pointer; padding:4px 10px; font-size:12px; flex-shrink:0; }
@@ -694,7 +694,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v703</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
+  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v704</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
   <div class="top-item" data-item="date" style="background:var(--clock-date-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-time-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -937,15 +937,23 @@ input[type="checkbox"]:hover {
         </div>
       </div>
       <div class="settings-row">
-        <label>Slider height <span id="s-sliderh-val">8%</span></label>
-        <input type="range" class="alpha-slider" id="s-sliderh" min="0" max="100" value="8" oninput="document.getElementById('s-sliderh-val').textContent=this.value+'%';settingsChange()">
+        <label>Slider height <span id="s-sliderh-val">8px</span></label>
+        <input type="range" class="alpha-slider" id="s-sliderh" min="0" max="100" value="8" oninput="document.getElementById('s-sliderh-val').textContent=this.value+'px';settingsChange()">
       </div>
       <div class="settings-row">
-        <label>Slider corners <span id="s-sliderr-val">4%</span></label>
-        <input type="range" class="alpha-slider" id="s-sliderr" min="0" max="100" value="4" oninput="document.getElementById('s-sliderr-val').textContent=this.value+'%';settingsChange()">
+          <label>Slider corners <span id="s-sliderr-val">4%</span></label>
+          <input type="range" class="alpha-slider" id="s-sliderr" min="0" max="100" value="4" oninput="document.getElementById('s-sliderr-val').textContent=this.value+'%';settingsChange()">
+        </div>
+        <div class="settings-row">
+          <label>Handle height <span id="s-sliderhandleh-val">16px</span></label>
+          <input type="range" class="alpha-slider" id="s-sliderhandleh" min="4" max="60" value="16" oninput="document.getElementById('s-sliderhandleh-val').textContent=this.value+'px';settingsChange()">
+        </div>
+        <div class="settings-row">
+          <label>Handle corners <span id="s-sliderhandler-val">3%</span></label>
+          <input type="range" class="alpha-slider" id="s-sliderhandler" min="0" max="100" value="3" oninput="document.getElementById('s-sliderhandler-val').textContent=this.value+'%';settingsChange()">
+        </div>
       </div>
-    </div>
-    <div class="settings-group-content" id="sg-clock">
+      <div class="settings-group-content" id="sg-clock">
       <div id="clock-tumbler-wrap"></div>
       <div class="color-settings-row">
         <label>Date colour</label>
@@ -1412,6 +1420,7 @@ input[type="checkbox"]:hover {
 <script src="notifications.js"></script>
 </body>
 </html>
+
 
 
 
