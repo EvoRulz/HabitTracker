@@ -371,6 +371,8 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     document.getElementById("settings-overlay").classList.remove("active");
   }
   async function settingsSave() {
+    btnStyle.sliderHandleW  = Number(document.getElementById("s-sliderhandlew").value);
+    btnStyle.sliderW        = Number(document.getElementById("s-sliderw").value);
     localStorage.setItem("_btnStyle",   JSON.stringify(btnStyle));
     localStorage.setItem("_btnStyles",  JSON.stringify(_btnStyles));
     try {
