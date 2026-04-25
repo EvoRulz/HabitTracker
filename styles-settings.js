@@ -419,11 +419,28 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
         if (data["_btnStyle"]) {
           btnStyle = Object.assign({}, BTN_STYLE_DEFAULTS, JSON.parse(data["_btnStyle"]));
           applyBtnStyle();
-          document.getElementById("s-bg").value       = btnStyle.bg;
-          document.getElementById("s-fg").value       = btnStyle.fg;
-          document.getElementById("s-font").value     = btnStyle.font;
-          document.getElementById("s-glow").value     = btnStyle.glow;
-          document.getElementById("s-activebg").value = btnStyle.activeBg;
+          setColorValue('s-bg',       btnStyle.bg);
+          setColorValue('s-fg',       btnStyle.fg);
+          setColorValue('s-glow',     btnStyle.glow);
+          setColorValue('s-activeglow', btnStyle.activeGlow || btnStyle.glow);
+          setColorValue('s-activebg', btnStyle.activeBg);
+          setColorValue('s-tap',      btnStyle.tap);
+          setColorValue('s-sliderborder',  btnStyle.sliderBorder);
+          setColorValue('s-sliderfill',    btnStyle.sliderFill   || '#9659FFFF');
+          setColorValue('s-slidertrack',   btnStyle.sliderTrack  || '#333333FF');
+          setColorValue('s-sliderhandle',  btnStyle.sliderHandle || '#FFFFFFFF');
+          const _sv = (id, val) => { const el = document.getElementById(id); if (el) el.value = String(val); };
+          _sv('s-sliderh',       btnStyle.sliderH);
+          _sv('s-sliderr',       btnStyle.sliderR);
+          _sv('s-sliderspread',  btnStyle.sliderSpread   ?? 4);
+          _sv('s-sliderhandleh', btnStyle.sliderHandleH  ?? 16);
+          _sv('s-sliderhandler', btnStyle.sliderHandleR  ?? 3);
+          const _shv2 = document.getElementById('s-sliderh-val');       if (_shv2) _shv2.textContent = btnStyle.sliderH + 'px';
+          const _srv2 = document.getElementById('s-sliderr-val');       if (_srv2) _srv2.textContent = btnStyle.sliderR + '%';
+          const _sspv2 = document.getElementById('s-sliderspread-val'); if (_sspv2) _sspv2.textContent = (btnStyle.sliderSpread ?? 4) + 'px';
+          const _shhv2 = document.getElementById('s-sliderhandleh-val');if (_shhv2) _shhv2.textContent = (btnStyle.sliderHandleH ?? 16) + 'px';
+          const _shrv2 = document.getElementById('s-sliderhandler-val');if (_shrv2) _shrv2.textContent = (btnStyle.sliderHandleR ?? 3) + '%';
+          document.getElementById("s-font").value = btnStyle.font;
           settingsUpdatePreview();
           if(window.fontPickerSync)fontPickerSync();
         }

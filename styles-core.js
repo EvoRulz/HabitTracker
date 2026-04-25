@@ -224,6 +224,14 @@
     if (!picker||!slider) return;
     const pct = ((slider.value - (slider.min||0)) / ((slider.max||255) - (slider.min||0))) * 100;
     slider.style.background = `linear-gradient(to right, ${picker.value} ${pct}%, transparent ${pct}%), linear-gradient(to right, transparent, ${picker.value})`;
+    // Update swatch overlay to show color+alpha
+    const overlay = document.getElementById(id+'-swatch-overlay');
+    if (overlay) {
+      const a = parseInt(slider.value) / 255;
+      const hex = picker.value;
+      const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+      overlay.style.background = `rgba(${r},${g},${b},${a})`;
+    }
   }
 
   // ── Per-button style store ─────────────────────────────────
@@ -379,4 +387,16 @@
       btn.style.borderRadius = (s.btnRadius ?? btnStyle.btnRadius ?? 6) + 'px';
     });
   }
+  // ── Wrap all color pickers in swatch containers ────────────
+  document.querySelectorAll('.color-picker-row input[type="color"]').forEach(picker => {
+    const id = picker.id;
+    const wrap = document.createElement('div');
+    wrap.className = 'color-swatch-wrap';
+    picker.parentNode.insertBefore(wrap, picker);
+    wrap.appendChild(picker);
+    const overlay = document.createElement('div');
+    overlay.className = 'color-swatch-overlay';
+    overlay.id = id + '-swatch-overlay';
+    wrap.appendChild(overlay);
+  });
   applyBtnStyle(true);
