@@ -176,7 +176,7 @@
   }
   applyAppStyle();
 
-  const BTN_STYLE_DEFAULTS = { bg: "#444444FF", fg: "#FFFFFFFF", font: "sans-serif", glow: "#9659FFFF", activeGlow: "#9659FFFF", activeBg: "#555555FF", tap: "#FFFFFF40", tapHighlight: "#0000FFFF", btnRadius: 6, sliderBorder: "#555555FF", sliderH: 8, sliderR: 4, checkboxChecked: "#90EE90FF", checkboxMark: "#000000FF", checkboxBorder: "#555555FF", checkboxBg: "#111111FF", clockDateColor: "#666666FF", clockTimeColor: "#666666FF", clockDateSize: 13, clockTimeSize: 13, clockBg: "#00000000" };
+  const BTN_STYLE_DEFAULTS = { bg: "#444444FF", fg: "#FFFFFFFF", font: "sans-serif", glow: "#9659FFFF", activeGlow: "#9659FFFF", activeBg: "#555555FF", tap: "#FFFFFF40", tapHighlight: "#0000FFFF", btnRadius: 6, sliderBorder: "#555555FF", sliderH: 8, sliderR: 4, sliderW: 100, sliderHandleW: 16, checkboxChecked: "#90EE90FF", checkboxMark: "#000000FF", checkboxBorder: "#555555FF", checkboxBg: "#111111FF", clockDateColor: "#666666FF", clockTimeColor: "#666666FF", clockDateSize: 13, clockTimeSize: 13, clockBg: "#00000000" };
   let btnStyle = Object.assign({}, BTN_STYLE_DEFAULTS);
   try {
     const saved = JSON.parse(localStorage.getItem("_btnStyle"));
@@ -269,6 +269,8 @@
     document.documentElement.style.setProperty("--slider-r",             btnStyle.sliderR + "%");
     document.documentElement.style.setProperty("--slider-spread",        (btnStyle.sliderSpread ?? 4) + "px");
     document.documentElement.style.setProperty("--slider-handle-h",      (btnStyle.sliderHandleH ?? 16) + "px");
+    document.documentElement.style.setProperty("--slider-handle-w",      (btnStyle.sliderHandleW ?? 16) + "px");
+    document.documentElement.style.setProperty("--slider-w",             (btnStyle.sliderW ?? 100) + "%");
     document.documentElement.style.setProperty("--slider-handle-r",      (btnStyle.sliderHandleR ?? 3) + "%");
     document.documentElement.style.setProperty("--slider-fill-color",    hex8ToCss(btnStyle.sliderFill   || '#9659FFFF'));
     document.documentElement.style.setProperty("--slider-track-bg",      hex8ToCss(btnStyle.sliderTrack  || '#333333FF'));

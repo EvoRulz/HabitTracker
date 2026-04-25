@@ -309,6 +309,12 @@ function onHexInput(id) {
     const _initRadius = (_initId && _btnStyles[_initId]?.btnRadius != null) ? _btnStyles[_initId].btnRadius : (btnStyle.btnRadius ?? 6);
 document.getElementById("s-radius").value  = String(_initRadius);
 const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textContent = _initRadius + "px";
+    const _sliderW = btnStyle.sliderW ?? 100;
+    const _sliderHW = btnStyle.sliderHandleW ?? 16;
+    const _swEl = document.getElementById('s-sliderw'); if (_swEl) _swEl.value = String(_sliderW);
+    const _swvEl = document.getElementById('s-sliderw-val'); if (_swvEl) _swvEl.textContent = _sliderW + '%';
+    const _shwEl = document.getElementById('s-sliderhandlew'); if (_shwEl) _shwEl.value = String(_sliderHW);
+    const _shwvEl = document.getElementById('s-sliderhandlew-val'); if (_shwvEl) _shwvEl.textContent = _sliderHW + 'px';
     const _s = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
     _s("s-app-bg-type",    appStyle.bgType);
     _s("s-app-grad-dir",   appStyle.gradDir);
@@ -435,6 +441,10 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
           _sv('s-sliderspread',  btnStyle.sliderSpread   ?? 4);
           _sv('s-sliderhandleh', btnStyle.sliderHandleH  ?? 16);
           _sv('s-sliderhandler', btnStyle.sliderHandleR  ?? 3);
+          _sv('s-sliderw',       btnStyle.sliderW        ?? 100);
+          _sv('s-sliderhandlew', btnStyle.sliderHandleW  ?? 16);
+          const _swIvEl = document.getElementById('s-sliderw-val'); if (_swIvEl) _swIvEl.textContent = (btnStyle.sliderW ?? 100) + '%';
+          const _shwIvEl = document.getElementById('s-sliderhandlew-val'); if (_shwIvEl) _shwIvEl.textContent = (btnStyle.sliderHandleW ?? 16) + 'px';
           const _shv2 = document.getElementById('s-sliderh-val');       if (_shv2) _shv2.textContent = btnStyle.sliderH + 'px';
           const _srv2 = document.getElementById('s-sliderr-val');       if (_srv2) _srv2.textContent = btnStyle.sliderR + '%';
           const _sspv2 = document.getElementById('s-sliderspread-val'); if (_sspv2) _sspv2.textContent = (btnStyle.sliderSpread ?? 4) + 'px';
@@ -551,6 +561,8 @@ else {
     btnStyle.sliderSpread   = Number(document.getElementById("s-sliderspread").value);
     btnStyle.sliderHandleH  = Number(document.getElementById("s-sliderhandleh").value);
     btnStyle.sliderHandleR  = Number(document.getElementById("s-sliderhandler").value);
+    btnStyle.sliderW        = Number(document.getElementById("s-sliderw").value);
+    btnStyle.sliderHandleW  = Number(document.getElementById("s-sliderhandlew").value);
     btnStyle.checkboxChecked = getColorValue('s-checkbox-checked');
     btnStyle.checkboxMark    = getColorValue('s-checkbox-mark');
     btnStyle.checkboxBorder  = getColorValue('s-checkbox-border');
@@ -644,6 +656,10 @@ _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
     const _shrv = document.getElementById("s-sliderhandler-val"); if (_shrv) _shrv.textContent = (btnStyle.sliderHandleR ?? 3) + "%";
     const _shhEl = document.getElementById("s-sliderhandleh"); if (_shhEl) _shhEl.value = btnStyle.sliderHandleH ?? 16;
     const _shrEl = document.getElementById("s-sliderhandler"); if (_shrEl) _shrEl.value = btnStyle.sliderHandleR ?? 3;
+    const _swREl = document.getElementById("s-sliderw"); if (_swREl) _swREl.value = String(BTN_STYLE_DEFAULTS.sliderW ?? 100);
+    const _swRvEl = document.getElementById("s-sliderw-val"); if (_swRvEl) _swRvEl.textContent = (BTN_STYLE_DEFAULTS.sliderW ?? 100) + '%';
+    const _shwREl = document.getElementById("s-sliderhandlew"); if (_shwREl) _shwREl.value = String(BTN_STYLE_DEFAULTS.sliderHandleW ?? 16);
+    const _shwRvEl = document.getElementById("s-sliderhandlew-val"); if (_shwRvEl) _shwRvEl.textContent = (BTN_STYLE_DEFAULTS.sliderHandleW ?? 16) + 'px';
     const _sspv = document.getElementById("s-sliderspread-val"); if (_sspv) _sspv.textContent = (btnStyle.sliderSpread ?? 4) + "px";
     const _sspEl = document.getElementById("s-sliderspread"); if (_sspEl) _sspEl.value = btnStyle.sliderSpread ?? 4;
     document.getElementById("s-font").value    = btnStyle.font;
