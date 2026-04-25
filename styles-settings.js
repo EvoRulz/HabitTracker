@@ -555,9 +555,9 @@ else {
     btnStyle.activeGlow     = getColorValue('s-activeglow');
     btnStyle.tapHighlight   = getColorValue('s-taphighlight');
     btnStyle.sliderBorder   = getColorValue('s-sliderborder');
-    btnStyle.sliderFill     = getColorValue('s-sliderfill');
-    btnStyle.sliderTrack    = getColorValue('s-slidertrack');
-    btnStyle.sliderHandle   = getColorValue('s-sliderhandle');
+    if (document.getElementById('s-sliderfill'))   btnStyle.sliderFill   = getColorValue('s-sliderfill');
+if (document.getElementById('s-slidertrack'))  btnStyle.sliderTrack  = getColorValue('s-slidertrack');
+if (document.getElementById('s-sliderhandle')) btnStyle.sliderHandle = getColorValue('s-sliderhandle');
     btnStyle.sliderH        = Number(document.getElementById("s-sliderh").value);
     btnStyle.sliderR        = Number(document.getElementById("s-sliderr").value);
     btnStyle.sliderSpread   = Number(document.getElementById("s-sliderspread").value);
