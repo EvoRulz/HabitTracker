@@ -195,7 +195,8 @@
     const pct = ((slider.value - slider.min) / ((slider.max || 255) - (slider.min || 0))) * 100;
     const fill = hex8ToCss(btnStyle.sliderFill || '#9659FFFF');
     const track = hex8ToCss(btnStyle.sliderTrack || '#333333FF');
-    slider.style.background = `linear-gradient(to right, ${fill} ${pct}%, ${track} ${pct}%)`;
+    const adjPct = `calc(${pct / 100} * (100% - var(--slider-handle-w)) + var(--slider-handle-w) / 2)`;
+    slider.style.background = `linear-gradient(to right, ${fill} ${adjPct}, ${track} ${adjPct})`;
   }
   function hex8ToCss(hex) {
     const {r,g,b,a} = hex8ToComponents(hex);
