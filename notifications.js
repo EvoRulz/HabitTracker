@@ -188,6 +188,19 @@ function _notifTickCountdown() {
     localStorage.removeItem('_notifOffUntil');
     _notifUpdateToggleUI();
     if (window._notifReschedule) window._notifReschedule();
+    const _s = JSON.parse(localStorage.getItem('_notifSettings') || '{}');
+    const _ms = (
+      (_s.years   || 0) * 365 * 24 * 60 * 60 * 1000 +
+      (_s.days    || 0) * 24 * 60 * 60 * 1000 +
+      (_s.hours   || 0) * 60 * 60 * 1000 +
+      (_s.minutes || 0) * 60 * 1000 +
+      (_s.seconds || 0) * 1000
+    ) || 60 * 60 * 1000;
+    if (window.AndroidSettings && window.AndroidSettings.scheduleRepeatingNotification) {
+      window.AndroidSettings.scheduleRepeatingNotification(_ms);
+    } else {
+      window.location.href = 'habitnotify://schedule?interval=' + _ms;
+    }
     el.textContent = '';
     return;
   }
@@ -213,6 +226,19 @@ setInterval(() => {
     localStorage.removeItem('_notifOffUntil');
     _notifUpdateToggleUI();
     if (window._notifReschedule) window._notifReschedule();
+    const _s2 = JSON.parse(localStorage.getItem('_notifSettings') || '{}');
+    const _ms2 = (
+      (_s2.years   || 0) * 365 * 24 * 60 * 60 * 1000 +
+      (_s2.days    || 0) * 24 * 60 * 60 * 1000 +
+      (_s2.hours   || 0) * 60 * 60 * 1000 +
+      (_s2.minutes || 0) * 60 * 1000 +
+      (_s2.seconds || 0) * 1000
+    ) || 60 * 60 * 1000;
+    if (window.AndroidSettings && window.AndroidSettings.scheduleRepeatingNotification) {
+      window.AndroidSettings.scheduleRepeatingNotification(_ms2);
+    } else {
+      window.location.href = 'habitnotify://schedule?interval=' + _ms2;
+    }
   }
   _notifTickCountdown();
 }, 1000);
@@ -223,10 +249,28 @@ window.notifToggle = function() {
     localStorage.setItem('_notifEnabled', 'false');
     localStorage.removeItem('_notifOffUntil');
     if (window._notifReschedule) window._notifReschedule();
+    if (window.AndroidSettings && window.AndroidSettings.scheduleRepeatingNotification) {
+      window.AndroidSettings.scheduleRepeatingNotification(0);
+    } else {
+      window.location.href = 'habitnotify://schedule?interval=0';
+    }
   } else {
     localStorage.setItem('_notifEnabled', 'true');
     localStorage.removeItem('_notifOffUntil');
     if (window._notifReschedule) window._notifReschedule();
+    const s = JSON.parse(localStorage.getItem('_notifSettings') || '{}');
+    const intervalMs = (
+      (s.years   || 0) * 365 * 24 * 60 * 60 * 1000 +
+      (s.days    || 0) * 24 * 60 * 60 * 1000 +
+      (s.hours   || 0) * 60 * 60 * 1000 +
+      (s.minutes || 0) * 60 * 1000 +
+      (s.seconds || 0) * 1000
+    ) || 60 * 60 * 1000;
+    if (window.AndroidSettings && window.AndroidSettings.scheduleRepeatingNotification) {
+      window.AndroidSettings.scheduleRepeatingNotification(intervalMs);
+    } else {
+      window.location.href = 'habitnotify://schedule?interval=' + intervalMs;
+    }
   }
   _notifUpdateToggleUI();
   _notifTickCountdown();
