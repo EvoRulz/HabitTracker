@@ -120,7 +120,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
     const _ctrEl = document.getElementById("s-clock-time-radius"); if (_ctrEl) { _ctrEl.value = String(_ctrV); const _ctrvEl = document.getElementById("s-clock-time-radius-val"); if (_ctrvEl) _ctrvEl.textContent = _ctrV + "px"; }
   }
   
-  document.querySelectorAll('.alpha-slider').forEach(s => updateSliderFill(s));
+  document.querySelectorAll('.alpha-slider:not([id$="-alpha"])').forEach(s => updateSliderFill(s));
   if (window.fontPickerSync) fontPickerSync();
   settingsUpdatePreview();
 }
