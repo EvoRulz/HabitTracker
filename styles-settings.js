@@ -291,6 +291,7 @@ function onHexInput(id) {
     setColorValue('s-sliderfill',      btnStyle.sliderFill   || '#9659FFFF');
     setColorValue('s-slidertrack',     btnStyle.sliderTrack  || '#333333FF');
     setColorValue('s-sliderhandle',    btnStyle.sliderHandle || '#FFFFFFFF');
+    setColorValue('s-sliderhandleborder', btnStyle.sliderHandleBorder || '#00000000');
     setColorValue('s-checkbox-checked', btnStyle.checkboxChecked);
     setColorValue('s-checkbox-mark',    btnStyle.checkboxMark);
     setColorValue('s-checkbox-border',  btnStyle.checkboxBorder);
@@ -318,6 +319,17 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     const _swvEl = document.getElementById('s-sliderw-val'); if (_swvEl) _swvEl.textContent = _sliderW + '%';
     const _shwEl = document.getElementById('s-sliderhandlew'); if (_shwEl) _shwEl.value = String(_sliderHW);
     const _shwvEl = document.getElementById('s-sliderhandlew-val'); if (_shwvEl) _shwvEl.textContent = _sliderHW + 'px';
+    const _shEl = document.getElementById('s-sliderh'); if (_shEl) _shEl.value = String(btnStyle.sliderH ?? 8);
+    const _shvEl = document.getElementById('s-sliderh-val'); if (_shvEl) _shvEl.textContent = (btnStyle.sliderH ?? 8) + 'px';
+    const _srEl = document.getElementById('s-sliderr'); if (_srEl) _srEl.value = String(btnStyle.sliderR ?? 4);
+    const _srvEl = document.getElementById('s-sliderr-val'); if (_srvEl) _srvEl.textContent = (btnStyle.sliderR ?? 4) + '%';
+    const _sspEl2 = document.getElementById('s-sliderspread'); if (_sspEl2) _sspEl2.value = String(btnStyle.sliderSpread ?? 4);
+    const _sspvEl2 = document.getElementById('s-sliderspread-val'); if (_sspvEl2) _sspvEl2.textContent = (btnStyle.sliderSpread ?? 4) + 'px';
+    const _shhEl2 = document.getElementById('s-sliderhandleh'); if (_shhEl2) _shhEl2.value = String(btnStyle.sliderHandleH ?? 16);
+    const _shhvEl2 = document.getElementById('s-sliderhandleh-val'); if (_shhvEl2) _shhvEl2.textContent = (btnStyle.sliderHandleH ?? 16) + 'px';
+    const _shrEl2 = document.getElementById('s-sliderhandler'); if (_shrEl2) _shrEl2.value = String(btnStyle.sliderHandleR ?? 3);
+    const _shrvEl2 = document.getElementById('s-sliderhandler-val'); if (_shrvEl2) _shrvEl2.textContent = (btnStyle.sliderHandleR ?? 3) + '%';
+    setColorValue('s-sliderhandleborder', btnStyle.sliderHandleBorder || '#00000000');
     const _s = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
     _s("s-app-bg-type",    appStyle.bgType);
     _s("s-app-grad-dir",   appStyle.gradDir);
@@ -411,6 +423,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
       "_clockTumbler":       JSON.stringify(clk.tumblerCfg),
       "_cfTuning":           localStorage.getItem("_cfTuning") || "{}",
       "_settingsGroupOrder": localStorage.getItem("_settingsGroupOrder") || "[]",
+      "_sliderRowOrder":     localStorage.getItem("_sliderRowOrder")     || "[]",
       "_trackerConfigs":    localStorage.getItem("_trackerConfigs")    || "[]",
     };
     const saveStyle = Object.assign({}, appStyle, { imgData: null });
@@ -440,6 +453,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
           setColorValue('s-sliderfill',    btnStyle.sliderFill   || '#9659FFFF');
           setColorValue('s-slidertrack',   btnStyle.sliderTrack  || '#333333FF');
           setColorValue('s-sliderhandle',  btnStyle.sliderHandle || '#FFFFFFFF');
+          setColorValue('s-sliderhandleborder', btnStyle.sliderHandleBorder || '#00000000');
           const _sv = (id, val) => { const el = document.getElementById(id); if (el) el.value = String(val); };
           _sv('s-sliderh',       btnStyle.sliderH);
           _sv('s-sliderr',       btnStyle.sliderR);
@@ -493,6 +507,12 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
           try {
             localStorage.setItem("_settingsGroupOrder", data["_settingsGroupOrder"]);
             applySettingsGroupOrder();
+          } catch {}
+        }
+        if (data["_sliderRowOrder"]) {
+          try {
+            localStorage.setItem("_sliderRowOrder", data["_sliderRowOrder"]);
+            applySliderRowOrder();
           } catch {}
         }
         if (data["_trackerConfigs"]) {
@@ -561,6 +581,7 @@ else {
     if (document.getElementById('s-sliderfill'))   btnStyle.sliderFill   = getColorValue('s-sliderfill');
 if (document.getElementById('s-slidertrack'))  btnStyle.sliderTrack  = getColorValue('s-slidertrack');
 if (document.getElementById('s-sliderhandle')) btnStyle.sliderHandle = getColorValue('s-sliderhandle');
+    if (document.getElementById('s-sliderhandleborder')) btnStyle.sliderHandleBorder = getColorValue('s-sliderhandleborder');
     btnStyle.sliderH        = Number(document.getElementById("s-sliderh").value);
     btnStyle.sliderR        = Number(document.getElementById("s-sliderr").value);
     btnStyle.sliderSpread   = Number(document.getElementById("s-sliderspread").value);
@@ -653,6 +674,7 @@ _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
     setColorValue('s-sliderfill',      btnStyle.sliderFill   || '#9659FFFF');
     setColorValue('s-slidertrack',     btnStyle.sliderTrack  || '#333333FF');
     setColorValue('s-sliderhandle',    btnStyle.sliderHandle || '#FFFFFFFF');
+    setColorValue('s-sliderhandleborder', btnStyle.sliderHandleBorder || '#00000000');
     document.getElementById("s-sliderh").value = btnStyle.sliderH;
     document.getElementById("s-sliderr").value = btnStyle.sliderR;
     const _shv = document.getElementById("s-sliderh-val"); if (_shv) _shv.textContent = btnStyle.sliderH + "px";
@@ -719,3 +741,98 @@ _btnStyles = {};
       _cogEl2.style.boxShadow   = `0 0 16px 5px ${hex8ToCss(s.glow)}`;
     }
   }
+  function saveSliderRowOrder() {
+    const grid = document.getElementById('sg-sliders');
+    if (!grid) return;
+    const order = [...grid.querySelectorAll('[data-slider-row]')].map(el => el.dataset.sliderRow);
+    localStorage.setItem('_sliderRowOrder', JSON.stringify(order));
+  }
+  function applySliderRowOrder() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('_sliderRowOrder'));
+      if (!Array.isArray(saved)) return;
+      const grid = document.getElementById('sg-sliders');
+      if (!grid) return;
+      saved.forEach(id => {
+        const item = grid.querySelector(`[data-slider-row="${id}"]`);
+        if (item) grid.appendChild(item);
+      });
+      grid.querySelectorAll('[data-slider-row]').forEach(item => {
+        if (!saved.includes(item.dataset.sliderRow)) grid.appendChild(item);
+      });
+    } catch {}
+  }
+  (function() {
+    const DRAG_THRESHOLD = 6;
+    let srDrag = null;
+    const grid = document.getElementById('sg-sliders');
+    if (!grid) return;
+    grid.addEventListener('pointerdown', e => {
+      const handle = e.target.closest('.slider-row-handle');
+      if (!handle || srDrag) return;
+      const item = handle.closest('[data-slider-row]');
+      if (!item) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const rect = item.getBoundingClientRect();
+      srDrag = {
+        item, startX: e.clientX, startY: e.clientY,
+        offX: e.clientX - rect.left, offY: e.clientY - rect.top,
+        w: rect.width, h: rect.height,
+        ghost: null, lastOver: null, active: false,
+      };
+    });
+    document.addEventListener('pointermove', e => {
+      if (!srDrag) return;
+      if (!srDrag.active) {
+        if (Math.hypot(e.clientX - srDrag.startX, e.clientY - srDrag.startY) < DRAG_THRESHOLD) return;
+        srDrag.active = true;
+        const rect = srDrag.item.getBoundingClientRect();
+        srDrag.ghost = srDrag.item.cloneNode(true);
+        Object.assign(srDrag.ghost.style, {
+          position: 'fixed', left: rect.left + 'px', top: rect.top + 'px',
+          width: rect.width + 'px', height: rect.height + 'px',
+          pointerEvents: 'none', opacity: '0.75', zIndex: '99999',
+          margin: '0', boxSizing: 'border-box',
+        });
+        (document.getElementById('settings-overlay') || document.body).appendChild(srDrag.ghost);
+        srDrag.item.style.opacity = '0.3';
+      }
+      srDrag.ghost.style.left = (e.clientX - srDrag.offX) + 'px';
+      srDrag.ghost.style.top  = (e.clientY - srDrag.offY) + 'px';
+      const gcx = e.clientX - srDrag.offX + srDrag.w / 2;
+      const gcy = e.clientY - srDrag.offY + srDrag.h / 2;
+      let over = null;
+      for (const t of grid.querySelectorAll('[data-slider-row]')) {
+        if (t === srDrag.item) continue;
+        const r = t.getBoundingClientRect();
+        if (gcx >= r.left && gcx <= r.right && gcy >= r.top && gcy <= r.bottom) { over = t; break; }
+      }
+      if (!over) { srDrag.lastOver = null; return; }
+      if (over === srDrag.lastOver) return;
+      srDrag.lastOver = over;
+      const overNext = over.nextSibling, iNext = srDrag.item.nextSibling;
+      if (iNext === over)                grid.insertBefore(over, srDrag.item);
+      else if (overNext === srDrag.item) grid.insertBefore(srDrag.item, over);
+      else {
+        grid.insertBefore(srDrag.item, overNext || null);
+        grid.insertBefore(over, iNext || null);
+      }
+    });
+    document.addEventListener('pointerup', () => {
+      if (!srDrag) return;
+      if (srDrag.active) {
+        srDrag.item.style.opacity = '';
+        if (srDrag.ghost) srDrag.ghost.remove();
+        saveSliderRowOrder();
+      }
+      srDrag = null;
+    });
+    document.addEventListener('pointercancel', () => {
+      if (!srDrag) return;
+      srDrag.item.style.opacity = '';
+      if (srDrag.ghost) srDrag.ghost.remove();
+      srDrag = null;
+    });
+    applySliderRowOrder();
+  })();
