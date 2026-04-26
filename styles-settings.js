@@ -933,34 +933,43 @@ makeRowsDraggable('sg-app', 'data-app-row', '_appRowOrder');
 makeRowsDraggable('sg-clock', 'data-clock-row', '_clockRowOrder');
 makeRowsDraggable('sg-checkboxes', 'data-checkbox-row', '_checkboxRowOrder');
 
-window._handleBackButton = function() {
-  if (document.getElementById('manage-overlay').classList.contains('active')) {
-    manageClose();
-    return;
+window.addEventListener('load', function() {
+  var _backReady = false;
+  function _initBack() {
+    if (_backReady) return;
+    _backReady = true;
+    history.pushState({ panel: 'nav' }, '');
   }
-  if (document.getElementById('settings-overlay').classList.contains('active')) {
-    var openGroup = null;
-    document.querySelectorAll('.settings-group-content').forEach(function(el) {
-      if (el.classList.contains('open')) openGroup = el;
-    });
-    if (openGroup) {
-      openGroup.classList.remove('open');
-      var btn = document.querySelector('[data-group="' + openGroup.id + '"]');
-      if (btn) btn.classList.remove('sg-active');
-    } else {
-      settingsCancel();
+  document.addEventListener('touchstart', _initBack, { once: true, passive: true });
+  document.addEventListener('click', _initBack, { once: true });
+
+  window.addEventListener('popstate', function() {
+    setTimeout(function() { history.pushState({ panel: 'nav' }, ''); }, 0);
+    if (document.getElementById('manage-overlay').classList.contains('active')) {
+      manageClose();
+      return;
     }
-    return;
-  }
-  if (typeof getActiveSectionId === 'function' && getActiveSectionId()) {
-    setActiveSection(null);
-    return;
-  }
-  if (typeof habitsVisible !== 'undefined' && habitsVisible) {
-    toggleHabits();
-    return;
-  }
-  if (window.AndroidSettings && window.AndroidSettings.goBack) {
-    window.AndroidSettings.goBack();
-  }
-};
+    if (document.getElementById('settings-overlay').classList.contains('active')) {
+      var openGroup = null;
+      document.querySelectorAll('.settings-group-content').forEach(function(el) {
+        if (el.classList.contains('open')) openGroup = el;
+      });
+      if (openGroup) {
+        openGroup.classList.remove('open');
+        var btn = document.querySelector('[data-group="' + openGroup.id + '"]');
+        if (btn) btn.classList.remove('sg-active');
+      } else {
+        settingsCancel();
+      }
+      return;
+    }
+    if (typeof getActiveSectionId === 'function' && getActiveSectionId()) {
+      setActiveSection(null);
+      return;
+    }
+    if (typeof habitsVisible !== 'undefined' && habitsVisible) {
+      toggleHabits();
+      return;
+    }
+  });
+});

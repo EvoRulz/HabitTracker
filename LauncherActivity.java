@@ -52,7 +52,6 @@ public class LauncherActivity
     return;
 }
     }
-    private WebView mWebView;
     public class SettingsBridge {
         @JavascriptInterface
         public String getPermissionStatus() {
@@ -113,15 +112,6 @@ public class LauncherActivity
                 .edit().putBoolean("done_" + dateKey, done).apply();
         }
         @JavascriptInterface
-        public void goBack() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    moveTaskToBack(true);
-                }
-            });
-        }
-        @JavascriptInterface
         public void showNotification(String title, String body) {
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -180,7 +170,6 @@ public class LauncherActivity
         android.view.View root = getWindow().getDecorView().getRootView();
         WebView wv = findWebView(root);
         if (wv != null) {
-            mWebView = wv;
             wv.addJavascriptInterface(new OrientationBridge(), "AndroidOrientation");
             wv.addJavascriptInterface(new SettingsBridge(), "AndroidSettings");
         }
@@ -290,11 +279,7 @@ public class LauncherActivity
     }
     @Override
     public void onBackPressed() {
-        if (mWebView != null) {
-            mWebView.evaluateJavascript("window._handleBackButton && window._handleBackButton()", null);
-        } else {
-            moveTaskToBack(true);
-        }
+        moveTaskToBack(true);
     }
     @Override
     protected Uri getLaunchingUrl() {
