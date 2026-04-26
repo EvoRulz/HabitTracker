@@ -185,10 +185,10 @@ function onHexInput(id) {
     appStyle.borderColor = getColorValue("s-app-border");
     appStyle.theadBg     = getColorValue("s-app-thead");
     appStyle.cellBg      = getColorValue("s-app-cell-bg");
-    appStyle.barSet      = getColorValue("s-app-bar-set");
-    appStyle.barTotal    = getColorValue("s-app-bar-total");
-    appStyle.barStreak   = getColorValue("s-app-bar-streak");
-    appStyle.padding     = Number(document.getElementById("s-app-padding").value);
+    if (document.getElementById("s-app-bar-set"))    appStyle.barSet    = getColorValue("s-app-bar-set");
+    if (document.getElementById("s-app-bar-total"))  appStyle.barTotal  = getColorValue("s-app-bar-total");
+    if (document.getElementById("s-app-bar-streak")) appStyle.barStreak = getColorValue("s-app-bar-streak");
+    const _padEl = document.getElementById("s-app-padding"); if (_padEl) appStyle.padding = Number(_padEl.value);
     collectAppStops();
     applyAppStyle();
   }
