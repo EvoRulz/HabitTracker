@@ -933,35 +933,34 @@ makeRowsDraggable('sg-app', 'data-app-row', '_appRowOrder');
 makeRowsDraggable('sg-clock', 'data-clock-row', '_clockRowOrder');
 makeRowsDraggable('sg-checkboxes', 'data-checkbox-row', '_checkboxRowOrder');
 
-window.addEventListener('load', function() {
-  for (var _i = 0; _i < 10; _i++) history.pushState({ panel: 'nav' }, '');
-  window.addEventListener('popstate', function() {
-    history.pushState({ panel: 'nav' }, '');
-    if (document.getElementById('manage-overlay').classList.contains('active')) {
-      manageClose();
-      return;
+window._handleBackButton = function() {
+  if (document.getElementById('manage-overlay').classList.contains('active')) {
+    manageClose();
+    return;
+  }
+  if (document.getElementById('settings-overlay').classList.contains('active')) {
+    var openGroup = null;
+    document.querySelectorAll('.settings-group-content').forEach(function(el) {
+      if (el.classList.contains('open')) openGroup = el;
+    });
+    if (openGroup) {
+      openGroup.classList.remove('open');
+      var btn = document.querySelector('[data-group="' + openGroup.id + '"]');
+      if (btn) btn.classList.remove('sg-active');
+    } else {
+      settingsCancel();
     }
-    if (document.getElementById('settings-overlay').classList.contains('active')) {
-      var openGroup = null;
-      document.querySelectorAll('.settings-group-content').forEach(function(el) {
-        if (el.classList.contains('open')) openGroup = el;
-      });
-      if (openGroup) {
-        openGroup.classList.remove('open');
-        var btn = document.querySelector('[data-group="' + openGroup.id + '"]');
-        if (btn) btn.classList.remove('sg-active');
-      } else {
-        settingsCancel();
-      }
-      return;
-    }
-    if (typeof getActiveSectionId === 'function' && getActiveSectionId()) {
-      setActiveSection(null);
-      return;
-    }
-    if (typeof habitsVisible !== 'undefined' && habitsVisible) {
-      toggleHabits();
-      return;
-    }
-  });
-});
+    return;
+  }
+  if (typeof getActiveSectionId === 'function' && getActiveSectionId()) {
+    setActiveSection(null);
+    return;
+  }
+  if (typeof habitsVisible !== 'undefined' && habitsVisible) {
+    toggleHabits();
+    return;
+  }
+  if (window.AndroidSettings && window.AndroidSettings.goBack) {
+    window.AndroidSettings.goBack();
+  }
+};
