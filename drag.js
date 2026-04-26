@@ -171,9 +171,10 @@
       if (tdrag.ghost) tdrag.ghost.remove();
       saveTopGridOrder();
     } else {
-      const btn = tdrag.item.querySelector("button");
-      // Skip re-triggering for manage-habits since it already fires directly
-      if (btn && tdrag.item.dataset.item !== "manage-habits") btn.click();
+      if (window._interactEnabled !== false) {
+        const btn = tdrag.item.querySelector("button");
+        if (btn && tdrag.item.dataset.item !== "manage-habits") btn.click();
+      }
     }
     tdrag = null;
   });
@@ -263,7 +264,7 @@
       if (sgDrag.ghost) sgDrag.ghost.remove();
       saveSettingsGroupOrder();
     } else {
-      toggleSettingsGroup(sgDrag.item.dataset.group);
+      if (window._interactEnabled !== false) toggleSettingsGroup(sgDrag.item.dataset.group);
     }
     sgDrag = null;
   });
