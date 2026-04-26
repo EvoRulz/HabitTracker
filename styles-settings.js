@@ -772,9 +772,9 @@ _btnStyles = {};
       const item = e.target.closest('[data-slider-row]');
       if (!item || srDrag) return;
       e.preventDefault();
-      if (!item) return;
+      if (!item || srDrag) return;
       e.preventDefault();
-      e.stopPropagation();
+      grid.setPointerCapture(e.pointerId);
       const rect = item.getBoundingClientRect();
       srDrag = {
         item, startX: e.clientX, startY: e.clientY,
@@ -783,7 +783,7 @@ _btnStyles = {};
         ghost: null, lastOver: null, active: false,
       };
     });
-    document.addEventListener('pointermove', e => {
+    grid.addEventListener('pointermove', e => {
       if (!srDrag) return;
       if (!srDrag.active) {
         if (Math.hypot(e.clientX - srDrag.startX, e.clientY - srDrag.startY) < DRAG_THRESHOLD) return;
@@ -820,7 +820,7 @@ _btnStyles = {};
         grid.insertBefore(over, iNext || null);
       }
     });
-    document.addEventListener('pointerup', () => {
+    grid.addEventListener('pointerup', () => {
       if (!srDrag) return;
       if (srDrag.active) {
         srDrag.item.style.opacity = '';
@@ -829,7 +829,7 @@ _btnStyles = {};
       }
       srDrag = null;
     });
-    document.addEventListener('pointercancel', () => {
+    grid.addEventListener('pointercancel', () => {
       if (!srDrag) return;
       srDrag.item.style.opacity = '';
       if (srDrag.ghost) srDrag.ghost.remove();
