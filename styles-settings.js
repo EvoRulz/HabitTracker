@@ -963,5 +963,6 @@ window.addEventListener('load', function() {
     if (typeof habitsVisible !== 'undefined' && habitsVisible) {
       toggleHabits(); return;
     }
+    history.pushState({panel:'base'}, '');
   });
 });
