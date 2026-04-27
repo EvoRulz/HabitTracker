@@ -834,6 +834,7 @@ _btnStyles = {};
         if (moved > 10) srCancel();
         return;
       }
+      e.preventDefault();
       if (!srDrag.active) {
         if (moved < 4) return;
         srDrag.active = true;
@@ -873,7 +874,7 @@ _btnStyles = {};
         grid.insertBefore(srDrag.item, overNext || null);
         grid.insertBefore(over, iNext || null);
       }
-    });
+    }, { passive: false });
 
     const srUp = () => {
       if (!srDrag) return;
