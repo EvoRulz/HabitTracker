@@ -791,6 +791,7 @@ _btnStyles = {};
 
     function srCancel() {
       clearTimeout(srHoldTimer); srHoldTimer = null; srReady = false;
+      document.body.style.touchAction = '';
       if (srDrag) {
         srDrag.item.style.boxShadow = '';
         srDrag.item.style.opacity = '';
@@ -821,6 +822,7 @@ _btnStyles = {};
         if (srDrag) {
           srReady = true;
           srDrag.item.style.boxShadow = '0 0 14px 5px rgba(255,255,255,0.85)';
+          document.body.style.touchAction = 'none';
         }
       }, 500);
     });
