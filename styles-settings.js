@@ -787,16 +787,13 @@ _btnStyles = {};
       if (e.target.closest('input, select, button, textarea')) return;
       const item = e.target.closest('[data-slider-row]');
       if (!item || srDrag) return;
-      e.preventDefault();
-      if (!item || srDrag) return;
-      e.preventDefault();
-      grid.setPointerCapture(e.pointerId);
       const rect = item.getBoundingClientRect();
       srDrag = {
         item, startX: e.clientX, startY: e.clientY,
         offX: e.clientX - rect.left, offY: e.clientY - rect.top,
         w: rect.width, h: rect.height,
         ghost: null, lastOver: null, active: false,
+        pointerId: e.pointerId,
       };
     });
     grid.addEventListener('pointermove', e => {
@@ -805,6 +802,8 @@ _btnStyles = {};
         if (Math.hypot(e.clientX - srDrag.startX, e.clientY - srDrag.startY) < DRAG_THRESHOLD) return;
         if (window._dragEnabled === false) { srDrag = null; return; }
         srDrag.active = true;
+        grid.setPointerCapture(srDrag.pointerId);
+        e.preventDefault();
         const rect = srDrag.item.getBoundingClientRect();
         srDrag.ghost = srDrag.item.cloneNode(true);
         Object.assign(srDrag.ghost.style, {
@@ -880,8 +879,6 @@ _btnStyles = {};
       if (e.target.closest('input, select, button, textarea')) return;
       const item = e.target.closest('[' + itemAttr + ']');
       if (!item || rDrag) return;
-      e.preventDefault();
-      grid.setPointerCapture(e.pointerId);
       const rect = item.getBoundingClientRect();
       rDrag = {
         item, startX: e.clientX, startY: e.clientY,
