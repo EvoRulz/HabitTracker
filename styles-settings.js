@@ -800,7 +800,7 @@ _btnStyles = {};
     }
 
     grid.addEventListener('pointerdown', e => {
-      if (e.target.closest('input, select, button, textarea, .alpha-slider, [class*="overlay"]')) return;
+      if (e.target.closest('input, select, button, textarea')) return;
       const item = e.target.closest('[data-slider-row]');
       if (!item || srDrag) return;
       const rect = item.getBoundingClientRect();
