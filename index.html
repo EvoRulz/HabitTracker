@@ -765,7 +765,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v758</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
+  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v759</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
   <div class="top-item" data-item="date" style="background:var(--clock-date-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-time-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -1521,38 +1521,30 @@ input[type="checkbox"]:hover {
 <script src="notifications.js"></script>
 <script>
 document.querySelectorAll('.alpha-slider').forEach(function(s){
-  // Overlay a transparent blocker div over the track, with a hole cut out for the thumb
-  var wrapper = s.parentElement;
-  if (getComputedStyle(wrapper).position === 'static') wrapper.style.position = 'relative';
-  var blocker = document.createElement('div');
-  blocker.style.cssText = 'position:absolute;inset:0;z-index:2;cursor:default;';
-  blocker.addEventListener('pointerdown', function(e){ e.preventDefault(); e.stopImmediatePropagation(); });
-  wrapper.appendChild(blocker);
-
-  // The actual slider sits above the blocker only at the thumb position via pointer-events:none on track
-  s.style.position = 'relative';
-  s.style.zIndex = '3';
-  s.style.pointerEvents = 'none';
-
-  var dragging = false;
+  var active = false;
+  var savedVal = s.value;
   s.addEventListener('pointerdown', function(e){
     var rect = s.getBoundingClientRect();
-    var handleW = parseFloat(getComputedStyle(s).getPropertyValue('--slider-handle-w')) || 16;
     var min = parseFloat(s.min) || 0;
     var max = parseFloat(s.max) || 255;
+    var handleW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--slider-handle-w')) || 16;
     var ratio = (parseFloat(s.value) - min) / (max - min);
-    var thumbX = rect.left + ratio * (rect.width - handleW) + handleW / 2;
-    if (Math.abs(e.clientX - thumbX) <= handleW) {
-      dragging = true;
-      s.style.pointerEvents = 'auto';
-      s.setPointerCapture(e.pointerId);
+    var thumbCX = rect.left + ratio * (rect.width - handleW) + handleW / 2;
+    if (Math.abs(e.clientX - thumbCX) <= handleW * 1.2) {
+      active = true;
+      savedVal = s.value;
     } else {
+      active = false;
       e.preventDefault();
-      e.stopImmediatePropagation();
+      e.stopPropagation();
+      return;
     }
+  }, true);
+  s.addEventListener('input', function(){
+    if (!active) s.value = savedVal;
   });
-  s.addEventListener('pointerup', function(){ dragging = false; s.style.pointerEvents = 'none'; });
-  s.addEventListener('pointercancel', function(){ dragging = false; s.style.pointerEvents = 'none'; });
+  s.addEventListener('pointerup', function(){ active = false; });
+  s.addEventListener('pointercancel', function(){ active = false; });
 });
 </script>
 </body>
