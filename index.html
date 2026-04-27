@@ -765,7 +765,7 @@ input[type="checkbox"]:hover {
 
 <div id="top-grid">
   <div class="top-item" data-item="title"><span id="title-span" class="title-span flame-active" style="font-size:22px;font-weight:bold;color:white;pointer-events:auto" onclick="this.classList.toggle('flame-active')">Habit Tracker</span></div>
-  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v756</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
+  <div class="top-item" data-item="version"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span id="app-version" style="font-size:14px;">v757</span><span id="app-stats" style="font-size:9px;color:#555;line-height:1.4;text-align:center;"></span></div></div>
   <div class="top-item" data-item="date" style="background:var(--clock-date-bg,transparent)"><span id="live-date" style="font-size:var(--clock-date-size,13px);color:var(--clock-date-color,#666);letter-spacing:0.02em;cursor:pointer;line-height:1.3;text-align:center"></span></div>
   <div class="top-item" data-item="time" style="background:var(--clock-time-bg,transparent)"><span id="live-time" style="font-size:var(--clock-time-size,13px);color:var(--clock-time-color,#666);letter-spacing:0.02em;cursor:pointer"></span></div>
   <div class="top-item" data-item="settings">
@@ -1521,20 +1521,30 @@ input[type="checkbox"]:hover {
 <script src="notifications.js"></script>
 <script>
 document.querySelectorAll('.alpha-slider').forEach(function(s){
-  var _thumbActive = false;
-  var _savedVal;
+  var dragging = false;
   s.addEventListener('pointerdown', function(e){
-  _savedVal = s.value;
-  var rect = s.getBoundingClientRect();
-  var range = (s.max || 255) - (s.min || 0);
-  var ratio = range > 0 ? (s.value - s.min) / range : 0;
-  var thumbX = rect.left + ratio * rect.width;
-  _thumbActive = Math.abs(e.clientX - thumbX) <= 28;
+    var rect = s.getBoundingClientRect();
+    var range = parseFloat(s.max||255) - parseFloat(s.min||0);
+    var ratio = range > 0 ? (parseFloat(s.value) - parseFloat(s.min)) / range : 0;
+    var handleW = 16;
+    var thumbX = rect.left + ratio * (rect.width - handleW) + handleW / 2;
+    if (Math.abs(e.clientX - thumbX) <= 20) {
+      dragging = true;
+      s.setPointerCapture(e.pointerId);
+    } else {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+  });
+  s.addEventListener('pointermove', function(e){
+    if (!dragging) { e.preventDefault(); e.stopImmediatePropagation(); }
+  });
+  s.addEventListener('pointerup', function(){ dragging = false; });
+  s.addEventListener('pointercancel', function(){ dragging = false; });
+  s.addEventListener('click', function(e){
+    if (!dragging) { e.preventDefault(); e.stopImmediatePropagation(); }
+  });
 });
-s.addEventListener('input', function(){ if (!_thumbActive) { s.value = _savedVal; s.dispatchEvent(new Event('change')); } });
-s.addEventListener('change', function(){ if (!_thumbActive) s.value = _savedVal; });
-s.addEventListener('pointerup', function(){ _thumbActive = false; });
-s.addEventListener('pointercancel', function(){ _thumbActive = false; });
 </script>
 </body>
 </html>
