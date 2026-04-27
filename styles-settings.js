@@ -757,6 +757,10 @@ _btnStyles = {};
       _cogEl2.style.boxShadow   = `0 0 16px 5px ${hex8ToCss(s.glow)}`;
     }
   }
+  var _srGlowStyle = document.createElement('style');
+  _srGlowStyle.textContent = '.sr-drag-ready { box-shadow: 0 0 12px 4px rgba(255,255,255,0.7) !important; transition: box-shadow 0.2s; }';
+  document.head.appendChild(_srGlowStyle);
+
   function saveSliderRowOrder() {
     const grid = document.getElementById('sg-sliders');
     if (!grid) return;
@@ -783,20 +787,39 @@ _btnStyles = {};
     let srDrag = null;
     const grid = document.getElementById('sg-sliders');
     if (!grid) return;
+    var _srHoldTimer = null;
+    var _srPending = null;
+
     grid.addEventListener('pointerdown', e => {
       if (e.target.closest('input, select, button, textarea')) return;
       const item = e.target.closest('[data-slider-row]');
       if (!item || srDrag) return;
       const rect = item.getBoundingClientRect();
-      srDrag = {
+      _srPending = {
         item, startX: e.clientX, startY: e.clientY,
         offX: e.clientX - rect.left, offY: e.clientY - rect.top,
         w: rect.width, h: rect.height,
         ghost: null, lastOver: null, active: false,
         pointerId: e.pointerId,
       };
+      _srHoldTimer = setTimeout(() => {
+        if (_srPending) {
+          srDrag = _srPending;
+          _srPending.item.classList.add('sr-drag-ready');
+        }
+      }, 1000);
     });
     grid.addEventListener('pointermove', e => {
+      if (_srPending && !srDrag) {
+        const dx = e.clientX - _srPending.startX;
+        const dy = e.clientY - _srPending.startY;
+        if (Math.hypot(dx, dy) > 8) {
+          clearTimeout(_srHoldTimer);
+          _srHoldTimer = null;
+          _srPending = null;
+          return;
+        }
+      }
       if (!srDrag) return;
       if (!srDrag.active) {
         if (Math.hypot(e.clientX - srDrag.startX, e.clientY - srDrag.startY) < DRAG_THRESHOLD) return;
@@ -837,7 +860,11 @@ _btnStyles = {};
       }
     });
     grid.addEventListener('pointerup', () => {
+      clearTimeout(_srHoldTimer);
+      _srHoldTimer = null;
+      if (_srPending) { _srPending.item.classList.remove('sr-drag-ready'); _srPending = null; }
       if (!srDrag) return;
+      srDrag.item.classList.remove('sr-drag-ready');
       if (srDrag.active) {
         srDrag.item.style.opacity = '';
         if (srDrag.ghost) srDrag.ghost.remove();
@@ -846,7 +873,11 @@ _btnStyles = {};
       srDrag = null;
     });
     grid.addEventListener('pointercancel', () => {
+      clearTimeout(_srHoldTimer);
+      _srHoldTimer = null;
+      if (_srPending) { _srPending.item.classList.remove('sr-drag-ready'); _srPending = null; }
       if (!srDrag) return;
+      srDrag.item.classList.remove('sr-drag-ready');
       srDrag.item.style.opacity = '';
       if (srDrag.ghost) srDrag.ghost.remove();
       srDrag = null;
