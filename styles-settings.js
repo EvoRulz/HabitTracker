@@ -882,12 +882,16 @@ _btnStyles = {};
       if (!srDrag) return;
       const wasActive = srDrag.active;
       grid.style.touchAction = '';
-      const _so2 = document.getElementById('settings-overlay'); if (_so2) _so2.style.overflowY = '';
       srCancel();
       if (wasActive) saveSliderRowOrder();
     };
     grid.addEventListener('pointerup', srUp);
     grid.addEventListener('pointercancel', srCancel);
+
+    document.addEventListener('touchmove', function(e) {
+      if (srReady) e.preventDefault();
+    }, { passive: false });
+
     applySliderRowOrder();
   })();
   function makeRowsDraggable(containerId, itemAttr, saveKey) {
