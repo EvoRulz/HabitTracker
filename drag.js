@@ -18,6 +18,16 @@
   });
 
   buttonsEl.addEventListener("pointerup", e => {
+    if (window._dragEnabled === false) {
+      if (window._interactEnabled === false) return;
+      const btn = e.target.closest(".tracker-btn[data-id]");
+      if (!btn) return;
+      drag = null;
+      const id = btn.dataset.id;
+      const currentlyOpen = getActiveSectionId();
+      setActiveSection(currentlyOpen === id ? null : id);
+      return;
+    }
     if (!drag || drag.active) return;
     if (window._interactEnabled === false) return;
     const id = drag.id;
