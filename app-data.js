@@ -76,6 +76,9 @@ function appExport() {
             appStyle = Object.assign({}, APP_STYLE_DEFAULTS, JSON.parse(data["_appStyle"]));
             if (!appStyle.imgData && _existingImg) appStyle.imgData = _existingImg;
             localStorage.setItem("_appStyle", data["_appStyle"]);
+            if (appStyle.bgType === 'image' && !appStyle.imgData) {
+              ImgDB.get("bgImage").then(img => { if (img) { appStyle.imgData = img; applyAppStyle(); } }).catch(() => {});
+            }
             applyAppStyle();
           } catch {}
         }
