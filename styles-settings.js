@@ -507,7 +507,9 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
         }
         if (data["_appStyle"]) {
           try {
+            const _existingImg = appStyle.imgData;
             appStyle = Object.assign({}, APP_STYLE_DEFAULTS, JSON.parse(data["_appStyle"]));
+            if (!appStyle.imgData && _existingImg) appStyle.imgData = _existingImg;
             localStorage.setItem("_appStyle", data["_appStyle"]);
             applyAppStyle();
           } catch {}

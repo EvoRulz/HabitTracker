@@ -1,4 +1,4 @@
-const CACHE = "habit-tracker-v786";
+const CACHE = "habit-tracker-v787";
 
 const ASSETS = [
   "./",
@@ -20,6 +20,9 @@ const ASSETS = [
   "./bootstrap.js",
   "./font.js",
   "./notifications.js"
+  "./notifications.js",
+  "./slider-init.js",
+  "./styles.css"
 ];
 
 self.addEventListener("notificationclick", e => {
