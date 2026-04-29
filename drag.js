@@ -6,6 +6,7 @@
     const btn = e.target.closest(".tracker-btn[data-id]");
     if (!btn) return;
     if (drag) return;
+    if (window._dragEnabled === false) return;
     const rect = btn.getBoundingClientRect();
     drag = {
       id: btn.dataset.id, btn,
