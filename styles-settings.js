@@ -241,6 +241,9 @@ function onHexInput(id) {
 }
     const item = document.querySelector(`#settings-groups-grid [data-group="${groupId}"]`);
     if (item) item.classList.toggle('sg-active', isOpen);
+    if (groupId === 'sg-swatches' && isOpen) {
+      if (window._cpSyncUI) window._cpSyncUI();
+    }
     if (groupId === 'sg-notifications' && isOpen) {
       if (window.notifRefreshPermission) window.notifRefreshPermission();
       if (window.notifLoadScheduleUI) window.notifLoadScheduleUI();
@@ -408,6 +411,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     localStorage.setItem("_clockTumbler", JSON.stringify(window._clockGet().tumblerCfg));
     applyBtnStyle();
     applyAppStyle();
+    if (window._cpSaveFromUI) window._cpSaveFromUI();
     settingsClose();
   }
   function settingsCancel() {
@@ -662,6 +666,7 @@ _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
     localStorage.removeItem("_btnStyles");
     localStorage.removeItem("_appStyle");
     localStorage.removeItem("_clockTumbler");
+    localStorage.removeItem("_cpSettings");
     _btnStyles = {};
     window._clockSet([6, 1, 1, 1, 2, 1, 1, 0]);
     if (window._tumblerRefresh) window._tumblerRefresh();

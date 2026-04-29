@@ -1,4 +1,4 @@
-const CACHE = "habit-tracker-v1033";
+const CACHE = "habit-tracker-v1034";
 
 const ASSETS = [
   "./",
@@ -21,6 +21,7 @@ const ASSETS = [
   "./font.js",
   "./notifications.js",
   "./slider-init.js",
+  "./color-picker.js",
   "./styles.css"
 ];
 

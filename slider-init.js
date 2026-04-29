@@ -22,11 +22,7 @@ var dragging = false;
     var ratio = (parseFloat(s.value)-cachedMin)/(cachedMax-cachedMin);
     var thumbCX = cachedRect.left + ratio*(cachedRect.width-cachedHandleW) + cachedHandleW/2;
     var hitRadius = Math.max(cachedHandleW, 28);
-    if (Math.abs(e.clientX - thumbCX) > hitRadius) {
-      overlay.style.pointerEvents = 'none';
-      setTimeout(function() { overlay.style.pointerEvents = ''; }, 300);
-      return;
-    }
+    if (Math.abs(e.clientX - thumbCX) > hitRadius) return;
     overlay.style.touchAction = 'none';
     s.classList.add('handle-active');
     e.preventDefault();
