@@ -111,7 +111,14 @@
 
   sgGrid.addEventListener('pointerdown', e => {
     const item = e.target.closest('.settings-group-item');
-    if (!item || sgDrag) return;
+    if (!item) return;
+    if (sgDrag) {
+      if (sgDrag.active) {
+        sgDrag.item.style.opacity = '';
+        if (sgDrag.ghost) sgDrag.ghost.remove();
+      }
+      sgDrag = null;
+    }
     if (window._interactEnabled === false) return;
     const rect = item.getBoundingClientRect();
     sgDrag = {
@@ -139,8 +146,8 @@
         pointerEvents: 'none', opacity: '0.75', zIndex: '9999',
         margin: '0', boxSizing: 'border-box',
       });
-      (document.getElementById('settings-overlay') || document.body).appendChild(sgDrag.ghost);
-      sgDrag.item.style.opacity = '0.3';
+      document.body.appendChild(sgDrag.ghost);
+        sgDrag.item.style.opacity = '0.3';
     }
     e.preventDefault();
     e.stopPropagation();
