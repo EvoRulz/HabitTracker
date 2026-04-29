@@ -141,13 +141,13 @@
       `<div><div style="${ls}">Saturation</div>` +
         `<input id="cp-sat" type="range" min="0" max="100" value="${S}" style="${ss}"></div>` +
       `<div><div style="${ls}">Brightness</div>` +
-        `<input id="cp-bri" type="range" min="0" max="100" value="${B}" style="${ss}"></div>` +
+        `<input id="cp-bri" type="range" min="0" max="100" value="${B}" style="${ss}"></div>`;
     document.body.appendChild(el);
 
     makeDragger(el.querySelector('#cp-hue'), v => { H = v; commitColor(); });
     makeDragger(el.querySelector('#cp-sat'), v => { S = v; commitColor(); });
     makeDragger(el.querySelector('#cp-bri'), v => { B = v; commitColor(); });
-    
+
     let dg = null;
     el.addEventListener('pointerdown', e => {
       if (e.target.tagName === 'INPUT') return;
@@ -220,6 +220,7 @@
   }, true);
 
   // ── Public API ─────────────────────────────────────────────
+  window._cpClose = close;
   window._cpSyncUI = function () {
     if (typeof setColorValue !== 'function') return;
     const c = cpCfg();

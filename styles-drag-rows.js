@@ -235,6 +235,7 @@ window.addEventListener('load', function() {
   var _goingForward = false;
   window.addEventListener('popstate', function() {
     if (_goingForward) { _goingForward = false; return; }
+    if (document.getElementById('cp-popup')) { window._cpClose(); _goingForward = true; history.go(1); return; }
     if (document.getElementById('manage-overlay').classList.contains('active')) {
       manageClose();
     } else if (document.getElementById('settings-overlay').classList.contains('active')) {

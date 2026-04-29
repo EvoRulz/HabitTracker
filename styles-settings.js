@@ -232,6 +232,7 @@ function onHexInput(id) {
         if (btn) btn.classList.remove('sg-active');
       }
     });
+    if (window._cpClose) window._cpClose();
     const c = document.getElementById(groupId);
     const isOpen = c.classList.toggle('open');
     if (isOpen) history.pushState({panel:'sg'}, '');
@@ -388,6 +389,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     } catch(e) { alert("settingsOpen error: " + e.message + "\n" + e.stack); }
   }
   function settingsClose() {
+    if (window._cpClose) window._cpClose();
     document.getElementById("settings-overlay").classList.remove("active");
   }
   async function settingsSave() {
