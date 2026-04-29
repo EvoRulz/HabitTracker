@@ -182,7 +182,7 @@
     activeSwatch = swatch;
     popup = buildPopup();
     position(swatch);
-    popup.querySelector('#cp-hex').value = inp.value.replace('#','').toUpperCase();
+    const _hexInit = popup.querySelector('#cp-hex'); if (_hexInit) _hexInit.value = inp.value.replace('#','').toUpperCase();
     refreshTracks();
     setTimeout(() => document.addEventListener('pointerdown', tapOut), 80);
   }
