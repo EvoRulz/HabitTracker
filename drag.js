@@ -17,15 +17,6 @@
     };
   });
 
-  buttonsEl.addEventListener("pointerup", e => {
-  if (!drag || drag.active) return;
-  if (window._interactEnabled === false) return;
-  const id = drag.id;
-  drag = null;
-  const currentlyOpen = getActiveSectionId();
-  setActiveSection(currentlyOpen === id ? null : id);
-  });
-
   document.addEventListener("pointermove", e => {
     if (!drag) return;
     if (!drag.active) {
@@ -76,8 +67,10 @@
       saveButtonOrder();
       drag.btn.style.background = "";
     } else {
-      const currentlyOpen = getActiveSectionId();
-      setActiveSection(currentlyOpen === drag.id ? null : drag.id);
+      if (window._interactEnabled !== false) {
+        const currentlyOpen = getActiveSectionId();
+        setActiveSection(currentlyOpen === drag.id ? null : drag.id);
+      }
     }
     drag = null;
   });

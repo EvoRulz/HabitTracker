@@ -81,12 +81,6 @@
     btn.addEventListener('pointerup', () => {
       const _s = _btnStyleFor(config.id);
       btn.style.background = hex8ToCss(_s.bg);
-      if (window._interactEnabled !== false && !(drag && drag.active)) {
-        drag = null;
-        const id = config.id;
-        const currentlyOpen = getActiveSectionId();
-        setActiveSection(currentlyOpen === id ? null : id);
-      }
     });
     btn.addEventListener('pointercancel', () => { const _s = _btnStyleFor(config.id); btn.style.background = hex8ToCss(_s.bg); });
     return btn;
