@@ -106,101 +106,6 @@
       window._cfBuild();
     }
   }
-  // ── Top grid drag-to-reorder ───────────────────────────────
-  const topGrid = document.getElementById("top-grid");
-  let tdrag = null;
-
-  topGrid.addEventListener("pointerdown", e => {
-    const item = e.target.closest(".top-item");
-    if (!item) return;
-    if (tdrag) return;
-    e.preventDefault();
-    const rect = item.getBoundingClientRect();
-    tdrag = {
-      item, startX: e.clientX, startY: e.clientY,
-      offX: e.clientX - rect.left, offY: e.clientY - rect.top,
-      w: rect.width, h: rect.height,
-      ghost: null, lastOver: null, active: false,
-    };
-  });
-
-  topGrid.addEventListener("pointermove", e => {
-    if (!tdrag) return;
-    if (!tdrag.active) {
-      if (Math.hypot(e.clientX - tdrag.startX, e.clientY - tdrag.startY) < DRAG_THRESHOLD) return;
-      if (window._dragEnabled === false) return;
-      tdrag.active = true;
-      const rect = tdrag.item.getBoundingClientRect();
-      tdrag.ghost = tdrag.item.cloneNode(true);
-      Object.assign(tdrag.ghost.style, {
-        position: "fixed", left: rect.left+"px", top: rect.top+"px",
-        width: rect.width+"px", height: rect.height+"px",
-        pointerEvents: "none", opacity: "0.75", zIndex: "8999",
-        margin: "0", boxSizing: "border-box",
-      });
-      document.body.appendChild(tdrag.ghost);
-      tdrag.item.style.visibility = "hidden";
-    }
-    tdrag.ghost.style.left = (e.clientX - tdrag.offX) + "px";
-    tdrag.ghost.style.top  = (e.clientY - tdrag.offY) + "px";
-    const gcx = e.clientX - tdrag.offX + tdrag.w / 2;
-    const gcy = e.clientY - tdrag.offY + tdrag.h / 2;
-    let over = null;
-    for (const t of topGrid.children) {
-      if (t === tdrag.item) continue;
-      const r = t.getBoundingClientRect();
-      if (gcx >= r.left && gcx <= r.right && gcy >= r.top && gcy <= r.bottom) { over = t; break; }
-    }
-    if (!over) { tdrag.lastOver = null; return; }
-    if (over === tdrag.lastOver) return;
-    tdrag.lastOver = over;
-    const overNext = over.nextSibling, iNext = tdrag.item.nextSibling;
-    if (iNext === over)                topGrid.insertBefore(over, tdrag.item);
-    else if (overNext === tdrag.item)  topGrid.insertBefore(tdrag.item, over);
-    else {
-      topGrid.insertBefore(tdrag.item, overNext || null);
-      topGrid.insertBefore(over, iNext || null);
-    }
-  });
-
-  document.addEventListener("pointerup", () => {
-    if (!tdrag) return;
-    if (tdrag.active) {
-      tdrag.item.style.visibility = "";
-      if (tdrag.ghost) tdrag.ghost.remove();
-      saveTopGridOrder();
-    } else {
-      if (window._interactEnabled !== false) {
-        const btn = tdrag.item.querySelector("button");
-        if (btn && tdrag.item.dataset.item !== "manage-habits") btn.click();
-      }
-    }
-    tdrag = null;
-  });
-
-  document.addEventListener("pointercancel", () => {
-    if (!tdrag) return;
-    tdrag.item.style.visibility = "";
-    if (tdrag.ghost) tdrag.ghost.remove();
-    tdrag = null;
-  });
-
-  function saveTopGridOrder() {
-    const order = [...topGrid.children].map(w => w.dataset.item).filter(Boolean);
-    localStorage.setItem("_topGridOrder", JSON.stringify(order));
-  }
-  function applyTopGridOrder() {
-    try {
-      const saved = JSON.parse(localStorage.getItem("_topGridOrder"));
-      if (!Array.isArray(saved)) return;
-      saved.forEach(id => {
-        const w = topGrid.querySelector(`.top-item[data-item="${id}"]`);
-        if (w) topGrid.appendChild(w);
-      });
-    } catch {}
-  }
-  applyTopGridOrder();
-  // ── Settings group grid drag-to-reorder ───────────────────
   const sgGrid = document.getElementById('settings-groups-grid');
   let sgDrag = null;
 
@@ -217,26 +122,26 @@
       ghost: null, lastOver: null, active: false,
       pointerId: e.pointerId,
     };
-    sgGrid.setPointerCapture(e.pointerId);
-    const _soDown = document.getElementById('settings-overlay');
-    if (_soDown) _soDown.style.overflowY = 'hidden';
+    item.setPointerCapture(e.pointerId);
   });
 
-  sgGrid.addEventListener('pointermove', e => {
+  document.addEventListener('pointermove', e => {
     if (!sgDrag) return;
     e.preventDefault();
     if (!sgDrag.active) {
       if (Math.hypot(e.clientX - sgDrag.startX, e.clientY - sgDrag.startY) < DRAG_THRESHOLD) return;
       sgDrag.active = true;
-      const _so2 = document.getElementById('settings-overlay');
-      if (_so2) _so2.style.overflowY = 'hidden';
+      const _so = document.getElementById('settings-overlay');
+      if (_so) _so.style.overflowY = 'hidden';
       const rect = sgDrag.item.getBoundingClientRect();
+      sgDrag.offX = sgDrag.startX - rect.left;
+      sgDrag.offY = sgDrag.startY - rect.top;
       sgDrag.ghost = sgDrag.item.cloneNode(true);
       Object.assign(sgDrag.ghost.style, {
-        position:'fixed', left:rect.left+'px', top:rect.top+'px',
-        width:rect.width+'px', height:rect.height+'px',
-        pointerEvents:'none', opacity:'0.75', zIndex:'9999',
-        margin:'0', boxSizing:'border-box',
+        position: 'fixed', left: rect.left + 'px', top: rect.top + 'px',
+        width: rect.width + 'px', height: rect.height + 'px',
+        pointerEvents: 'none', opacity: '0.75', zIndex: '9999',
+        margin: '0', boxSizing: 'border-box',
       });
       (document.getElementById('settings-overlay') || document.body).appendChild(sgDrag.ghost);
       sgDrag.item.style.opacity = '0.3';
@@ -263,15 +168,13 @@
     }
   }, { passive: false });
 
-  sgGrid.addEventListener('pointerup', () => {
-    const _soUp = document.getElementById('settings-overlay');
-    if (_soUp) _soUp.style.overflowY = '';
+  document.addEventListener('pointerup', e => {
     if (!sgDrag) return;
+    const _so = document.getElementById('settings-overlay');
+    if (_so) _so.style.overflowY = '';
     if (sgDrag.active) {
       sgDrag.item.style.opacity = '';
       if (sgDrag.ghost) sgDrag.ghost.remove();
-      const _so3 = document.getElementById('settings-overlay');
-      if (_so3) _so3.style.overflowY = '';
       saveSettingsGroupOrder();
     } else {
       if (window._interactEnabled !== false) toggleSettingsGroup(sgDrag.item.dataset.group);
@@ -279,19 +182,15 @@
     sgDrag = null;
   });
 
-  sgGrid.addEventListener('pointercancel', () => {
-    const _soCancel = document.getElementById('settings-overlay');
-    if (_soCancel) _soCancel.style.overflowY = '';
+  document.addEventListener('pointercancel', e => {
     if (!sgDrag) return;
+    const _so = document.getElementById('settings-overlay');
+    if (_so) _so.style.overflowY = '';
     sgDrag.item.style.opacity = '';
     if (sgDrag.ghost) sgDrag.ghost.remove();
     sgDrag = null;
   });
 
-  function saveSettingsGroupOrder() {
-    const order = [...sgGrid.children].map(el => el.dataset.group).filter(Boolean);
-    localStorage.setItem('_settingsGroupOrder', JSON.stringify(order));
-  }
   function applySettingsGroupOrder() {
     try {
       const saved = JSON.parse(localStorage.getItem('_settingsGroupOrder'));
