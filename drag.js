@@ -207,6 +207,7 @@
     const item = e.target.closest('.settings-group-item');
     if (!item || sgDrag) return;
     if (window._interactEnabled === false) return;
+    e.preventDefault();
     const rect = item.getBoundingClientRect();
     sgDrag = {
       item, startX: e.clientX, startY: e.clientY,
@@ -215,14 +216,15 @@
       ghost: null, lastOver: null, active: false,
       pointerId: e.pointerId,
     };
+    sgGrid.setPointerCapture(e.pointerId);
   });
 
-  document.addEventListener('pointermove', e => {
+  sgGrid.addEventListener('pointermove', e => {
     if (!sgDrag) return;
+    e.preventDefault();
     if (!sgDrag.active) {
       if (Math.hypot(e.clientX - sgDrag.startX, e.clientY - sgDrag.startY) < DRAG_THRESHOLD) return;
       sgDrag.active = true;
-      e.preventDefault();
       const rect = sgDrag.item.getBoundingClientRect();
       sgDrag.ghost = sgDrag.item.cloneNode(true);
       Object.assign(sgDrag.ghost.style, {
@@ -256,7 +258,7 @@
     }
   }, { passive: false });
 
-  document.addEventListener('pointerup', () => {
+  sgGrid.addEventListener('pointerup', () => {
     if (!sgDrag) return;
     if (sgDrag.active) {
       sgDrag.item.style.opacity = '';
@@ -268,7 +270,7 @@
     sgDrag = null;
   });
 
-  document.addEventListener('pointercancel', () => {
+  sgGrid.addEventListener('pointercancel', () => {
     if (!sgDrag) return;
     sgDrag.item.style.opacity = '';
     if (sgDrag.ghost) sgDrag.ghost.remove();
@@ -283,12 +285,10 @@
     try {
       const saved = JSON.parse(localStorage.getItem('_settingsGroupOrder'));
       if (!Array.isArray(saved)) return;
-      // Append known saved items in order
       saved.forEach(id => {
         const item = sgGrid.querySelector(`[data-group="${id}"]`);
         if (item) sgGrid.appendChild(item);
       });
-      // Append any new group items not present in the saved order
       sgGrid.querySelectorAll('.settings-group-item').forEach(item => {
         if (!saved.includes(item.dataset.group)) sgGrid.appendChild(item);
       });
