@@ -232,7 +232,14 @@
 
   topGrid.addEventListener('pointerdown', e => {
     const item = e.target.closest('.top-item[data-item]');
-    if (!item || topDrag) return;
+    if (!item) return;
+    if (topDrag) {
+      if (topDrag.active) {
+        topDrag.item.style.visibility = '';
+        if (topDrag.ghost) topDrag.ghost.remove();
+      }
+      topDrag = null;
+    }
     if (window._dragEnabled === false) return;
     const rect = item.getBoundingClientRect();
     topDrag = {

@@ -354,6 +354,9 @@
     .top-item[data-item="orient-lock"] button {
     pointer-events: auto;
     }
+    .top-item[data-item="hide-habits"] button {
+    pointer-events: auto;
+    }
     .top-item input[type="file"] { display: none; }
     #settings-overlay {
       display: none; position: fixed; inset: 0;
