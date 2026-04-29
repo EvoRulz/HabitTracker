@@ -124,20 +124,17 @@
     };
     const _so = document.getElementById('settings-overlay');
     if (_so) _so.style.overflowY = 'hidden';
-    item.setPointerCapture(e.pointerId);
   });
 
   document.addEventListener('pointermove', e => {
     if (!sgDrag) return;
     e.preventDefault();
     if (!sgDrag.active) {
-      if (Math.hypot(e.clientX - sgDrag.startX, e.clientY - sgDrag.startY) < DRAG_THRESHOLD) return;
+      if (Math.hypot(e.clientX - sgDrag.startX, e.clientY - sgDrag.startY) < 14) return;
       sgDrag.active = true;
+      sgDrag.item.setPointerCapture(sgDrag.pointerId);
       const _so = document.getElementById('settings-overlay');
       if (_so) _so.style.overflowY = 'hidden';
-      const rect = sgDrag.item.getBoundingClientRect();
-      sgDrag.offX = sgDrag.startX - rect.left;
-      sgDrag.offY = sgDrag.startY - rect.top;
       sgDrag.ghost = sgDrag.item.cloneNode(true);
       Object.assign(sgDrag.ghost.style, {
         position: 'fixed', left: rect.left + 'px', top: rect.top + 'px',
