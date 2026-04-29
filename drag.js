@@ -15,6 +15,7 @@
       btnW: rect.width, btnH: rect.height,
       ghost: null, lastOver: null, active: false,
     };
+    e.preventDefault();
   });
 
   document.addEventListener("pointermove", e => {
@@ -225,6 +226,8 @@
     if (!sgDrag.active) {
       if (Math.hypot(e.clientX - sgDrag.startX, e.clientY - sgDrag.startY) < DRAG_THRESHOLD) return;
       sgDrag.active = true;
+      const _so2 = document.getElementById('settings-overlay');
+      if (_so2) _so2.style.overflowY = 'hidden';
       const rect = sgDrag.item.getBoundingClientRect();
       sgDrag.ghost = sgDrag.item.cloneNode(true);
       Object.assign(sgDrag.ghost.style, {
@@ -263,6 +266,8 @@
     if (sgDrag.active) {
       sgDrag.item.style.opacity = '';
       if (sgDrag.ghost) sgDrag.ghost.remove();
+      const _so3 = document.getElementById('settings-overlay');
+      if (_so3) _so3.style.overflowY = '';
       saveSettingsGroupOrder();
     } else {
       if (window._interactEnabled !== false) toggleSettingsGroup(sgDrag.item.dataset.group);
@@ -274,6 +279,8 @@
     if (!sgDrag) return;
     sgDrag.item.style.opacity = '';
     if (sgDrag.ghost) sgDrag.ghost.remove();
+    const _so4 = document.getElementById('settings-overlay');
+    if (_so4) _so4.style.overflowY = '';
     sgDrag = null;
   });
 
