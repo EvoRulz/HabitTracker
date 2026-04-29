@@ -217,12 +217,11 @@
     };
   });
 
-  sgGrid.addEventListener('pointermove', e => {
+  document.addEventListener('pointermove', e => {
     if (!sgDrag) return;
     if (!sgDrag.active) {
       if (Math.hypot(e.clientX - sgDrag.startX, e.clientY - sgDrag.startY) < DRAG_THRESHOLD) return;
       sgDrag.active = true;
-      sgGrid.setPointerCapture(sgDrag.pointerId);
       const rect = sgDrag.item.getBoundingClientRect();
       sgDrag.ghost = sgDrag.item.cloneNode(true);
       Object.assign(sgDrag.ghost.style, {

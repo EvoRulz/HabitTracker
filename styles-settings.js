@@ -277,7 +277,7 @@ function onHexInput(id) {
     });
     _btnStyleSnapshot  = Object.assign({}, btnStyle);
     _btnStylesSnapshot = JSON.parse(JSON.stringify(_btnStyles));
-    _appStyleSnapshot  = Object.assign({}, appStyle, { stops: appStyle.stops.slice() });
+    _appStyleSnapshot  = Object.assign({}, appStyle, { stops: appStyle.stops.slice(), imgData: appStyle.imgData });
     const clk = window._clockGet();
     _clockSnapshot = { tumblerCfg: clk.tumblerCfg.slice() };
     const _initId = window._cfActiveId ? window._cfActiveId() : null;
@@ -367,18 +367,6 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     if (typeof cfSyncTuningUI !== 'undefined') if (window.cfSyncTuningUI) window.cfSyncTuningUI();
     if (window._cfBuild) {
       window._cfBuild();
-      const _cfId = window._cfActiveId ? window._cfActiveId() : null;
-      if (_cfId) {
-        const _s2 = _btnStyleFor(_cfId);
-        setColorValue('s-bg',       _s2.bg);
-        setColorValue('s-fg',       _s2.fg);
-        setColorValue('s-glow',     _s2.glow);
-        setColorValue('s-activebg', _s2.activeBg);
-        document.getElementById("s-font").value = _s2.font;
-        btnStyle.bg = _s2.bg; btnStyle.fg = _s2.fg;
-        btnStyle.glow = _s2.glow; btnStyle.activeBg = _s2.activeBg;
-        btnStyle.font = _s2.font;
-      }
     }
     if(window.fontPickerSync)fontPickerSync();
     requestAnimationFrame(() => {
