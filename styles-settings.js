@@ -233,6 +233,7 @@ function onHexInput(id) {
   let _undoDebounceTimer = null;
   let _skipCancelSnapshot = false;
   let _applyingSnapshot = false;
+  let _lastUndoRedoTime = 0;
   function toggleSettingsGroup(groupId) {
     document.querySelectorAll('.settings-group-content').forEach(el => {
       if (el.id !== groupId) {
@@ -358,9 +359,20 @@ function onHexInput(id) {
     }
     _applyingSnapshot = false;
   }
-  function settingsUndo() {
+  function _flushPendingHistory() {
+    if (_undoDebounceTimer === null) return;
     clearTimeout(_undoDebounceTimer);
+    _undoDebounceTimer = null;
+    if (_applyingSnapshot) return;
+    _history = _history.slice(0, _historyIndex + 1);
+    _history.push(_captureStyleSnapshot());
+    if (_history.length > 50) _history.shift();
+    _historyIndex = _history.length - 1;
+  }
+  function settingsUndo() {
+    _flushPendingHistory();
     if (!_canUndo()) return;
+    _lastUndoRedoTime = Date.now();
     _historyIndex--;
     _applyingSnapshot = true;
     _applyStyleSnapshot(_history[_historyIndex]);
@@ -369,8 +381,9 @@ function onHexInput(id) {
     _updateUndoRedoBtns();
   }
   function settingsRedo() {
-    clearTimeout(_undoDebounceTimer);
+    _flushPendingHistory();
     if (!_canRedo()) return;
+    _lastUndoRedoTime = Date.now();
     _historyIndex++;
     _applyingSnapshot = true;
     _applyStyleSnapshot(_history[_historyIndex]);
@@ -682,10 +695,12 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
       clearTimeout(_undoDebounceTimer);
       _undoDebounceTimer = setTimeout(() => {
         if (_applyingSnapshot) return;
+        if (Date.now() - _lastUndoRedoTime < 600) { _undoDebounceTimer = null; return; }
         _history = _history.slice(0, _historyIndex + 1);
         _history.push(_captureStyleSnapshot());
         if (_history.length > 50) _history.shift();
         _historyIndex = _history.length - 1;
+        _undoDebounceTimer = null;
         _updateUndoRedoBtns();
       }, 400);
     }
