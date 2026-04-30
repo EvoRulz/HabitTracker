@@ -109,18 +109,24 @@
     const min = +slider.min, max = +slider.max;
     let active = false;
     let cachedRect = null;
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:absolute;inset:0;z-index:1;cursor:pointer;touch-action:none;';
+    const par = slider.parentElement;
+    if (getComputedStyle(par).position === 'static') par.style.position = 'relative';
+    par.appendChild(overlay);
+    slider.style.pointerEvents = 'none';
     function update(cx) {
-      const r = cachedRect || slider.getBoundingClientRect();
+      const r = cachedRect;
       const v = Math.round(min + Math.max(0, Math.min(1, (cx - r.left) / r.width)) * (max - min));
       slider.value = v; onVal(v);
     }
-    slider.addEventListener('pointerdown', e => {
-      active = true; cachedRect = slider.getBoundingClientRect(); slider.setPointerCapture(e.pointerId);
+    overlay.addEventListener('pointerdown', e => {
+      active = true; cachedRect = slider.getBoundingClientRect(); overlay.setPointerCapture(e.pointerId);
       update(e.clientX); e.preventDefault(); e.stopPropagation();
     });
-    slider.addEventListener('pointermove', e => { if (active) { update(e.clientX); e.preventDefault(); } });
-    slider.addEventListener('pointerup',     () => { active = false; cachedRect = null; });
-    slider.addEventListener('pointercancel', () => { active = false; cachedRect = null; });
+    overlay.addEventListener('pointermove', e => { if (active) { update(e.clientX); e.preventDefault(); } });
+    overlay.addEventListener('pointerup',     () => { active = false; cachedRect = null; });
+    overlay.addEventListener('pointercancel', () => { active = false; cachedRect = null; });
   }
 
   function buildPopup() {
