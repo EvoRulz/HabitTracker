@@ -239,4 +239,17 @@
   window._cpRebuild = function () {
     if (popup && activeSwatch) { const sw = activeSwatch; close(); openFor(sw); }
   };
+  window._cpRefresh = function () {
+  if (!popup || !activeSwatch) return;
+  const inp = activeSwatch.querySelector('input[type="color"]');
+  if (!inp) return;
+  [H, S, B] = rgbToHsb(...hexToRgb(inp.value));
+  const hueEl = popup.querySelector('#cp-hue');
+  const satEl = popup.querySelector('#cp-sat');
+  const briEl = popup.querySelector('#cp-bri');
+  if (hueEl) hueEl.value = H;
+  if (satEl) satEl.value = S;
+  if (briEl) briEl.value = B;
+  refreshTracks();
+  };
 })();

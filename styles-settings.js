@@ -360,7 +360,7 @@ function onHexInput(id) {
     if (snap.cpSettings !== undefined) {
       if (snap.cpSettings) { localStorage.setItem('_cpSettings', JSON.stringify(snap.cpSettings)); } else { localStorage.removeItem('_cpSettings'); }
       if (window._cpSyncUI) window._cpSyncUI();
-      if (window._cpRebuild) window._cpRebuild();
+      if (window._cpRefresh) window._cpRefresh(); else if (window._cpRebuild) window._cpRebuild();
     }
     if (document.getElementById('settings-overlay').classList.contains('active')) {
       _syncSettingsPanelUI();
