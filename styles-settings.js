@@ -553,7 +553,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     if (_appStyleSnapshot)  { appStyle   = Object.assign({}, _appStyleSnapshot); applyAppStyle(); }
     if (_clockSnapshot) window._clockSet(_clockSnapshot.tumblerCfg);
     _settingsHasChanges = false;
-    _undoStack = []; _redoStack = []; _updateSettingsBtns();
+    _history = []; _historyIndex = -1; _updateSettingsBtns();
     settingsClose();
   }
   function settingsExport() {
@@ -684,7 +684,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
       _updateUndoRedoBtns();
     }
     clearTimeout(_undoDebounceTimer);
-    _undoDebounceTimer = setTimeout(() => { _undoPending = false; }, 400);
+    _undoDebounceTimer = setTimeout(() => { _undoPending = false; }, 80);
     const _cfId = window._cfActiveId ? window._cfActiveId() : null;
     if (_cfId) {
       if (_cfId === 'top-date') {

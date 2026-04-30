@@ -345,15 +345,15 @@
       margin: 0;
       pointer-events: none;
     }
-    .top-item[data-item="manage-habits"] button {
-    pointer-events: auto;
-    }
-    .top-item[data-item="settings"] button {
-    pointer-events: auto;
-    }
-    .top-item[data-item="orient-lock"] button {
-    pointer-events: auto;
-    }
+    .top-item[data-item="manage-habits"] button,    }
+    .top-item[data-item="settings"] button,
+    .top-item[data-item="orient-lock"] button,
+    .top-item[data-item="export-all"] button,
+    .top-item[data-item="import-all"] button,
+    .top-item[data-item="export-layout"] button,
+    .top-item[data-item="import-layout"] button,
+    .top-item[data-item="clear-all"] button,
+    .top-item[data-item="my-files"] button,
     .top-item[data-item="hide-habits"] button {
     pointer-events: auto;
     }
