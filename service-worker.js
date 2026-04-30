@@ -1,4 +1,4 @@
-const CACHE = "habit-tracker-v1066";
+const CACHE = "habit-tracker-v1067";
 
 const ASSETS = [
   "./",
@@ -11,7 +11,7 @@ const ASSETS = [
   "./tracker.js",
   "./app-data.js",
   "./styles-core.js",
-  "./settings-colors.js",
+  "./styles-colors.js",
   "./settings-panel.js",
   "./styles-drag-rows.js",
   "./coverflow.js",
