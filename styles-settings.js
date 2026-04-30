@@ -229,6 +229,7 @@ function onHexInput(id) {
   let _historyIndex = -1;
   let _undoPending = false;
   let _preGestureSnapshot = null;
+  let _gestureHasChanges = false;
   let _undoDebounceTimer = null;
   let _skipCancelSnapshot = false;
   let _applyingSnapshot = false;
@@ -677,14 +678,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     if (!document.getElementById('s-bg')) return;
     if (!_applyingSnapshot) {
       _settingsHasChanges = true;
-      if (!_applyingSnapshot && _preGestureSnapshot) {
-        _history = _history.slice(0, _historyIndex + 1);
-        _history.push(_preGestureSnapshot);
-        if (_history.length > 51) _history.shift();
-        _historyIndex = _history.length - 1;
-        _preGestureSnapshot = null;
-        _updateUndoRedoBtns();
-      }
+      _gestureHasChanges = true;
       _updateUndoRedoBtns();
     }
     const _cfId = window._cfActiveId ? window._cfActiveId() : null;
@@ -920,6 +914,19 @@ _btnStyles = {};
       _preGestureSnapshot = _captureStyleSnapshot();
     }
   }, true);
-  document.addEventListener('pointerup', function() { _gestureActive = false; });
-  document.addEventListener('pointercancel', function() { _gestureActive = false; });
+  document.addEventListener('pointerup', function() {
+    if (_gestureActive && _gestureHasChanges && !_applyingSnapshot) {
+      _history = _history.slice(0, _historyIndex + 1);
+      _history.push(_captureStyleSnapshot());
+      if (_history.length > 52) _history.shift();
+      _historyIndex = _history.length - 1;
+      _updateUndoRedoBtns();
+    }
+    _gestureActive = false;
+    _gestureHasChanges = false;
+  }, true);
+  document.addEventListener('pointercancel', function() {
+    _gestureActive = false;
+    _gestureHasChanges = false;
+  }, true);
 })();
