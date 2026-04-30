@@ -358,17 +358,23 @@ function onHexInput(id) {
     if (!_undoStack.length) return;
     _redoStack.push(_captureStyleSnapshot());
     const snap = _undoStack.pop();
+    clearTimeout(_undoDebounceTimer);
+    _undoPending = true;
     _applyStyleSnapshot(snap);
     _settingsHasChanges = true;
     _updateUndoRedoBtns();
+    _undoDebounceTimer = setTimeout(() => { _undoPending = false; }, 200);
   }
   function settingsRedo() {
     if (!_redoStack.length) return;
     _undoStack.push(_captureStyleSnapshot());
     const snap = _redoStack.pop();
+    clearTimeout(_undoDebounceTimer);
+    _undoPending = true;
     _applyStyleSnapshot(snap);
     _settingsHasChanges = true;
     _updateUndoRedoBtns();
+    _undoDebounceTimer = setTimeout(() => { _undoPending = false; }, 200);
   }
   function settingsOpen() {
     try {
@@ -413,6 +419,7 @@ function onHexInput(id) {
     setColorValue('s-slidertrack',     btnStyle.sliderTrack  || '#333333FF');
     setColorValue('s-sliderhandle',    btnStyle.sliderHandle || '#FFFFFFFF');
     setColorValue('s-sliderhandleborder', btnStyle.sliderHandleBorder || '#00000000');
+    setColorValue('s-sliderborder', btnStyle.sliderBorder || '#555555FF');
     setColorValue('s-checkbox-checked', btnStyle.checkboxChecked);
     setColorValue('s-checkbox-mark',    btnStyle.checkboxMark);
     setColorValue('s-checkbox-border',  btnStyle.checkboxBorder);
