@@ -160,13 +160,6 @@ function onHexInput(id) {
   }
 
   function appBgTypeChange() {
-    if (!_settingsHasChanges) {
-      _settingsHasChanges = true;
-      const _cancelBtnBg = document.getElementById('settings-cancel');
-      if (_cancelBtnBg) _cancelBtnBg.textContent = 'Cancel';
-      const _revertBtnBg = document.getElementById('settings-revert');
-      if (_revertBtnBg) _revertBtnBg.style.display = '';
-    }
     appStyle.bgType = document.getElementById("s-app-bg-type").value;
     const isGrad    = appStyle.bgType.startsWith("gradient");
     const isPat     = appStyle.bgType.startsWith("pattern");
@@ -178,13 +171,6 @@ function onHexInput(id) {
     buildAppBg();
   }
   function settingsAppChange() {
-    if (!_settingsHasChanges) {
-      _settingsHasChanges = true;
-      const _cancelBtnApp = document.getElementById('settings-cancel');
-      if (_cancelBtnApp) _cancelBtnApp.textContent = 'Cancel';
-      const _revertBtnApp = document.getElementById('settings-revert');
-      if (_revertBtnApp) _revertBtnApp.style.display = '';
-    }
     appStyle.bgType   = document.getElementById("s-app-bg-type").value;
     appStyle.gradDir  = document.getElementById("s-app-grad-dir").value;
     appStyle.patColor = getColorValue("s-app-pat-color");
@@ -238,7 +224,11 @@ function onHexInput(id) {
   // ── Settings open/close/save/cancel/reset/export/import ───
   let _appStyleSnapshot = null;
   let _clockSnapshot    = null;
-  let _settingsHasChanges = false;
+  let _undoStack = [];
+  let _redoStack = [];
+  let _undoPending = false;
+  let _undoDebounceTimer = null;
+  let _skipCancelSnapshot = false;
   function toggleSettingsGroup(groupId) {
     document.querySelectorAll('.settings-group-content').forEach(el => {
       if (el.id !== groupId) {
@@ -275,6 +265,44 @@ function onHexInput(id) {
       });
     }
   }
+  function _captureStyleSnapshot() {
+    return {
+      btnStyle: Object.assign({}, btnStyle),
+      _btnStyles: JSON.parse(JSON.stringify(_btnStyles)),
+      appStyle: Object.assign({}, appStyle, { stops: appStyle.stops.slice(), imgData: appStyle.imgData }),
+      clock: window._clockGet().tumblerCfg.slice(),
+    };
+  }
+  function _updateUndoRedoBtns() {
+    const u = document.getElementById('settings-undo');
+    const r = document.getElementById('settings-redo');
+    if (u) u.disabled = _undoStack.length === 0;
+    if (r) r.disabled = _redoStack.length === 0;
+  }
+  function _applyStyleSnapshot(snap) {
+    _skipCancelSnapshot = true;
+    btnStyle = Object.assign({}, snap.btnStyle);
+    _btnStyles = JSON.parse(JSON.stringify(snap._btnStyles));
+    appStyle = Object.assign({}, snap.appStyle, { stops: snap.appStyle.stops.slice(), imgData: snap.appStyle.imgData });
+    window._clockSet(snap.clock);
+    applyBtnStyle();
+    applyAppStyle();
+    settingsOpen();
+  }
+  function settingsUndo() {
+    if (!_undoStack.length) return;
+    _redoStack.push(_captureStyleSnapshot());
+    const snap = _undoStack.pop();
+    _applyStyleSnapshot(snap);
+    _updateUndoRedoBtns();
+  }
+  function settingsRedo() {
+    if (!_redoStack.length) return;
+    _undoStack.push(_captureStyleSnapshot());
+    const snap = _redoStack.pop();
+    _applyStyleSnapshot(snap);
+    _updateUndoRedoBtns();
+  }
   function settingsOpen() {
     try {
     _settingsJustOpened = true;
@@ -294,11 +322,16 @@ function onHexInput(id) {
     btn.dataset.debounceListener = 'true';
       }
     });
-    _btnStyleSnapshot  = Object.assign({}, btnStyle);
-    _btnStylesSnapshot = JSON.parse(JSON.stringify(_btnStyles));
-    _appStyleSnapshot  = Object.assign({}, appStyle, { stops: appStyle.stops.slice(), imgData: appStyle.imgData });
-    const clk = window._clockGet();
-    _clockSnapshot = { tumblerCfg: clk.tumblerCfg.slice() };
+    const _wasSkipSnap = _skipCancelSnapshot;
+    _skipCancelSnapshot = false;
+    if (!_wasSkipSnap) {
+      _btnStyleSnapshot  = Object.assign({}, btnStyle);
+      _btnStylesSnapshot = JSON.parse(JSON.stringify(_btnStyles));
+      _appStyleSnapshot  = Object.assign({}, appStyle, { stops: appStyle.stops.slice(), imgData: appStyle.imgData });
+      const clk = window._clockGet();
+      _clockSnapshot = { tumblerCfg: clk.tumblerCfg.slice() };
+      _undoStack = []; _redoStack = []; _updateUndoRedoBtns();
+    }
     const _initId = window._cfActiveId ? window._cfActiveId() : null;
     const _initS  = _initId ? _btnStyleFor(_initId) : btnStyle;
     setColorValue('s-bg',           _initS.bg);
@@ -400,12 +433,9 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
         hexEl.value = '#' + h + a;
       });
     });
-    _settingsHasChanges = false;
-    const _cancelBtnOpen = document.getElementById('settings-cancel');
-    if (_cancelBtnOpen) _cancelBtnOpen.textContent = 'Close';
-    const _revertBtnOpen = document.getElementById('settings-revert');
-    if (_revertBtnOpen) _revertBtnOpen.style.display = 'none';
-    history.pushState({panel:'settings'}, '');
+    if (!_wasSkipSnap) {
+      history.pushState({panel:'settings'}, '');
+    }
     } catch(e) { alert("settingsOpen error: " + e.message + "\n" + e.stack); }
   }
   function settingsClose() {
@@ -443,6 +473,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     if (_btnStyleSnapshot || _btnStylesSnapshot) applyBtnStyle();
     if (_appStyleSnapshot)  { appStyle   = Object.assign({}, _appStyleSnapshot); applyAppStyle(); }
     if (_clockSnapshot) window._clockSet(_clockSnapshot.tumblerCfg);
+    _undoStack = []; _redoStack = []; _updateUndoRedoBtns();
     settingsClose();
   }
   function settingsExport() {
@@ -563,13 +594,15 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
   }
   function settingsChange() {
     if (!document.getElementById('s-bg')) return;
-    if (!_settingsHasChanges) {
-      _settingsHasChanges = true;
-      const _cancelBtnChg = document.getElementById('settings-cancel');
-      if (_cancelBtnChg) _cancelBtnChg.textContent = 'Cancel';
-      const _revertBtnChg = document.getElementById('settings-revert');
-      if (_revertBtnChg) _revertBtnChg.style.display = '';
+    if (!_undoPending) {
+      _undoPending = true;
+      _undoStack.push(_captureStyleSnapshot());
+      if (_undoStack.length > 50) _undoStack.shift();
+      _redoStack = [];
+      _updateUndoRedoBtns();
     }
+    clearTimeout(_undoDebounceTimer);
+    _undoDebounceTimer = setTimeout(() => { _undoPending = false; }, 800);
     const _cfId = window._cfActiveId ? window._cfActiveId() : null;
     if (_cfId) {
       if (_cfId === 'top-date') {
@@ -692,11 +725,10 @@ _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
   async function settingsReset() {
     const ok = await confirmClear("This will reset all styles to their <strong>factory defaults</strong>.");
     if (!ok) return;
-    _settingsHasChanges = true;
-    const _cancelBtnRst = document.getElementById('settings-cancel');
-    if (_cancelBtnRst) _cancelBtnRst.textContent = 'Cancel';
-    const _revertBtnRst = document.getElementById('settings-revert');
-    if (_revertBtnRst) _revertBtnRst.style.display = '';
+    _undoStack.push(_captureStyleSnapshot());
+    if (_undoStack.length > 50) _undoStack.shift();
+    _redoStack = [];
+    _updateUndoRedoBtns();
     btnStyle  = Object.assign({}, BTN_STYLE_DEFAULTS);
     appStyle  = Object.assign({}, APP_STYLE_DEFAULTS);
     localStorage.removeItem("_btnStyle");
@@ -763,15 +795,6 @@ _btnStyles = {};
     window._clockSet([6, 1, 1, 1, 2, 1, 1, 0]);
     settingsUpdatePreview();
     if(window.fontPickerSync)fontPickerSync();
-  }
-  function settingsRevert() {
-    if (_btnStyleSnapshot)  { btnStyle   = Object.assign({}, _btnStyleSnapshot); }
-    if (_btnStylesSnapshot) { _btnStyles = JSON.parse(JSON.stringify(_btnStylesSnapshot)); }
-    if (_btnStyleSnapshot || _btnStylesSnapshot) applyBtnStyle();
-    if (_appStyleSnapshot)  { appStyle   = Object.assign({}, _appStyleSnapshot); applyAppStyle(); }
-    if (_clockSnapshot) window._clockSet(_clockSnapshot.tumblerCfg);
-    settingsClose();
-    setTimeout(() => settingsOpen(), 10);
   }
   function settingsUpdatePreview() {
     const p = document.getElementById("settings-btn-preview");
