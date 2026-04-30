@@ -43,6 +43,7 @@
       if (_tg) { _tg.value = picker.value; updateAlphaSliderBg('s-clock-time-glow'); }
       if (_tga) _tga.value = slider ? slider.value : 255;
     }
+    if (window._cpSaveFromUI) window._cpSaveFromUI();
     settingsChange();
 }
 function onAlphaChange(id) {
@@ -89,6 +90,7 @@ function onAlphaChange(id) {
       if (_tg) { _tg.value = document.getElementById('s-glow').value; updateAlphaSliderBg('s-clock-time-glow'); }
       if (_tga) _tga.value = slider.value;
     }
+    if (window._cpSaveFromUI) window._cpSaveFromUI();
     settingsChange();
 }
 function onHexInput(id) {
@@ -708,7 +710,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
         _historyIndex = _history.length - 1;
         _undoDebounceTimer = null;
         _updateUndoRedoBtns();
-      }, 400);
+      }, 50);
     }
     const _cfId = window._cfActiveId ? window._cfActiveId() : null;
     if (_cfId) {
