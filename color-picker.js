@@ -108,18 +108,19 @@
   function makeDragger(slider, onVal) {
     const min = +slider.min, max = +slider.max;
     let active = false;
+    let cachedRect = null;
     function update(cx) {
-      const r = slider.getBoundingClientRect();
+      const r = cachedRect || slider.getBoundingClientRect();
       const v = Math.round(min + Math.max(0, Math.min(1, (cx - r.left) / r.width)) * (max - min));
       slider.value = v; onVal(v);
     }
     slider.addEventListener('pointerdown', e => {
-      active = true; slider.setPointerCapture(e.pointerId);
+      active = true; cachedRect = slider.getBoundingClientRect(); slider.setPointerCapture(e.pointerId);
       update(e.clientX); e.preventDefault(); e.stopPropagation();
     });
     slider.addEventListener('pointermove', e => { if (active) { update(e.clientX); e.preventDefault(); } });
-    slider.addEventListener('pointerup',     () => { active = false; });
-    slider.addEventListener('pointercancel', () => { active = false; });
+    slider.addEventListener('pointerup',     () => { active = false; cachedRect = null; });
+    slider.addEventListener('pointercancel', () => { active = false; cachedRect = null; });
   }
 
   function buildPopup() {
