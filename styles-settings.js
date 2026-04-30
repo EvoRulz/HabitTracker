@@ -364,7 +364,7 @@ function onHexInput(id) {
     _settingsHasChanges = true;
     _updateUndoRedoBtns();
     clearTimeout(_undoDebounceTimer);
-    _undoDebounceTimer = setTimeout(() => { _undoRedoActive = false; _undoPending = false; }, 1000);
+    _undoDebounceTimer = setTimeout(() => { _undoRedoActive = false; _undoPending = false; }, 50);
   }
   function settingsRedo() {
     if (!_redoStack.length) return;
@@ -680,11 +680,11 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
       _undoPending = true;
       _undoStack.push(_captureStyleSnapshot());
       if (_undoStack.length > 50) _undoStack.shift();
-      if (!_undoRedoActive) _redoStack = [];
+      if (!_undoRedoActive && !_applyingSnapshot) _redoStack = [];
       _updateUndoRedoBtns();
     }
     clearTimeout(_undoDebounceTimer);
-    _undoDebounceTimer = setTimeout(() => { _undoPending = false; }, 800);
+    _undoDebounceTimer = setTimeout(() => { _undoPending = false; }, 300);
     const _cfId = window._cfActiveId ? window._cfActiveId() : null;
     if (_cfId) {
       if (_cfId === 'top-date') {
