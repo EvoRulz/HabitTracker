@@ -280,26 +280,83 @@ function onHexInput(id) {
     const cancelBtn = document.getElementById('settings-cancel');
     const undoBtn   = document.getElementById('settings-undo');
     const redoBtn   = document.getElementById('settings-redo');
-    if (saveBtn)   saveBtn.style.display   = _settingsHasChanges ? '' : 'none';
-    if (cancelBtn) cancelBtn.textContent   = _settingsHasChanges ? 'Cancel' : 'Close';
-    if (undoBtn) { undoBtn.style.display   = _undoStack.length > 0 ? '' : 'none'; undoBtn.disabled = _undoStack.length === 0; }
-    if (redoBtn) { redoBtn.style.display   = _redoStack.length > 0 ? '' : 'none'; redoBtn.disabled = _redoStack.length === 0; }
+    const anyActivity = _settingsHasChanges || _undoStack.length > 0 || _redoStack.length > 0;
+    if (saveBtn)   { saveBtn.style.display = anyActivity ? '' : 'none'; saveBtn.disabled = !_settingsHasChanges; saveBtn.style.opacity = _settingsHasChanges ? '' : '0.35'; }
+    if (cancelBtn) cancelBtn.textContent = _settingsHasChanges ? 'Cancel' : 'Close';
+    if (undoBtn)   { undoBtn.style.display = anyActivity ? '' : 'none'; undoBtn.disabled = _undoStack.length === 0; undoBtn.style.opacity = _undoStack.length > 0 ? '' : '0.35'; }
+    if (redoBtn)   { redoBtn.style.display = anyActivity ? '' : 'none'; redoBtn.disabled = _redoStack.length === 0; redoBtn.style.opacity = _redoStack.length > 0 ? '' : '0.35'; }
+  }
+  function _syncSettingsPanelUI() {
+    if (window._cfBuild) window._cfBuild();
+    setColorValue('s-sliderborder',       btnStyle.sliderBorder       || '#555555FF');
+    setColorValue('s-sliderfill',         btnStyle.sliderFill         || '#9659FFFF');
+    setColorValue('s-slidertrack',        btnStyle.sliderTrack        || '#333333FF');
+    setColorValue('s-sliderhandle',       btnStyle.sliderHandle       || '#FFFFFFFF');
+    setColorValue('s-sliderhandleborder', btnStyle.sliderHandleBorder || '#00000000');
+    const _sv  = (id, v)      => { const el = document.getElementById(id); if (el) el.value = String(v); };
+    const _svl = (id, v, sfx) => { const el = document.getElementById(id); if (el) el.textContent = v + sfx; };
+    _sv('s-sliderh',       btnStyle.sliderH      ?? 8);   _svl('s-sliderh-val',       btnStyle.sliderH      ?? 8,   'px');
+    _sv('s-sliderr',       btnStyle.sliderR      ?? 4);   _svl('s-sliderr-val',       btnStyle.sliderR      ?? 4,   '%');
+    _sv('s-sliderspread',  btnStyle.sliderSpread ?? 4);   _svl('s-sliderspread-val',  btnStyle.sliderSpread ?? 4,   'px');
+    _sv('s-sliderhandleh', btnStyle.sliderHandleH?? 16);  _svl('s-sliderhandleh-val', btnStyle.sliderHandleH?? 16,  'px');
+    _sv('s-sliderhandler', btnStyle.sliderHandleR?? 3);   _svl('s-sliderhandler-val', btnStyle.sliderHandleR?? 3,   '%');
+    _sv('s-sliderw',       btnStyle.sliderW      ?? 100); _svl('s-sliderw-val',       btnStyle.sliderW      ?? 100, '%');
+    _sv('s-sliderhandlew', btnStyle.sliderHandleW?? 16);  _svl('s-sliderhandlew-val', btnStyle.sliderHandleW?? 16,  'px');
+    setColorValue('s-clock-date-color', _btnStyleFor('top-date').fg);
+    setColorValue('s-clock-time-color', _btnStyleFor('top-time').fg);
+    setColorValue('s-clock-date-bg',    _btnStyleFor('top-date').bg);
+    setColorValue('s-clock-time-bg',    _btnStyleFor('top-time').bg);
+    setColorValue('s-clock-date-glow',  _btnStyleFor('top-date').glow || '#00000000');
+    setColorValue('s-clock-time-glow',  _btnStyleFor('top-time').glow || '#00000000');
+    _sv('s-clock-date-size', _btnStyles['top-date']?.clockDateSize ?? btnStyle.clockDateSize);
+    _sv('s-clock-time-size', _btnStyles['top-time']?.clockTimeSize ?? btnStyle.clockTimeSize);
+    if (window._tumblerRefresh) window._tumblerRefresh();
+    setColorValue('s-checkbox-checked', btnStyle.checkboxChecked);
+    setColorValue('s-checkbox-mark',    btnStyle.checkboxMark);
+    setColorValue('s-checkbox-border',  btnStyle.checkboxBorder);
+    setColorValue('s-checkbox-bg',      btnStyle.checkboxBg);
+    const _bgTypeEl  = document.getElementById('s-app-bg-type');  if (_bgTypeEl)  _bgTypeEl.value  = appStyle.bgType;
+    const _gradDirEl = document.getElementById('s-app-grad-dir'); if (_gradDirEl) _gradDirEl.value = appStyle.gradDir;
+    setColorValue('s-app-pat-color',  appStyle.patColor);
+    setColorValue('s-app-pat-bg',     appStyle.patBg);
+    setColorValue('s-app-img-tint',   appStyle.imgTint);
+    setColorValue('s-app-text',       appStyle.textColor);
+    setColorValue('s-app-border',     appStyle.borderColor);
+    setColorValue('s-app-thead',      appStyle.theadBg);
+    setColorValue('s-app-cell-bg',    appStyle.cellBg || '#111111FF');
+    buildStopPickers();
+    const _isGrad = appStyle.bgType.startsWith('gradient');
+    const _isPat  = appStyle.bgType.startsWith('pattern');
+    const _isImg  = appStyle.bgType === 'image';
+    document.getElementById('s-app-grad-dir-row').style.display = _isGrad ? '' : 'none';
+    document.getElementById('s-app-pattern-wrap').style.display = _isPat  ? '' : 'none';
+    document.getElementById('s-app-image-wrap').style.display   = _isImg  ? 'flex' : 'none';
+    if (window._cpSyncUI) window._cpSyncUI();
+    const _fontSel = document.getElementById('s-font'); if (_fontSel) _fontSel.value = btnStyle.font;
+    if (window.fontPickerSync) window.fontPickerSync();
+    document.querySelectorAll('.alpha-slider').forEach(function(s) {
+      if (s.id && s.id.endsWith('-alpha')) updateAlphaSliderBg(s.id.slice(0, -6));
+      else updateSliderFill(s);
+    });
+    settingsUpdatePreview();
   }
   function _applyStyleSnapshot(snap) {
-    _skipCancelSnapshot = true;
-    btnStyle = Object.assign({}, snap.btnStyle);
+    btnStyle   = Object.assign({}, snap.btnStyle);
     _btnStyles = JSON.parse(JSON.stringify(snap._btnStyles));
-    appStyle = Object.assign({}, snap.appStyle, { stops: snap.appStyle.stops.slice(), imgData: snap.appStyle.imgData });
+    appStyle   = Object.assign({}, snap.appStyle, { stops: snap.appStyle.stops.slice(), imgData: snap.appStyle.imgData });
     window._clockSet(snap.clock);
     applyBtnStyle();
     applyAppStyle();
-    settingsOpen();
+    if (document.getElementById('settings-overlay').classList.contains('active')) {
+      _syncSettingsPanelUI();
+    }
   }
   function settingsUndo() {
     if (!_undoStack.length) return;
     _redoStack.push(_captureStyleSnapshot());
     const snap = _undoStack.pop();
     _applyStyleSnapshot(snap);
+    _settingsHasChanges = true;
     _updateUndoRedoBtns();
   }
   function settingsRedo() {
@@ -307,6 +364,7 @@ function onHexInput(id) {
     _undoStack.push(_captureStyleSnapshot());
     const snap = _redoStack.pop();
     _applyStyleSnapshot(snap);
+    _settingsHasChanges = true;
     _updateUndoRedoBtns();
   }
   function settingsOpen() {
