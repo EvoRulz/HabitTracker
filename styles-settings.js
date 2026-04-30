@@ -224,6 +224,7 @@ function onHexInput(id) {
   // ── Settings open/close/save/cancel/reset/export/import ───
   let _appStyleSnapshot = null;
   let _clockSnapshot    = null;
+  let _settingsHasChanges = false;
   let _undoStack = [];
   let _redoStack = [];
   let _undoPending = false;
@@ -273,11 +274,16 @@ function onHexInput(id) {
       clock: window._clockGet().tumblerCfg.slice(),
     };
   }
-  function _updateUndoRedoBtns() {
-    const u = document.getElementById('settings-undo');
-    const r = document.getElementById('settings-redo');
-    if (u) u.disabled = _undoStack.length === 0;
-    if (r) r.disabled = _redoStack.length === 0;
+  function _updateUndoRedoBtns() { _updateSettingsBtns(); }
+  function _updateSettingsBtns() {
+    const saveBtn   = document.getElementById('settings-save');
+    const cancelBtn = document.getElementById('settings-cancel');
+    const undoBtn   = document.getElementById('settings-undo');
+    const redoBtn   = document.getElementById('settings-redo');
+    if (saveBtn)   saveBtn.style.display   = _settingsHasChanges ? '' : 'none';
+    if (cancelBtn) cancelBtn.textContent   = _settingsHasChanges ? 'Cancel' : 'Close';
+    if (undoBtn) { undoBtn.style.display   = _undoStack.length > 0 ? '' : 'none'; undoBtn.disabled = _undoStack.length === 0; }
+    if (redoBtn) { redoBtn.style.display   = _redoStack.length > 0 ? '' : 'none'; redoBtn.disabled = _redoStack.length === 0; }
   }
   function _applyStyleSnapshot(snap) {
     _skipCancelSnapshot = true;
@@ -325,12 +331,13 @@ function onHexInput(id) {
     const _wasSkipSnap = _skipCancelSnapshot;
     _skipCancelSnapshot = false;
     if (!_wasSkipSnap) {
+      _settingsHasChanges = false;
       _btnStyleSnapshot  = Object.assign({}, btnStyle);
       _btnStylesSnapshot = JSON.parse(JSON.stringify(_btnStyles));
       _appStyleSnapshot  = Object.assign({}, appStyle, { stops: appStyle.stops.slice(), imgData: appStyle.imgData });
       const clk = window._clockGet();
       _clockSnapshot = { tumblerCfg: clk.tumblerCfg.slice() };
-      _undoStack = []; _redoStack = []; _updateUndoRedoBtns();
+      _undoStack = []; _redoStack = []; _updateSettingsBtns();
     }
     const _initId = window._cfActiveId ? window._cfActiveId() : null;
     const _initS  = _initId ? _btnStyleFor(_initId) : btnStyle;
@@ -421,6 +428,10 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
       window._cfBuild();
     }
     if(window.fontPickerSync)fontPickerSync();
+    document.querySelectorAll('.alpha-slider').forEach(s => {
+      if (s.id && s.id.endsWith('-alpha')) updateAlphaSliderBg(s.id.slice(0, -6));
+      else updateSliderFill(s);
+    });
     requestAnimationFrame(() => {
       document.querySelectorAll('.hex-input').forEach(hexEl => {
         if (hexEl.value) return;
@@ -473,7 +484,8 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     if (_btnStyleSnapshot || _btnStylesSnapshot) applyBtnStyle();
     if (_appStyleSnapshot)  { appStyle   = Object.assign({}, _appStyleSnapshot); applyAppStyle(); }
     if (_clockSnapshot) window._clockSet(_clockSnapshot.tumblerCfg);
-    _undoStack = []; _redoStack = []; _updateUndoRedoBtns();
+    _settingsHasChanges = false;
+    _undoStack = []; _redoStack = []; _updateSettingsBtns();
     settingsClose();
   }
   function settingsExport() {
@@ -595,11 +607,12 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
   function settingsChange() {
     if (!document.getElementById('s-bg')) return;
     if (!_undoPending) {
+      _settingsHasChanges = true;
       _undoPending = true;
       _undoStack.push(_captureStyleSnapshot());
       if (_undoStack.length > 50) _undoStack.shift();
       _redoStack = [];
-      _updateUndoRedoBtns();
+      _updateSettingsBtns();
     }
     clearTimeout(_undoDebounceTimer);
     _undoDebounceTimer = setTimeout(() => { _undoPending = false; }, 800);
