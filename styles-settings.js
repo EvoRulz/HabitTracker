@@ -362,8 +362,8 @@ function onHexInput(id) {
     _applyingSnapshot = true;
     _applyStyleSnapshot(_history[_historyIndex]);
     _applyingSnapshot = false;
+    clearTimeout(_undoDebounceTimer);
     _settingsHasChanges = true;
-    _undoPending = false;
     _updateUndoRedoBtns();
   }
   function settingsRedo() {
@@ -372,8 +372,8 @@ function onHexInput(id) {
     _applyingSnapshot = true;
     _applyStyleSnapshot(_history[_historyIndex]);
     _applyingSnapshot = false;
+    clearTimeout(_undoDebounceTimer);
     _settingsHasChanges = true;
-    _undoPending = false;
     _updateUndoRedoBtns();
   }
   function settingsOpen() {
@@ -674,17 +674,20 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
   }
   function settingsChange() {
     if (!document.getElementById('s-bg')) return;
-    if (!_undoPending && !_applyingSnapshot) {
-      _undoPending = true;
-      _history = _history.slice(0, _historyIndex + 1);
-      _history.push(_captureStyleSnapshot());
-      if (_history.length > 51) _history.shift();
-      _historyIndex = _history.length - 1;
+    if (!_applyingSnapshot) {
       _settingsHasChanges = true;
+      clearTimeout(_undoDebounceTimer);
+      _undoDebounceTimer = setTimeout(() => {
+        if (!_applyingSnapshot) {
+          _history = _history.slice(0, _historyIndex + 1);
+          _history.push(_captureStyleSnapshot());
+          if (_history.length > 51) _history.shift();
+          _historyIndex = _history.length - 1;
+          _updateUndoRedoBtns();
+        }
+      }, 400);
       _updateUndoRedoBtns();
     }
-    clearTimeout(_undoDebounceTimer);
-    _undoDebounceTimer = setTimeout(() => { _undoPending = false; }, 80);
     const _cfId = window._cfActiveId ? window._cfActiveId() : null;
     if (_cfId) {
       if (_cfId === 'top-date') {
