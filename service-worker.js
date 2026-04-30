@@ -1,4 +1,4 @@
-const CACHE = "habit-tracker-v1065";
+const CACHE = "habit-tracker-v1066";
 
 const ASSETS = [
   "./",
@@ -11,7 +11,8 @@ const ASSETS = [
   "./tracker.js",
   "./app-data.js",
   "./styles-core.js",
-  "./styles-settings.js",
+  "./settings-colors.js",
+  "./settings-panel.js",
   "./styles-drag-rows.js",
   "./coverflow.js",
   "./drag.js",
@@ -22,7 +23,8 @@ const ASSETS = [
   "./notifications.js",
   "./slider-init.js",
   "./color-picker.js",
-  "./styles.css"
+  "./app.css",
+  "./settings-ui.css"
 ];
 
 self.addEventListener("notificationclick", e => {
