@@ -207,6 +207,7 @@
     }
     const _initId = window._cfActiveId ? window._cfActiveId() : null;
     const _initS  = _initId ? _btnStyleFor(_initId) : btnStyle;
+    if (window._cpSetGradientStops) window._cpSetGradientStops('s-bg', _initS.bgStops || null);
     setColorValue('s-bg',           _initS.bg);
     setColorValue('s-fg',           _initS.fg);
     setColorValue('s-glow',         _initS.glow);
