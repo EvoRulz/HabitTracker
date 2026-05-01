@@ -169,7 +169,7 @@
     el.id = 'cp-popup';
     el.style.cssText =
       `position:fixed;z-index:99999;background:${bg};border:1px solid ${br};border-radius:8px;` +
-      `padding:14px 16px;width:220px;box-shadow:0 4px 24px rgba(0,0,0,0.65);` +
+      `padding:14px 16px;width:268px;box-shadow:0 4px 24px rgba(0,0,0,0.65);` +
       `display:flex;flex-direction:column;gap:10px;touch-action:none;` +
       `user-select:none;-webkit-user-select:none;`;
     const ss = sliderCSS(v);
