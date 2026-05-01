@@ -414,8 +414,8 @@
     const brIsGrad = c.border && typeof c.border === 'string' && (c.border.startsWith('linear-gradient') || c.border.startsWith('radial-gradient'));
     const br = brIsGrad ? c.border : h8css(c.border);
     const bgLayer = brIsGrad ? (bgIsGrad ? bg : `linear-gradient(${bg}, ${bg})`) : bg;
-    const _lblRaw = (c.labelStops && typeof c.label === 'string' && (c.label.startsWith('linear-gradient') || c.label.startsWith('radial-gradient'))) ? c.label : null;
-    const lbl = _lblRaw || h8css(typeof c.label === 'string' ? c.label : '#bbbbbbFF');
+    const _lblGrad = c.labelStops ? _gBuildCSS(c.labelStops) : (typeof c.label === 'string' && (c.label.startsWith('linear-gradient') || c.label.startsWith('radial-gradient'))) ? c.label : null;
+    const lbl = _lblGrad || h8css(typeof c.label === 'string' ? c.label : '#bbbbbbFF');
     const sb = h8css((typeof btnStyle !== 'undefined' && btnStyle.sliderBorder) || '#555555FF');
     injectThumbCSS(v);
     const el = document.createElement('div');
@@ -428,7 +428,9 @@
       `display:flex;flex-direction:column;gap:10px;touch-action:none;` +
       `user-select:none;-webkit-user-select:none;`;
     const ss = sliderCSS(v);
-    const ls = `font-size:11px;color:${lbl};margin-bottom:2px;`;
+    const ls = _lblGrad
+      ? `font-size:11px;background:${_lblGrad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:transparent;margin-bottom:2px;`
+      : `font-size:11px;color:${lbl};margin-bottom:2px;`;
     el.innerHTML =
   `<div style="display:flex;gap:10px;align-items:center;">` +
     `<button id="cp-grad-minus" style="background:#2a2a2a;border:1px solid ${sb};border-radius:4px;color:#aaa;cursor:pointer;width:22px;height:22px;font-size:16px;line-height:1;padding:0;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">&#8722;</button>` +
@@ -643,7 +645,7 @@
       label:       (typeof getStyleValue === 'function' ? getStyleValue('s-cp-label') : getColorValue('s-cp-label')),
       bgStops:     window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-bg')     : null,
       borderStops: window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-border') : null,
-      labelStops:  window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-label') : null,
+      labelStops:  window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-label')  : null,
     }));
   };
   window._cpRebuild = function () {
