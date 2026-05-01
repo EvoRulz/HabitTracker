@@ -100,10 +100,8 @@
             const centerPct = s.pos * 100;
             const leftPct = centerPct - halfPct;
             const rightPct = centerPct + halfPct;
-            const leftColor = prev ? _gInterp(prev.hex8, next ? next.hex8 : prev.hex8, prev.pos < s.pos ? (s.pos - halfPct / 100 - prev.pos) / (s.pos - prev.pos) : 0) : h8css(s.hex8);
-            const rightColor = next ? _gInterp(prev ? prev.hex8 : next.hex8, next.hex8, next.pos > s.pos ? ((s.pos + halfPct / 100) - (prev ? prev.pos : s.pos)) / (next.pos - (prev ? prev.pos : s.pos)) : 1) : h8css(s.hex8);
-            stops.push(h8css(leftColor) + ' ' + Math.max(0, leftPct).toFixed(2) + '%');
-            stops.push(h8css(rightColor) + ' ' + Math.min(100, rightPct).toFixed(2) + '%');
+            const trueCenterPct = stripW > 0 ? (hw / 2 + s.pos * (stripW - hw)) / stripW * 100 : centerPct;
+            stops.push(h8css(_gInterp(prev ? prev.hex8 : next.hex8, next ? next.hex8 : prev.hex8, 0.5)) + ' ' + trueCenterPct.toFixed(2) + '%');
           });
           return 'linear-gradient(to right,' + stops.join(',') + ')';
         })()
