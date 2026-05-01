@@ -32,12 +32,178 @@
   }
 
   let popup = null, styleTag = null, activeSwatch = null;
+  const _gd   = {};   // stored gradient per swatch: { [inputId]: stops[] | null }
+  let   _ga   = null; // active stops for open popup (null = solid)
+  let   _gSel = 0;    // selected handle index
   let H = 0, S = 100, B = 100;
 
   const CP_DEFAULTS = { bg: '#1c1c1cFF', border: '#555555FF', label: '#bbbbbbFF' };
   function cpCfg() {
     try { const s = JSON.parse(localStorage.getItem('_cpSettings')); if (s) return Object.assign({}, CP_DEFAULTS, s); } catch {}
     return Object.assign({}, CP_DEFAULTS);
+  }
+
+  function _gHex8() {
+    const [r,g,b] = hsbToRgb(H,S,B);
+    const aEl = popup && popup.querySelector('#cp-alpha');
+    const a   = aEl ? parseInt(aEl.value) : 255;
+    return '#' + [r,g,b,a].map(v => v.toString(16).padStart(2,'0').toUpperCase()).join('');
+  }
+  function _gInterp(ha, hb, t) {
+    const p = h => { const s = h.replace('#',''); return [0,2,4,6].map(i => parseInt(s.slice(i,i+2),16)||0); };
+    const a = p(ha), b = p(hb);
+    return '#' + a.map((v,i) => Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0').toUpperCase()).join('');
+  }
+  function _gBuildCSS(stops) {
+    if (!stops || stops.length < 2) return null;
+    return 'linear-gradient(to right,' + stops.map(s => h8css(s.hex8)+' '+(s.pos*100).toFixed(1)+'%').join(',') + ')';
+  }
+  function _gLoad() {
+    if (!activeSwatch) { _ga = null; _gSel = 0; return; }
+    const inp = activeSwatch.querySelector('input[type="color"]');
+    _ga   = inp && _gd[inp.id] ? _gd[inp.id].map(s => ({...s})) : null;
+    _gSel = 0;
+  }
+  function _gSave() {
+    if (!activeSwatch) return;
+    const inp = activeSwatch.querySelector('input[type="color"]');
+    if (inp) _gd[inp.id] = _ga ? _ga.map(s => ({...s})) : null;
+  }
+  function _gLoadHandle(i) {
+    if (!_ga || !_ga[i] || _ga[i].isPercent) return;
+    const [r,g,b] = hexToRgb(_ga[i].hex8.slice(0,7));
+    [H,S,B] = rgbToHsb(r,g,b);
+    const aEl = popup && popup.querySelector('#cp-alpha');
+    if (aEl) aEl.value = parseInt(_ga[i].hex8.slice(7,9)||'ff',16);
+    refreshTracks(); refreshAlphaTrack();
+    const hexEl = popup && popup.querySelector('#cp-hex');
+    if (hexEl) hexEl.value = _ga[i].hex8;
+  }
+  function _gRender() {
+    if (!popup) return;
+    const strip  = popup.querySelector('#cp-grad-strip');
+    const hw     = popup.querySelector('#cp-grad-hw');
+    const minBtn = popup.querySelector('#cp-grad-minus');
+    const plsBtn = popup.querySelector('#cp-grad-plus');
+    if (!strip || !hw) return;
+    const solid = _gHex8();
+    strip.style.background = _ga
+      ? 'linear-gradient(to right,' + _ga.map(s => h8css(s.hex8)+' '+(s.pos*100).toFixed(1)+'%').join(',') + ')'
+      : h8css(solid);
+    hw.innerHTML = '';
+    const stops = _ga || [
+      {pos:0, hex8:solid, isEnd:true,  isPercent:false},
+      {pos:1, hex8:solid, isEnd:true,  isPercent:false},
+    ];
+    stops.forEach((s, i) => {
+      const isL = i===0, isR = i===stops.length-1, isSel = !!_ga && i===_gSel;
+      const h = document.createElement('div');
+      h.dataset.gi = i;
+      if (s.isPercent) h.dataset.isPercent = '1';
+      h.style.cssText = [
+        'position:absolute','top:50%','transform:translate(-50%,-50%)',
+        'width:14px','height:14px','border-radius:50%','box-sizing:border-box',
+        'pointer-events:auto','touch-action:none',
+        'cursor:' + (isL||isR ? 'pointer' : 'grab'),
+        'left:' + (s.pos*100) + '%',
+        'z-index:' + (isSel ? 10 : isL||isR ? 5 : 2),
+        'border:2px solid ' + (isSel ? '#fff' : (s.isPercent ? '#888' : '#666')),
+        'box-shadow:0 0 0 1px #000' + (isSel ? ',0 0 0 3px rgba(255,255,255,0.4)' : ''),
+      ].join(';');
+      if (s.isPercent) {
+        h.style.background = '#444';
+        h.innerHTML = '<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:7px;color:#ccc;font-weight:bold;pointer-events:none;">%</span>';
+      } else {
+        h.style.background = h8css(s.hex8);
+      }
+      let _ghdrag = false;
+      h.addEventListener('pointerdown', e => {
+        e.stopPropagation(); e.preventDefault();
+        _gSel = i;
+        hw.querySelectorAll('[data-gi]').forEach((hh, ii) => {
+          const sel = ii===i;
+          hh.style.borderColor = sel ? '#fff' : (hh.dataset.isPercent==='1' ? '#888' : '#666');
+          hh.style.zIndex      = sel ? 10 : (ii===0||ii===stops.length-1 ? 5 : 2);
+          hh.style.boxShadow   = '0 0 0 1px #000' + (sel ? ',0 0 0 3px rgba(255,255,255,0.4)' : '');
+        });
+        if (!s.isPercent && _ga) {
+          _gLoadHandle(i);
+        }
+        if (!isL && !isR && _ga) {
+          _ghdrag = true;
+          h.setPointerCapture(e.pointerId);
+        }
+      });
+      h.addEventListener('pointermove', e => {
+        if (!_ghdrag) return;
+        const rect = hw.getBoundingClientRect();
+        const p0 = i > 0            ? _ga[i-1].pos + 0.005 : 0.005;
+        const p1 = i < _ga.length-1 ? _ga[i+1].pos - 0.005 : 0.995;
+        _ga[i].pos = Math.max(p0, Math.min(p1, (e.clientX - rect.left)/rect.width));
+        h.style.left = (_ga[i].pos*100) + '%';
+        strip.style.background = 'linear-gradient(to right,' +
+          _ga.map(s2 => h8css(s2.hex8)+' '+(s2.pos*100).toFixed(1)+'%').join(',') + ')';
+      });
+      h.addEventListener('pointerup',     () => { if (_ghdrag) { _ghdrag=false; _gRender(); _gSave(); } });
+      h.addEventListener('pointercancel', () => { if (_ghdrag) { _ghdrag=false; _gRender(); } });
+      hw.appendChild(h);
+    });
+    if (minBtn) { minBtn.disabled = !_ga; minBtn.style.opacity = _ga ? '' : '0.4'; }
+    if (plsBtn) { plsBtn.disabled = !!(_ga&&_ga.length>=10); plsBtn.style.opacity = (_ga&&_ga.length>=10) ? '0.4' : ''; }
+  }
+  function _gPlus() {
+    const solid = _gHex8();
+    if (!_ga) {
+      _ga = [
+        {pos:0,   hex8:solid, isEnd:true,  isPercent:false},
+        {pos:0.5, hex8:solid, isEnd:false, isPercent:true },
+        {pos:1,   hex8:solid, isEnd:true,  isPercent:false},
+      ];
+      _gSel = 0;
+    } else {
+      const pctI = _ga.findIndex((s,j) => j>0 && j<_ga.length-1 && s.isPercent);
+      if (pctI !== -1) {
+        const denom = _ga[pctI+1].pos - _ga[pctI-1].pos;
+        const t = denom > 0 ? (_ga[pctI].pos - _ga[pctI-1].pos)/denom : 0.5;
+        _ga[pctI] = { ..._ga[pctI], isPercent:false, hex8: _gInterp(_ga[pctI-1].hex8, _ga[pctI+1].hex8, t) };
+        _gSel = pctI;
+        _gLoadHandle(pctI);
+      } else if (_ga.length < 10) {
+        const n = _ga.length + 1;
+        const colors = [];
+        for (let j=0; j<n; j++) {
+          const pos = j/(n-1);
+          let c = _ga[0].hex8;
+          for (let k=0; k<_ga.length-1; k++) {
+            if (pos >= _ga[k].pos && pos <= _ga[k+1].pos) {
+              const td = _ga[k+1].pos - _ga[k].pos;
+              c = _gInterp(_ga[k].hex8, _ga[k+1].hex8, td>0 ? (pos-_ga[k].pos)/td : 0);
+              break;
+            }
+          }
+          colors.push(c);
+        }
+        _ga = colors.map((hex8,j) => ({pos:j/(n-1), hex8, isEnd:j===0||j===n-1, isPercent:false}));
+        _gSel = Math.floor(n/2);
+        _gLoadHandle(_gSel);
+      }
+    }
+    _gRender(); _gSave();
+  }
+  function _gMinus() {
+    if (!_ga) return;
+    const mids = [];
+    for (let i=1; i<_ga.length-1; i++) mids.push(i);
+    if (!mids.length) return;
+    if (mids.length > 1) {
+      _ga.splice(mids[mids.length-1], 1);
+      _ga[0].isEnd = true; _ga[_ga.length-1].isEnd = true;
+      if (_gSel >= _ga.length) _gSel = _ga.length-1;
+    } else {
+      if (_ga[mids[0]].isPercent) { _ga = null; _gSel = 0; }
+      else { _ga[mids[0]].isPercent = true; _gSel = 0; }
+    }
+    _gRender(); _gSave();
   }
 
   function cssVars() {
@@ -117,6 +283,13 @@
     const _hexEl = popup ? popup.querySelector('#cp-hex') : null;
     if (_hexEl) _hexEl.value = '#' + hex.replace('#','') + aHex;
     refreshAlphaTrack();
+    if (_ga && _ga[_gSel] && !_ga[_gSel].isPercent) {
+      const [rc,gc,bc] = hsbToRgb(H,S,B);
+      const a = Math.round(Number(v));
+      _ga[_gSel].hex8 = '#' + [rc,gc,bc,a].map(x => x.toString(16).padStart(2,'0').toUpperCase()).join('');
+      _gSave();
+    }
+    _gRender();
   }
 
   function commitColor() {
@@ -134,6 +307,14 @@
     if (!activeSwatch) return;
     const inp = activeSwatch.querySelector('input[type="color"]');
     if (inp) { inp.value = hex.toLowerCase(); inp.dispatchEvent(new Event('input', {bubbles:true})); }
+    if (_ga && _ga[_gSel] && !_ga[_gSel].isPercent) {
+      const aEl = popup && popup.querySelector('#cp-alpha');
+      const a   = aEl ? parseInt(aEl.value) : 255;
+      const [rc,gc,bc] = hsbToRgb(H,S,B);
+      _ga[_gSel].hex8 = '#' + [rc,gc,bc,a].map(v => v.toString(16).padStart(2,'0').toUpperCase()).join('');
+      _gSave();
+    }
+    _gRender();
   }
 
   function makeDragger(slider, onVal) {
@@ -188,7 +369,20 @@
         `style="flex:1;min-width:0;background:#111;color:#fff;border:1px solid ${br};border-radius:4px;padding:4px 6px;font-size:12px;font-family:monospace;outline:none;text-transform:uppercase;letter-spacing:0.04em;" ` +
         `spellcheck="false" autocomplete="off">` +
       `<button id="cp-copy" style="background:#2a2a2a;border:1px solid ${br};border-radius:4px;color:#aaa;cursor:pointer;padding:4px 8px;font-size:12px;flex-shrink:0;">Copy</button>` +
-    `</div>`;
+`</div>` +
+`<div style="margin-top:6px;border-top:1px solid ${br};padding-top:8px;display:flex;flex-direction:column;gap:6px;">` +
+  `<div style="display:flex;align-items:center;justify-content:space-between;">` +
+    `<span style="font-size:11px;color:${lbl};">Gradient</span>` +
+    `<div style="display:flex;gap:4px;">` +
+      `<button id="cp-grad-minus" style="background:#2a2a2a;border:1px solid ${br};border-radius:4px;color:#aaa;cursor:pointer;width:22px;height:22px;font-size:16px;line-height:1;padding:0;display:inline-flex;align-items:center;justify-content:center;">&#8722;</button>` +
+      `<button id="cp-grad-plus"  style="background:#2a2a2a;border:1px solid ${br};border-radius:4px;color:#aaa;cursor:pointer;width:22px;height:22px;font-size:16px;line-height:1;padding:0;display:inline-flex;align-items:center;justify-content:center;">+</button>` +
+    `</div>` +
+  `</div>` +
+  `<div style="position:relative;height:22px;">` +
+    `<div id="cp-grad-strip" style="position:absolute;inset:0;border-radius:4px;border:1px solid ${br};background:#333;"></div>` +
+    `<div id="cp-grad-hw"    style="position:absolute;inset:0;overflow:visible;pointer-events:none;"></div>` +
+  `</div>` +
+`</div>`;
   document.body.appendChild(el);
 
   makeDragger(el.querySelector('#cp-hue'), v => { H = v; commitColor(); });
@@ -232,6 +426,12 @@
     }).catch(() => {});
   });
 
+  el.querySelector('#cp-grad-minus').addEventListener('pointerdown', e => e.stopPropagation());
+  el.querySelector('#cp-grad-minus').addEventListener('click',       e => { e.stopPropagation(); _gMinus(); });
+  el.querySelector('#cp-grad-plus').addEventListener('pointerdown',  e => e.stopPropagation());
+  el.querySelector('#cp-grad-plus').addEventListener('click',        e => { e.stopPropagation(); _gPlus(); });
+  _gRender();
+
   return el;
   }
 
@@ -259,6 +459,7 @@
     if (!inp) return;
     [H,S,B] = rgbToHsb(...hexToRgb(inp.value));
     activeSwatch = swatch;
+    _gLoad();
     popup = buildPopup();
     if (wasOpen && savedLeft && savedTop) {
       popup.style.left = savedLeft;
@@ -281,12 +482,14 @@
     }
     refreshTracks();
     refreshAlphaTrack();
+    _gRender();
     setTimeout(() => document.addEventListener('pointerdown', tapOut), 80);
   }
 
   function close() {
     if (popup)    { popup.remove();    popup    = null; }
     if (styleTag) { styleTag.remove(); styleTag = null; }
+    _gSave();
     activeSwatch = null;
     document.removeEventListener('pointerdown', tapOut);
   }
@@ -356,6 +559,8 @@
   window._cpRebuild = function () {
     if (popup && activeSwatch) { const sw = activeSwatch; close(); openFor(sw); }
   };
+  window._cpGetGradient      = id => { const s = _gd[id]; return s ? _gBuildCSS(s) : null; };
+  window._cpGetGradientStops = id => { const s = _gd[id]; return s ? s.map(x => ({...x})) : null; };
   window._cpRefresh = function () {
   if (!popup || !activeSwatch) return;
   const inp = activeSwatch.querySelector('input[type="color"]');
