@@ -137,7 +137,7 @@
         'pointer-events:auto','touch-action:none',
         'cursor:' + (isL||isR ? 'pointer' : 'grab'),
         'left:' + (s.pos*100) + '%',
-        'z-index:' + (isSel ? 10 : isL||isR ? 5 : 2),
+        'z-index:' + (isSel ? 10 : isL||isR ? 3 : 6),
       ].join(';');
       if (s.isPercent) {
         const _holeGrad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--slider-handle-hole').trim()) || 0;
@@ -157,7 +157,7 @@
         _gSel = i;
         hw.querySelectorAll('[data-gi]').forEach((hh, ii) => {
           const sel = ii===i;
-          hh.style.zIndex = sel ? 10 : (ii===0||ii===stops.length-1 ? 5 : 2);
+          hh.style.zIndex = sel ? 10 : (ii===0||ii===stops.length-1 ? 3 : 6);
           if (hh.dataset.isPercent === '1') {
             hh.style.borderColor = sel ? '#fff' : '#888';
             hh.style.boxShadow = '0 0 0 1px #000' + (sel ? ',0 0 0 3px rgba(255,255,255,0.4)' : '');
