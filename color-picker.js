@@ -341,20 +341,20 @@
     if (!activeSwatch) return;
     const inp = activeSwatch.querySelector('input[type="color"]');
     if (!inp) return;
-    const realAlpha = document.getElementById(inp.id + '-alpha');
-    if (realAlpha) { realAlpha.value = v; realAlpha.dispatchEvent(new Event('input', {bubbles:true})); }
-    const [r,g,b] = hsbToRgb(H, S, B);
-    const hex = rgbToHex(r,g,b);
-    const aHex = Math.round(Number(v)).toString(16).padStart(2,'0').toUpperCase();
-    const _hexEl = popup ? popup.querySelector('#cp-hex') : null;
-    if (_hexEl) _hexEl.value = '#' + hex.replace('#','') + aHex;
-    refreshAlphaTrack();
     if (_ga && _ga[_gSel] && !_ga[_gSel].isPercent) {
       const [rc,gc,bc] = hsbToRgb(H,S,B);
       const a = Math.round(Number(v));
       _ga[_gSel].hex8 = '#' + [rc,gc,bc,a].map(x => x.toString(16).padStart(2,'0').toUpperCase()).join('');
       _gSave();
     }
+    const realAlpha = document.getElementById(inp.id + '-alpha');
+    if (realAlpha) { realAlpha.value = v; realAlpha.dispatchEvent(new Event('input', {bubbles:true})); }
+    const [r,g,b] = hsbToRgb(H, S, B);
+    const hex = rgbToHex(r,g,b);
+    const aHex = Math.round(Number(v)).toString(16).padStart(2,'0').toUpperCase();
+    const _hexEl = popup && popup.querySelector('#cp-hex');
+    if (_hexEl) _hexEl.value = '#' + hex.replace('#','') + aHex;
+    refreshAlphaTrack();
     _gRender();
   }
 
@@ -372,7 +372,6 @@
     refreshAlphaTrack();
     if (!activeSwatch) return;
     const inp = activeSwatch.querySelector('input[type="color"]');
-    if (inp) { inp.value = hex.toLowerCase(); inp.dispatchEvent(new Event('input', {bubbles:true})); }
     if (_ga && _ga[_gSel] && !_ga[_gSel].isPercent) {
       const aEl = popup && popup.querySelector('#cp-alpha');
       const a   = aEl ? parseInt(aEl.value) : 255;
@@ -380,6 +379,7 @@
       _ga[_gSel].hex8 = '#' + [rc,gc,bc,a].map(v => v.toString(16).padStart(2,'0').toUpperCase()).join('');
       _gSave();
     }
+    if (inp) { inp.value = hex.toLowerCase(); inp.dispatchEvent(new Event('input', {bubbles:true})); }
     _gRender();
   }
 
