@@ -151,7 +151,7 @@
         h.style.border = '1px solid ' + _cv.hBorder;
         h.style.boxShadow = isSel ? '0 0 8px 4px rgba(255,255,255,0.85)' : '';
       }
-      let _ghdrag = false;
+      let _ghdrag = false, _ghdragMoved = false;
       h.addEventListener('pointerdown', e => {
         e.stopPropagation(); e.preventDefault();
         _gSel = i;
@@ -168,6 +168,7 @@
         if (!s.isPercent && _ga) {
           _gLoadHandle(i);
         }
+        _ghdragMoved = false;
         if (!isL && !isR && _ga) {
           _ghdrag = true;
           h.setPointerCapture(e.pointerId);
@@ -175,6 +176,7 @@
       });
       h.addEventListener('pointermove', e => {
         if (!_ghdrag) return;
+        _ghdragMoved = true;
         const rect = hw.getBoundingClientRect();
         const p0 = i > 0            ? _ga[i-1].pos + 0.005 : 0.005;
         const p1 = i < _ga.length-1 ? _ga[i+1].pos - 0.005 : 0.995;
@@ -183,8 +185,23 @@
         strip.style.background = 'linear-gradient(to right,' +
           _ga.map(s2 => h8css(s2.hex8)+' '+(s2.pos*100).toFixed(1)+'%').join(',') + ')';
       });
-      h.addEventListener('pointerup',     () => { if (_ghdrag) { _ghdrag=false; _gRender(); _gSave(); _cpRefreshSwatch(); } });
-      h.addEventListener('pointercancel', () => { if (_ghdrag) { _ghdrag=false; _gRender(); } });
+      h.addEventListener('pointerup', () => {
+        if (_ghdrag) {
+          _ghdrag = false;
+          if (!_ghdragMoved && s.isPercent && _ga) {
+            const _prev = _ga[i - 1], _next = _ga[i + 1];
+            const _denom = (_next ? _next.pos : 1) - (_prev ? _prev.pos : 0);
+            const _t = _denom > 0 ? (_ga[i].pos - (_prev ? _prev.pos : 0)) / _denom : 0.5;
+            _ga[i] = { ..._ga[i], isPercent: false, hex8: _gInterp(_prev ? _prev.hex8 : _next.hex8, _next ? _next.hex8 : _prev.hex8, _t) };
+            _gSave();
+            _gRender();
+            _gLoadHandle(i);
+            return;
+          }
+          _gRender(); _gSave(); _cpRefreshSwatch();
+        }
+      });
+      h.addEventListener('pointercancel', () => { if (_ghdrag) { _ghdrag=false; _ghdragMoved=false; _gRender(); } });
       hw.appendChild(h);
     });
     if (minBtn) { minBtn.disabled = !_ga; minBtn.style.opacity = _ga ? '' : '0.4'; }
