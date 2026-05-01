@@ -232,7 +232,7 @@ function onHexInput(id) {
     appStyle.imgAttach   = document.getElementById("s-app-img-attach").value;
     appStyle.imgTint     = getColorValue("s-app-img-tint");
     appStyle.textColor   = getColorValue("s-app-text");
-    appStyle.borderColor = getColorValue("s-app-border");
+    appStyle.borderColor = getStyleValue("s-app-border");
     appStyle.theadBg     = getStyleValue("s-app-thead");
     appStyle.cellBg      = getStyleValue("s-app-cell-bg");
     if (document.getElementById("s-app-bar-set"))    appStyle.barSet    = getColorValue("s-app-bar-set");

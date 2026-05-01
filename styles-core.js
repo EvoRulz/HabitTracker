@@ -176,7 +176,10 @@ if (navigator.storage && navigator.storage.persist) {
     buildAppBg();
     document.body.style.color   = hex8ToCss(appStyle.textColor);
     document.body.style.padding = appStyle.padding + "px";
-    document.documentElement.style.setProperty("--app-border-color", hex8ToCss(appStyle.borderColor));
+    const _borderVal = _bgCss(appStyle.borderColor);
+    const _isBorderGrad = _borderVal.startsWith('linear-gradient') || _borderVal.startsWith('radial-gradient');
+    document.documentElement.style.setProperty("--app-border-color", _isBorderGrad ? 'transparent' : _borderVal);
+    document.documentElement.style.setProperty("--app-border-image", _isBorderGrad ? _borderVal + ' 1' : 'none');
     document.documentElement.style.setProperty("--app-thead-bg",     _bgCss(appStyle.theadBg));
     document.documentElement.style.setProperty("--app-cell-bg",      _bgCss(appStyle.cellBg || "#111111FF"));
     document.documentElement.style.setProperty("--app-table-bg",      hex8ToCss(appStyle.tableBg || "#111111FF"));
