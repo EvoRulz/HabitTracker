@@ -190,8 +190,8 @@
           }
           btn.dataset.debounced = 'true';
           setTimeout(() => { btn.dataset.debounced = 'false'; }, btn.id === 'hide-habits-btn' ? 2 : 500);
-    }, true);
-    btn.dataset.debounceListener = 'true';
+        }, true);
+        btn.dataset.debounceListener = 'true';
       }
     });
     const _wasSkipSnap = _skipCancelSnapshot;
