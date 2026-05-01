@@ -100,21 +100,27 @@
       const h = document.createElement('div');
       h.dataset.gi = i;
       if (s.isPercent) h.dataset.isPercent = '1';
+      const _cv = cssVars();
+      const _hw = _cv.hW || '16px';
+      const _hh = _cv.hH || '16px';
+      const _bw = Math.max(3, Math.round(parseFloat(_hw) * 0.28)) + 'px';
       h.style.cssText = [
         'position:absolute','top:50%','transform:translate(-50%,-50%)',
-        'width:14px','height:14px','border-radius:50%','box-sizing:border-box',
+        'width:' + _hw,'height:' + _hh,'border-radius:50%','box-sizing:border-box',
         'pointer-events:auto','touch-action:none',
         'cursor:' + (isL||isR ? 'pointer' : 'grab'),
         'left:' + (s.pos*100) + '%',
         'z-index:' + (isSel ? 10 : isL||isR ? 5 : 2),
-        'border:2px solid ' + (isSel ? '#fff' : (s.isPercent ? '#888' : '#666')),
-        'box-shadow:0 0 0 1px #000' + (isSel ? ',0 0 0 3px rgba(255,255,255,0.4)' : ''),
       ].join(';');
       if (s.isPercent) {
         h.style.background = '#444';
+        h.style.border = '2px solid ' + (isSel ? '#fff' : '#888');
+        h.style.boxShadow = '0 0 0 1px #000' + (isSel ? ',0 0 0 3px rgba(255,255,255,0.4)' : '');
         h.innerHTML = '<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:7px;color:#ccc;font-weight:bold;pointer-events:none;">%</span>';
       } else {
-        h.style.background = h8css(s.hex8);
+        h.style.background = 'transparent';
+        h.style.border = _bw + ' solid ' + h8css(s.hex8);
+        h.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,0.7),0 0 0 1px rgba(0,0,0,0.7)' + (isSel ? ',0 0 0 3px rgba(255,255,255,0.5)' : '');
       }
       let _ghdrag = false;
       h.addEventListener('pointerdown', e => {
@@ -122,9 +128,13 @@
         _gSel = i;
         hw.querySelectorAll('[data-gi]').forEach((hh, ii) => {
           const sel = ii===i;
-          hh.style.borderColor = sel ? '#fff' : (hh.dataset.isPercent==='1' ? '#888' : '#666');
-          hh.style.zIndex      = sel ? 10 : (ii===0||ii===stops.length-1 ? 5 : 2);
-          hh.style.boxShadow   = '0 0 0 1px #000' + (sel ? ',0 0 0 3px rgba(255,255,255,0.4)' : '');
+          hh.style.zIndex = sel ? 10 : (ii===0||ii===stops.length-1 ? 5 : 2);
+          if (hh.dataset.isPercent === '1') {
+            hh.style.borderColor = sel ? '#fff' : '#888';
+            hh.style.boxShadow = '0 0 0 1px #000' + (sel ? ',0 0 0 3px rgba(255,255,255,0.4)' : '');
+          } else {
+            hh.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,0.7),0 0 0 1px rgba(0,0,0,0.7)' + (sel ? ',0 0 0 3px rgba(255,255,255,0.5)' : '');
+          }
         });
         if (!s.isPercent && _ga) {
           _gLoadHandle(i);
