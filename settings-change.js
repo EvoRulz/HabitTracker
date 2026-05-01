@@ -146,7 +146,7 @@ function settingsExport() {
         _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
           bg: getStyleValue('s-bg'), fg: dateColor,
           glow: getColorValue('s-glow'), activeGlow: getColorValue('s-activeglow'),
-          activeBg: getColorValue('s-activebg'),
+          activeBg: getStyleValue('s-activebg'),
           tap: getColorValue('s-tap'), font: document.getElementById("s-font").value,
           clockDateSize: Number(document.getElementById("s-clock-date-size").value),
         });
@@ -159,7 +159,7 @@ function settingsExport() {
         _btnStyles['top-time'] = Object.assign(_btnStyles['top-time'] || {}, {
           bg: getStyleValue('s-bg'), fg: timeColor,
           glow: getColorValue('s-glow'), activeGlow: getColorValue('s-activeglow'),
-          activeBg: getColorValue('s-activebg'),
+          activeBg: getStyleValue('s-activebg'),
           tap: getColorValue('s-tap'), font: document.getElementById("s-font").value,
           clockTimeSize: Number(document.getElementById("s-clock-time-size").value),
         });
@@ -171,7 +171,7 @@ function settingsExport() {
         _btnStyles[_cfId] = Object.assign(_btnStyles[_cfId] || {}, {
           bg: getStyleValue('s-bg'), fg: getColorValue('s-fg'),
           glow: getColorValue('s-glow'), activeGlow: getColorValue('s-activeglow'),
-          activeBg: getColorValue('s-activebg'),
+          activeBg: getStyleValue('s-activebg'),
           tap: getColorValue('s-tap'), font: document.getElementById("s-font").value,
         });
       }

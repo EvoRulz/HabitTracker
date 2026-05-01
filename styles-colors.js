@@ -204,7 +204,7 @@ function onHexInput(id) {
     const numStops = t === "solid" ? 1 : t === "gradient2" ? 2 : t === "gradient3" ? 3 : t === "gradient4" ? 4 : 0;
     appStyle.stops = [];
     for (let i = 0; i < numStops; i++) {
-      appStyle.stops.push(getColorValue(`s-app-stop-${i}`));
+      appStyle.stops.push(t === 'solid' ? getStyleValue(`s-app-stop-${i}`) : getColorValue(`s-app-stop-${i}`));
     }
     buildAppBg();
   }
@@ -233,8 +233,8 @@ function onHexInput(id) {
     appStyle.imgTint     = getColorValue("s-app-img-tint");
     appStyle.textColor   = getColorValue("s-app-text");
     appStyle.borderColor = getColorValue("s-app-border");
-    appStyle.theadBg     = getColorValue("s-app-thead");
-    appStyle.cellBg      = getColorValue("s-app-cell-bg");
+    appStyle.theadBg     = getStyleValue("s-app-thead");
+    appStyle.cellBg      = getStyleValue("s-app-cell-bg");
     if (document.getElementById("s-app-bar-set"))    appStyle.barSet    = getColorValue("s-app-bar-set");
     if (document.getElementById("s-app-bar-total"))  appStyle.barTotal  = getColorValue("s-app-bar-total");
     if (document.getElementById("s-app-bar-streak")) appStyle.barStreak = getColorValue("s-app-bar-streak");

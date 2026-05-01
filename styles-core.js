@@ -135,7 +135,7 @@ if (navigator.storage && navigator.storage.persist) {
     document.body.style.backgroundRepeat = "";
     document.body.style.backgroundAttachment = "";
     if (t === "solid") {
-      document.body.style.background = hex8ToCss(appStyle.stops[0]);
+      document.body.style.background = _bgCss(appStyle.stops[0]);
       return;
     }
     if (t.startsWith("gradient")) {
@@ -177,8 +177,8 @@ if (navigator.storage && navigator.storage.persist) {
     document.body.style.color   = hex8ToCss(appStyle.textColor);
     document.body.style.padding = appStyle.padding + "px";
     document.documentElement.style.setProperty("--app-border-color", hex8ToCss(appStyle.borderColor));
-    document.documentElement.style.setProperty("--app-thead-bg",     hex8ToCss(appStyle.theadBg));
-    document.documentElement.style.setProperty("--app-cell-bg",      hex8ToCss(appStyle.cellBg || "#111111FF"));
+    document.documentElement.style.setProperty("--app-thead-bg",     _bgCss(appStyle.theadBg));
+    document.documentElement.style.setProperty("--app-cell-bg",      _bgCss(appStyle.cellBg || "#111111FF"));
     document.documentElement.style.setProperty("--app-table-bg",      hex8ToCss(appStyle.tableBg || "#111111FF"));
     document.documentElement.style.setProperty("--app-table-text",    hex8ToCss(appStyle.tableText || "#FFFFFFFF"));
     document.documentElement.style.setProperty("--bar-set-color",    hex8ToCss(appStyle.barSet));
