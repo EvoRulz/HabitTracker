@@ -65,7 +65,7 @@
     const undoBtn   = document.getElementById('settings-undo');
     const redoBtn   = document.getElementById('settings-redo');
     const anyActivity = _settingsHasChanges || _history.length > 1;
-    if (saveBtn)   { saveBtn.style.display = anyActivity ? '' : 'none'; saveBtn.disabled = !_settingsHasChanges; saveBtn.style.opacity = _settingsHasChanges ? '' : '0.35'; }
+    if (saveBtn)   { saveBtn.disabled = !_settingsHasChanges; saveBtn.style.opacity = _settingsHasChanges ? '' : '0.35'; }
     if (cancelBtn) cancelBtn.textContent = _settingsHasChanges ? 'Cancel' : 'Close';
     if (undoBtn)   { undoBtn.style.display = anyActivity ? '' : 'none'; undoBtn.disabled = !_canUndo(); undoBtn.style.opacity = _canUndo() ? '' : '0.35'; }
     if (redoBtn)   { redoBtn.style.display = anyActivity ? '' : 'none'; redoBtn.disabled = !_canRedo(); redoBtn.style.opacity = _canRedo() ? '' : '0.35'; }
