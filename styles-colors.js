@@ -115,6 +115,39 @@ function onHexInput(id) {
   document.addEventListener('focus', e => {
     if (e.target.classList.contains('hex-input')) e.target.select();
   }, true);
+  
+  function _expandHex(raw) {
+    let val = raw.trim().replace(/[^0-9a-fA-F#]/g, '');
+    if (val && !val.startsWith('#')) val = '#' + val;
+    const h = val.replace('#', '');
+    if (h.length === 3) return '#' + (h[0]+h[0]+h[1]+h[1]+h[2]+h[2]).toUpperCase() + 'FF';
+    if (h.length === 4) return '#' + (h[0]+h[0]+h[1]+h[1]+h[2]+h[2]+h[3]+h[3]).toUpperCase();
+    if (h.length === 6) return '#' + h.toUpperCase() + 'FF';
+    if (h.length === 8) return '#' + h.toUpperCase();
+    return null;
+  }
+  function commitHexInput(id) {
+    const hexEl = document.getElementById(id + '-hex');
+    if (!hexEl) return;
+    const result = _expandHex(hexEl.value);
+    if (!result) return;
+    hexEl.value = result;
+    const { r, g, b, a } = hex8ToComponents(result);
+    const picker = document.getElementById(id);
+    const slider = document.getElementById(id + '-alpha');
+    if (picker) picker.value = '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+    if (slider) { slider.value = a; updateAlphaSliderBg(id); }
+    settingsChange();
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    const hexEl = e.target;
+    if (!hexEl.classList.contains('hex-input')) return;
+    e.preventDefault();
+    const id = hexEl.id.replace('-hex', '');
+    commitHexInput(id);
+    hexEl.blur();
+  });
 
   function copyHex(id, btn) {
     const val = getColorValue(id);
