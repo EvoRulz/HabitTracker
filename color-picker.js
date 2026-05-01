@@ -599,6 +599,7 @@
   };
   window._cpGetGradient      = id => { const s = _gd[id]; return s ? _gBuildCSS(s) : null; };
   window._cpGetGradientStops = id => { const s = _gd[id]; return s ? s.map(x => ({...x})) : null; };
+  window._cpSetGradientStops = function(id, stops) { _gd[id] = stops ? stops.map(s => ({...s})) : null; };
   window._cpRefresh = function () {
   if (!popup || !activeSwatch) return;
   const inp = activeSwatch.querySelector('input[type="color"]');

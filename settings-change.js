@@ -169,7 +169,9 @@ function settingsExport() {
         updateAlphaSliderBg('s-clock-time-glow');
       } else {
         _btnStyles[_cfId] = Object.assign(_btnStyles[_cfId] || {}, {
-          bg: getStyleValue('s-bg'), fg: getColorValue('s-fg'),
+          bg: getStyleValue('s-bg'),
+          bgStops: window._cpGetGradientStops ? window._cpGetGradientStops('s-bg') : null,
+          fg: getColorValue('s-fg'),
           glow: getColorValue('s-glow'), activeGlow: getColorValue('s-activeglow'),
           activeBg: getStyleValue('s-activebg'),
           tap: getColorValue('s-tap'), font: document.getElementById("s-font").value,

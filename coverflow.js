@@ -86,6 +86,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
   setColorValue('s-bg',       s.bg);
   const _sbOv = document.getElementById('s-bg-swatch-overlay');
   if (_sbOv && s.bg && (s.bg.startsWith('linear-gradient') || s.bg.startsWith('radial-gradient'))) _sbOv.style.background = s.bg;
+  if (window._cpSetGradientStops) window._cpSetGradientStops('s-bg', s.bgStops || null);
   setColorValue('s-fg',       s.fg);
   setColorValue('s-glow',     s.glow);
   setColorValue('s-activeglow', s.activeGlow || s.glow);
