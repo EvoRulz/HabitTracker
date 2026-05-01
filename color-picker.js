@@ -368,7 +368,7 @@
     const ss = sliderCSS(v);
     const ls = `font-size:11px;color:${lbl};margin-bottom:2px;`;
     el.innerHTML =
-  `<div style="display:flex;gap:4px;align-items:center;">` +
+  `<div style="display:flex;gap:10px;align-items:center;">` +
     `<button id="cp-grad-minus" style="background:#2a2a2a;border:1px solid ${sb};border-radius:4px;color:#aaa;cursor:pointer;width:22px;height:22px;font-size:16px;line-height:1;padding:0;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">&#8722;</button>` +
     `<div style="position:relative;height:22px;flex:1;">` +
       `<div id="cp-grad-strip" style="position:absolute;inset:0;border-radius:4px;border:1px solid ${sb};background:#333;"></div>` +
