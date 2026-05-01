@@ -256,7 +256,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
         } else {
           const styleId = items[i].id === 'top-hide-habits' ? (habitsVisible ? 'top-hide-habits' : 'top-show-habits') : items[i].id;
         const s2 = _btnStyleFor(styleId);
-        el.style.background = hex8ToCss(s2.bg);
+        el.style.background = _bgCss(s2.bg);
         el.style.color      = hex8ToCss(s2.fg);
         el.style.fontSize   = '';
         el.style.fontFamily = s2.font;
@@ -311,8 +311,8 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
         const s2 = _btnStyleFor(items[i].id);
         el.style.background = hex8ToCss(s2.tap || btnStyle.tapHighlight);
       });
-      el.addEventListener('pointerup',     () => { const s2 = _btnStyleFor(items[i].id); el.style.background = hex8ToCss(s2.bg); });
-      el.addEventListener('pointercancel', () => { const s2 = _btnStyleFor(items[i].id); el.style.background = hex8ToCss(s2.bg); });
+      el.addEventListener('pointerup',     () => { const s2 = _btnStyleFor(items[i].id); el.style.background = _bgCss(s2.bg); });
+      el.addEventListener('pointercancel', () => { const s2 = _btnStyleFor(items[i].id); el.style.background = _bgCss(s2.bg); });
         el.onclick = () => {
           cfIdx = i;
           if (items[i].id === 'top-settings') {

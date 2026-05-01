@@ -328,8 +328,8 @@ if (navigator.storage && navigator.storage.persist) {
     document.documentElement.style.setProperty("--clock-date-size",      (_btnStyles['top-date']?.clockDateSize ?? btnStyle.clockDateSize) + "px");
     document.documentElement.style.setProperty("--clock-time-size",      (_btnStyles['top-time']?.clockTimeSize ?? btnStyle.clockTimeSize) + "px");
     document.documentElement.style.setProperty("--clock-bg",             hex8ToCss(btnStyle.clockBg));
-    document.documentElement.style.setProperty("--clock-date-bg",        hex8ToCss(_btnStyleFor('top-date').bg));
-    document.documentElement.style.setProperty("--clock-time-bg",        hex8ToCss(_btnStyleFor('top-time').bg));
+    document.documentElement.style.setProperty("--clock-date-bg",        _bgCss(_btnStyleFor('top-date').bg));
+    document.documentElement.style.setProperty("--clock-time-bg",        _bgCss(_btnStyleFor('top-time').bg));
     const topGridMap = [
       { id: 'top-export-all',    el: '.top-item[data-item="export-all"]',    prefix: '--export-all' },
       { id: 'top-import-all',    el: '.top-item[data-item="import-all"]',    prefix: '--import-all' },
