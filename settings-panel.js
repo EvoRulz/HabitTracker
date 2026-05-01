@@ -258,7 +258,6 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     const _shrvEl2 = document.getElementById('s-sliderhandler-val'); if (_shrvEl2) _shrvEl2.textContent = (btnStyle.sliderHandleR ?? 3) + '%';
     btnStyle.sliderHandleW  = Number(document.getElementById("s-sliderhandlew").value);
     btnStyle.sliderHandleHole = Number(document.getElementById("s-sliderhandlehole").value);
-    localStorage.setItem("_btnStyle",
     setColorValue('s-sliderhandleborder', btnStyle.sliderHandleBorder || '#00000000');
     const _s = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
     _s("s-app-bg-type",    appStyle.bgType);
