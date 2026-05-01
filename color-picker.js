@@ -32,6 +32,13 @@
   }
 
   let popup = null, styleTag = null, activeSwatch = null;
+  function _cpRefreshSwatch() {
+    if (!activeSwatch) return;
+    const inp = activeSwatch.querySelector('input[type="color"]');
+    if (!inp) return;
+    if (typeof updateAlphaSliderBg === 'function') updateAlphaSliderBg(inp.id);
+    if (typeof settingsChange === 'function') settingsChange();
+  }
   const _gd   = {};   // stored gradient per swatch: { [inputId]: stops[] | null }
   let   _ga   = null; // active stops for open popup (null = solid)
   let   _gSel = 0;    // selected handle index
@@ -176,7 +183,7 @@
         strip.style.background = 'linear-gradient(to right,' +
           _ga.map(s2 => h8css(s2.hex8)+' '+(s2.pos*100).toFixed(1)+'%').join(',') + ')';
       });
-      h.addEventListener('pointerup',     () => { if (_ghdrag) { _ghdrag=false; _gRender(); _gSave(); } });
+      h.addEventListener('pointerup',     () => { if (_ghdrag) { _ghdrag=false; _gRender(); _gSave(); _cpRefreshSwatch(); } });
       h.addEventListener('pointercancel', () => { if (_ghdrag) { _ghdrag=false; _gRender(); } });
       hw.appendChild(h);
     });
@@ -220,7 +227,7 @@
         _gLoadHandle(_gSel);
       }
     }
-    _gRender(); _gSave();
+    _gRender(); _gSave(); _cpRefreshSwatch();
   }
   function _gMinus() {
     if (!_ga) return;
@@ -235,7 +242,7 @@
       if (_ga[mids[0]].isPercent) { _ga = null; _gSel = 0; }
       else { _ga[mids[0]].isPercent = true; _gSel = 0; }
     }
-    _gRender(); _gSave();
+    _gRender(); _gSave(); _cpRefreshSwatch();
   }
 
   function cssVars() {

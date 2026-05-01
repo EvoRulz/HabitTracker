@@ -144,7 +144,7 @@ function settingsExport() {
       if (_cfId === 'top-date') {
         const dateColor = getColorValue('s-fg');
         _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
-          bg: getColorValue('s-bg'), fg: dateColor,
+          bg: getStyleValue('s-bg'), fg: dateColor,
           glow: getColorValue('s-glow'), activeGlow: getColorValue('s-activeglow'),
           activeBg: getColorValue('s-activebg'),
           tap: getColorValue('s-tap'), font: document.getElementById("s-font").value,
@@ -157,7 +157,7 @@ function settingsExport() {
       } else if (_cfId === 'top-time') {
         const timeColor = getColorValue('s-fg');
         _btnStyles['top-time'] = Object.assign(_btnStyles['top-time'] || {}, {
-          bg: getColorValue('s-bg'), fg: timeColor,
+          bg: getStyleValue('s-bg'), fg: timeColor,
           glow: getColorValue('s-glow'), activeGlow: getColorValue('s-activeglow'),
           activeBg: getColorValue('s-activebg'),
           tap: getColorValue('s-tap'), font: document.getElementById("s-font").value,
@@ -169,7 +169,7 @@ function settingsExport() {
         updateAlphaSliderBg('s-clock-time-glow');
       } else {
         _btnStyles[_cfId] = Object.assign(_btnStyles[_cfId] || {}, {
-          bg: getColorValue('s-bg'), fg: getColorValue('s-fg'),
+          bg: getStyleValue('s-bg'), fg: getColorValue('s-fg'),
           glow: getColorValue('s-glow'), activeGlow: getColorValue('s-activeglow'),
           activeBg: getColorValue('s-activebg'),
           tap: getColorValue('s-tap'), font: document.getElementById("s-font").value,
@@ -209,7 +209,7 @@ if (document.getElementById('s-sliderhandle')) btnStyle.sliderHandle = getColorV
     btnStyle.clockBg         = getColorValue('s-clock-bg');
     if (_cfId !== 'top-date') {
       _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
-        bg: getColorValue('s-clock-date-bg'),
+        bg: getStyleValue('s-clock-date-bg'),
         fg: getColorValue('s-clock-date-color'),
         glow: getColorValue('s-clock-date-glow'),
         clockDateSize: Number(document.getElementById("s-clock-date-size").value),
@@ -217,7 +217,7 @@ if (document.getElementById('s-sliderhandle')) btnStyle.sliderHandle = getColorV
     }
     if (_cfId !== 'top-time') {
       _btnStyles['top-time'] = Object.assign(_btnStyles['top-time'] || {}, {
-        bg: getColorValue('s-clock-time-bg'),
+        bg: getStyleValue('s-clock-time-bg'),
         fg: getColorValue('s-clock-time-color'),
         glow: getColorValue('s-clock-time-glow'),
         clockTimeSize: Number(document.getElementById("s-clock-time-size").value),
@@ -226,7 +226,7 @@ if (document.getElementById('s-sliderhandle')) btnStyle.sliderHandle = getColorV
 if (_cfId !== 'top-date') {
 const cfDateColor = getColorValue('s-clock-date-color');
 _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
-  bg: getColorValue('s-clock-date-bg'),
+  bg: getStyleValue('s-clock-date-bg'),
   fg: cfDateColor,
   glow: getColorValue('s-clock-date-glow'),
   clockDateSize: Number(document.getElementById("s-clock-date-size").value),

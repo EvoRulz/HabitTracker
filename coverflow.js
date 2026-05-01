@@ -84,6 +84,8 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
   }
   const s = _btnStyleFor(id);
   setColorValue('s-bg',       s.bg);
+  const _sbOv = document.getElementById('s-bg-swatch-overlay');
+  if (_sbOv && s.bg && (s.bg.startsWith('linear-gradient') || s.bg.startsWith('radial-gradient'))) _sbOv.style.background = s.bg;
   setColorValue('s-fg',       s.fg);
   setColorValue('s-glow',     s.glow);
   setColorValue('s-activeglow', s.activeGlow || s.glow);
