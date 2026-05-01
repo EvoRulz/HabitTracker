@@ -345,12 +345,16 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     settingsClose();
   }
   function settingsCancel() {
-    if (_btnStyleSnapshot)  { btnStyle   = Object.assign({}, _btnStyleSnapshot); }
-    if (_btnStylesSnapshot) { _btnStyles = JSON.parse(JSON.stringify(_btnStylesSnapshot)); }
-    if (_btnStyleSnapshot || _btnStylesSnapshot) applyBtnStyle();
-    if (_appStyleSnapshot)  { appStyle   = Object.assign({}, _appStyleSnapshot); applyAppStyle(); }
-    if (_clockSnapshot) window._clockSet(_clockSnapshot.tumblerCfg);
+    if (!_settingsHasChanges) {
+      settingsClose();
+      return;
+    }
+    _flushPendingHistory();
+    _lastUndoRedoTime = Date.now();
+    _historyIndex = 0;
+    _applyingSnapshot = true;
+    _applyStyleSnapshot(_history[0]);
+    _applyingSnapshot = false;
     _settingsHasChanges = false;
-    _history = []; _historyIndex = -1; _updateSettingsBtns();
-    settingsClose();
+    _updateUndoRedoBtns();
   }
