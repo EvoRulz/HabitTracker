@@ -349,7 +349,6 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     localStorage.setItem("_clockTumbler", JSON.stringify(window._clockGet().tumblerCfg));
     applyBtnStyle();
     applyAppStyle();
-    settingsClose();
   }
   function settingsCancel() {
     if (!_settingsHasChanges) {
