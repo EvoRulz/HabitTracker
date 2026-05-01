@@ -88,16 +88,25 @@
     if (!strip || !hw) return;
     const solid = _gHex8();
     strip.style.background = _ga
-      ? 'linear-gradient(to right,' + _ga.map(s => {
-          if (s.isPercent) {
-            const hw = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--slider-handle-w').trim()) || 16;
-            const stripEl = popup && popup.querySelector('#cp-grad-strip');
-            const stripW = stripEl ? stripEl.offsetWidth : 200;
-            const offsetPct = stripW > 0 ? (hw / 2 / stripW * 100) : 0;
-            return h8css(s.hex8) + ' ' + Math.min(100, s.pos * 100 + offsetPct).toFixed(2) + '%';
-          }
-          return h8css(s.hex8)+' '+(s.pos*100).toFixed(1)+'%';
-        }).join(',') + ')'
+      ? (function() {
+          const hw = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--slider-handle-w').trim()) || 16;
+          const stripEl = popup && popup.querySelector('#cp-grad-strip');
+          const stripW = stripEl ? stripEl.offsetWidth : 200;
+          const halfPct = stripW > 0 ? (hw / 2 / stripW * 100) : 0;
+          const stops = [];
+          _ga.forEach((s, i) => {
+            if (!s.isPercent) { stops.push(h8css(s.hex8) + ' ' + (s.pos * 100).toFixed(1) + '%'); return; }
+            const prev = _ga[i - 1], next = _ga[i + 1];
+            const centerPct = s.pos * 100;
+            const leftPct = centerPct - halfPct;
+            const rightPct = centerPct + halfPct;
+            const leftColor = prev ? _gInterp(prev.hex8, next ? next.hex8 : prev.hex8, prev.pos < s.pos ? (s.pos - halfPct / 100 - prev.pos) / (s.pos - prev.pos) : 0) : h8css(s.hex8);
+            const rightColor = next ? _gInterp(prev ? prev.hex8 : next.hex8, next.hex8, next.pos > s.pos ? ((s.pos + halfPct / 100) - (prev ? prev.pos : s.pos)) / (next.pos - (prev ? prev.pos : s.pos)) : 1) : h8css(s.hex8);
+            stops.push(h8css(leftColor) + ' ' + Math.max(0, leftPct).toFixed(2) + '%');
+            stops.push(h8css(rightColor) + ' ' + Math.min(100, rightPct).toFixed(2) + '%');
+          });
+          return 'linear-gradient(to right,' + stops.join(',') + ')';
+        })()
       : h8css(solid);
     hw.innerHTML = '';
     const stops = _ga || [
