@@ -471,7 +471,7 @@ items.push({ id: 'top-date',           label: 'Date',           isTopGrid: true 
   let _settingsJustOpened = false;
     document.getElementById("settings-overlay").addEventListener("click", e => {
   if (_settingsJustOpened) { _settingsJustOpened = false; return; }
-  if (e.target === document.getElementById("settings-overlay")) settingsCancel();
+  if (e.target === document.getElementById("settings-overlay")) settingsClose();
   });
   document.getElementById("settings-save").addEventListener("click", e => {
   e.stopPropagation();

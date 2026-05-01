@@ -379,6 +379,12 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     reader.onload = e => {
       try {
         const data = JSON.parse(e.target.result);
+        _settingsHasChanges = true;
+        _history = _history.slice(0, _historyIndex + 1);
+        _history.push(_captureStyleSnapshot());
+        if (_history.length > 50) _history.shift();
+        _historyIndex = _history.length - 1;
+        _updateUndoRedoBtns();
         if (data["_btnStyle"]) {
           btnStyle = Object.assign({}, BTN_STYLE_DEFAULTS, JSON.parse(data["_btnStyle"]));
           applyBtnStyle();
