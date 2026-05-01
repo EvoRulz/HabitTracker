@@ -249,7 +249,7 @@
       }
     }
     _gRender();
-        if (_ghdragMoved) { _gSave(); _cpRefreshSwatch(); }
+        _gSave(); _cpRefreshSwatch();
   }
   function _gMinus() {
     if (!_ga) return;
@@ -265,7 +265,7 @@
       else { _ga[mids[0]].isPercent = true; _gSel = 0; }
     }
     _gRender();
-        if (_ghdragMoved) { _gSave(); _cpRefreshSwatch(); }
+    _gSave(); _cpRefreshSwatch();
   }
 
   function cssVars() {
