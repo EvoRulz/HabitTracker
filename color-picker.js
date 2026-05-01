@@ -386,13 +386,18 @@
 
   function buildPopup() {
     const v = cssVars(), c = cpCfg();
-    const bg  = (c.bg && (c.bg.startsWith('linear-gradient') || c.bg.startsWith('radial-gradient'))) ? c.bg : h8css(c.bg); const br = h8css(c.border), lbl = h8css(c.label);
+    const bg  = (c.bg && (c.bg.startsWith('linear-gradient') || c.bg.startsWith('radial-gradient'))) ? c.bg : h8css(c.bg);
+    const brIsGrad = c.border && typeof c.border === 'string' && (c.border.startsWith('linear-gradient') || c.border.startsWith('radial-gradient'));
+    const br = brIsGrad ? c.border : h8css(c.border);
+    const lbl = h8css(c.label);
     const sb = h8css((typeof btnStyle !== 'undefined' && btnStyle.sliderBorder) || '#555555FF');
     injectThumbCSS(v);
     const el = document.createElement('div');
     el.id = 'cp-popup';
     el.style.cssText =
-      `position:fixed;z-index:99999;background:${bg};border:1px solid ${br};border-radius:8px;` +
+      (brIsGrad
+        ? `position:fixed;z-index:99999;background:${bg} padding-box, ${br} border-box;border:1px solid transparent;border-radius:8px;`
+        : `position:fixed;z-index:99999;background:${bg};border:1px solid ${br};border-radius:8px;`) +
       `padding:14px 16px;width:268px;box-shadow:0 4px 24px rgba(0,0,0,0.65);` +
       `display:flex;flex-direction:column;gap:10px;touch-action:none;` +
       `user-select:none;-webkit-user-select:none;`;
@@ -582,16 +587,30 @@
   window._cpSyncUI = function () {
     if (typeof setColorValue !== 'function') return;
     const c = cpCfg();
-    setColorValue('s-cp-bg',     c.bg);
-    setColorValue('s-cp-border', c.border);
-    setColorValue('s-cp-label',  c.label);
+    if (c.bgStops && window._cpSetGradientStops) {
+      window._cpSetGradientStops('s-cp-bg', c.bgStops);
+      const _bgOv = document.getElementById('s-cp-bg-swatch-overlay');
+      if (_bgOv) { const _g = window._cpGetGradient('s-cp-bg'); if (_g) _bgOv.style.background = _g; }
+    } else {
+      setColorValue('s-cp-bg', c.bg);
+    }
+    if (c.borderStops && window._cpSetGradientStops) {
+      window._cpSetGradientStops('s-cp-border', c.borderStops);
+      const _brOv = document.getElementById('s-cp-border-swatch-overlay');
+      if (_brOv) { const _g = window._cpGetGradient('s-cp-border'); if (_g) _brOv.style.background = _g; }
+    } else {
+      setColorValue('s-cp-border', c.border);
+    }
+    setColorValue('s-cp-label', c.label);
   };
   window._cpSaveFromUI = function () {
     if (typeof getColorValue !== 'function') return;
     localStorage.setItem('_cpSettings', JSON.stringify({
-      bg:     (typeof getStyleValue === 'function' ? getStyleValue('s-cp-bg') : getColorValue('s-cp-bg')),
-      border: getColorValue('s-cp-border'),
-      label:  getColorValue('s-cp-label'),
+      bg:          (typeof getStyleValue === 'function' ? getStyleValue('s-cp-bg') : getColorValue('s-cp-bg')),
+      border:      (typeof getStyleValue === 'function' ? getStyleValue('s-cp-border') : getColorValue('s-cp-border')),
+      label:       getColorValue('s-cp-label'),
+      bgStops:     window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-bg')     : null,
+      borderStops: window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-border') : null,
     }));
   };
   window._cpRebuild = function () {
