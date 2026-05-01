@@ -54,6 +54,8 @@ function settingsExport() {
           _sv('s-sliderhandlew', btnStyle.sliderHandleW  ?? 16);
           const _swIvEl = document.getElementById('s-sliderw-val'); if (_swIvEl) _swIvEl.textContent = (btnStyle.sliderW ?? 100) + '%';
           const _shwIvEl = document.getElementById('s-sliderhandlew-val'); if (_shwIvEl) _shwIvEl.textContent = (btnStyle.sliderHandleW ?? 16) + 'px';
+          const _shholeIvEl = document.getElementById('s-sliderhandlehole-val'); if (_shholeIvEl) _shholeIvEl.textContent = (btnStyle.sliderHandleHole ?? 0) + '%';
+          const _shholeEl = document.getElementById('s-sliderhandlehole'); if (_shholeEl) _shholeEl.value = String(btnStyle.sliderHandleHole ?? 0);
           const _shv2 = document.getElementById('s-sliderh-val');       if (_shv2) _shv2.textContent = btnStyle.sliderH + 'px';
           const _srv2 = document.getElementById('s-sliderr-val');       if (_srv2) _srv2.textContent = btnStyle.sliderR + '%';
           const _sspv2 = document.getElementById('s-sliderspread-val'); if (_sspv2) _sspv2.textContent = (btnStyle.sliderSpread ?? 4) + 'px';
@@ -199,6 +201,7 @@ if (document.getElementById('s-sliderhandle')) btnStyle.sliderHandle = getColorV
     btnStyle.sliderHandleR  = Number(document.getElementById("s-sliderhandler").value);
     btnStyle.sliderW        = Number(document.getElementById("s-sliderw").value);
     btnStyle.sliderHandleW  = Number(document.getElementById("s-sliderhandlew").value);
+    btnStyle.sliderHandleHole = Number(document.getElementById("s-sliderhandlehole").value);
     btnStyle.checkboxChecked = getColorValue('s-checkbox-checked');
     btnStyle.checkboxMark    = getColorValue('s-checkbox-mark');
     btnStyle.checkboxBorder  = getColorValue('s-checkbox-border');
@@ -306,6 +309,8 @@ _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
     const _swRvEl = document.getElementById("s-sliderw-val"); if (_swRvEl) _swRvEl.textContent = (BTN_STYLE_DEFAULTS.sliderW ?? 100) + '%';
     const _shwREl = document.getElementById("s-sliderhandlew"); if (_shwREl) _shwREl.value = String(BTN_STYLE_DEFAULTS.sliderHandleW ?? 16);
     const _shwRvEl = document.getElementById("s-sliderhandlew-val"); if (_shwRvEl) _shwRvEl.textContent = (BTN_STYLE_DEFAULTS.sliderHandleW ?? 16) + 'px';
+    const _shheREl = document.getElementById("s-sliderhandlehole"); if (_shheREl) _shheREl.value = String(BTN_STYLE_DEFAULTS.sliderHandleHole ?? 0);
+    const _shhevREl = document.getElementById("s-sliderhandlehole-val"); if (_shhevREl) _shhevREl.textContent = (BTN_STYLE_DEFAULTS.sliderHandleHole ?? 0) + '%';
     const _sspv = document.getElementById("s-sliderspread-val"); if (_sspv) _sspv.textContent = (btnStyle.sliderSpread ?? 4) + "px";
     const _sspEl = document.getElementById("s-sliderspread"); if (_sspEl) _sspEl.value = btnStyle.sliderSpread ?? 4;
     document.getElementById("s-font").value    = btnStyle.font;

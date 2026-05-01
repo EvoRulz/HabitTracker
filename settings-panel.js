@@ -86,6 +86,7 @@
     _sv('s-sliderhandler', btnStyle.sliderHandleR?? 3);   _svl('s-sliderhandler-val', btnStyle.sliderHandleR?? 3,   '%');
     _sv('s-sliderw',       btnStyle.sliderW      ?? 100); _svl('s-sliderw-val',       btnStyle.sliderW      ?? 100, '%');
     _sv('s-sliderhandlew', btnStyle.sliderHandleW?? 16);  _svl('s-sliderhandlew-val', btnStyle.sliderHandleW?? 16,  'px');
+    _sv('s-sliderhandlehole', btnStyle.sliderHandleHole ?? 0); _svl('s-sliderhandlehole-val', btnStyle.sliderHandleHole ?? 0, '%');
     setColorValue('s-clock-date-color', _btnStyleFor('top-date').fg);
     setColorValue('s-clock-time-color', _btnStyleFor('top-time').fg);
     setColorValue('s-clock-date-bg',    _btnStyleFor('top-date').bg);
@@ -255,6 +256,9 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     const _shhvEl2 = document.getElementById('s-sliderhandleh-val'); if (_shhvEl2) _shhvEl2.textContent = (btnStyle.sliderHandleH ?? 16) + 'px';
     const _shrEl2 = document.getElementById('s-sliderhandler'); if (_shrEl2) _shrEl2.value = String(btnStyle.sliderHandleR ?? 3);
     const _shrvEl2 = document.getElementById('s-sliderhandler-val'); if (_shrvEl2) _shrvEl2.textContent = (btnStyle.sliderHandleR ?? 3) + '%';
+    btnStyle.sliderHandleW  = Number(document.getElementById("s-sliderhandlew").value);
+    btnStyle.sliderHandleHole = Number(document.getElementById("s-sliderhandlehole").value);
+    localStorage.setItem("_btnStyle",
     setColorValue('s-sliderhandleborder', btnStyle.sliderHandleBorder || '#00000000');
     const _s = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
     _s("s-app-bg-type",    appStyle.bgType);

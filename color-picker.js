@@ -118,9 +118,10 @@
         h.style.boxShadow = '0 0 0 1px #000' + (isSel ? ',0 0 0 3px rgba(255,255,255,0.4)' : '');
         h.innerHTML = '<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:7px;color:#ccc;font-weight:bold;pointer-events:none;">%</span>';
       } else {
-        h.style.background = 'transparent';
-        h.style.border = _bw + ' solid ' + h8css(s.hex8);
-        h.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,0.7),0 0 0 1px rgba(0,0,0,0.7)' + (isSel ? ',0 0 0 3px rgba(255,255,255,0.5)' : '');
+        const _holeGrad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--slider-handle-hole').trim()) || 0;
+        h.style.background = 'radial-gradient(circle, transparent calc(' + _holeGrad + ' * 1%), ' + h8css(s.hex8) + ' calc(' + _holeGrad + ' * 1%))';
+        h.style.border = '1px solid ' + _cv.hBorder;
+        h.style.boxShadow = isSel ? '0 0 8px 4px rgba(255,255,255,0.85)' : '';
       }
       let _ghdrag = false;
       h.addEventListener('pointerdown', e => {
@@ -236,15 +237,17 @@
     if (styleTag) styleTag.remove();
     styleTag = document.createElement('style');
     styleTag.id = 'cp-thumb-style';
+    const _holeInject = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--slider-handle-hole').trim()) || 0;
     styleTag.textContent = `
       #cp-popup input[type=range]::-webkit-slider-thumb {
         -webkit-appearance:none; width:${v.hW}; height:${v.hH};
-        border-radius:${v.hR}; background:${v.hColor};
+        border-radius:${v.hR}; background:radial-gradient(circle, transparent calc(${_holeInject} * 1%), ${v.hColor} calc(${_holeInject} * 1%));
         border:1px solid ${v.hBorder}; cursor:pointer; box-sizing:border-box;
       }
       #cp-popup input[type=range]::-moz-range-thumb {
         width:${v.hW}; height:${v.hH}; border-radius:${v.hR};
-        background:${v.hColor}; border:1px solid ${v.hBorder};
+        background:radial-gradient(circle, transparent calc(${_holeInject} * 1%), ${v.hColor} calc(${_holeInject} * 1%));
+        border:1px solid ${v.hBorder};
         cursor:pointer; box-sizing:border-box;
       }`;
     document.head.appendChild(styleTag);
