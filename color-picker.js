@@ -445,13 +445,13 @@
     `</div>` +
     `<button id="cp-grad-plus"  style="background:#2a2a2a;border:1px solid ${sb};border-radius:4px;color:#aaa;cursor:pointer;width:22px;height:22px;font-size:16px;line-height:1;padding:0;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">+</button>` +
   `</div>` +
-  `<div><div style="${ls}">Hue</div>` +
+  `<div><div class="cp-field-label">Hue</div>` +
     `<input id="cp-hue" type="range" min="0" max="360" value="${H}" style="${ss}"></div>` +
-  `<div><div style="${ls}">Saturation</div>` +
+  `<div><div class="cp-field-label">Saturation</div>` +
     `<input id="cp-sat" type="range" min="0" max="100" value="${S}" style="${ss}"></div>` +
-  `<div><div style="${ls}">Brightness</div>` +
+  `<div><div class="cp-field-label">Brightness</div>` +
     `<input id="cp-bri" type="range" min="0" max="100" value="${B}" style="${ss}"></div>` +
-`<div><div style="${ls}">Alpha</div>` +
+`<div><div class="cp-field-label">Alpha</div>` +
   `<input id="cp-alpha" type="range" min="0" max="255" value="255" style="${ss}"></div>` +
 `<div style="display:flex;gap:6px;align-items:center;margin-top:2px;">` +
   `<input id="cp-hex" type="text" maxlength="9" ` +
@@ -459,6 +459,20 @@
     `spellcheck="false" autocomplete="off">` +
   `<button id="cp-copy" style="background:#2a2a2a;border:1px solid ${sb};border-radius:4px;color:#aaa;cursor:pointer;padding:4px 8px;font-size:12px;flex-shrink:0;">Copy</button>` +
 `</div>`;
+el.querySelectorAll('.cp-field-label').forEach(function(label) {
+    const grad = c.labelStops ? _gBuildCSS(c.labelStops) : null;
+    if (grad) {
+      label.style.background = grad;
+      label.style.webkitBackgroundClip = 'text';
+      label.style.webkitTextFillColor = 'transparent';
+      label.style.backgroundClip = 'text';
+      label.style.color = 'transparent';
+      label.style.fontSize = '11px';
+      label.style.marginBottom = '2px';
+    } else {
+      label.style.cssText = 'font-size:11px;color:' + (txt || 'rgba(255,255,255,1)') + ';margin-bottom:2px;';
+    }
+  });
   document.body.appendChild(el);
 
   makeDragger(el.querySelector('#cp-hue'), v => { H = v; commitColor(); });
