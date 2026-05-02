@@ -378,5 +378,4 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     settingsUndo   = dbounce(settingsUndo);
     settingsRedo   = dbounce(settingsRedo);
     settingsCancel = dbounce(settingsCancel);
-    settingsReset  = dbounce(settingsReset);
-  })();
+    })();
