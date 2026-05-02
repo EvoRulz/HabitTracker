@@ -680,11 +680,13 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
     const grad = c.labelStops ? _gBuildCSS(c.labelStops) : null;
     document.querySelectorAll('.color-swatch-label').forEach(function(el) {
       if (grad) {
-        el.style.background = grad;
-        el.style.webkitBackgroundClip = 'text';
-        el.style.webkitTextFillColor = 'transparent';
-        el.style.backgroundClip = 'text';
-        el.style.color = 'transparent';
+        var _gc = c.labelStops ? c.labelStops.filter(function(s){return !s.isPercent;}) : [];
+      el.style.background = '';
+      el.style.webkitBackgroundClip = '';
+      el.style.webkitTextFillColor = '';
+      el.style.backgroundClip = '';
+      el.style.color = _gc.length ? h8css(_gc[0].hex8) : h8css(typeof c.label === 'string' ? c.label : '#bbbbbbFF');
+      el.style.display = 'inline-block';
       } else {
         el.style.background = '';
         el.style.webkitBackgroundClip = '';
