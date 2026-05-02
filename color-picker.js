@@ -46,7 +46,7 @@
   let   _gRenderTime = 0; // timestamp of last _gRender call
   let H = 0, S = 100, B = 100;
 
-  const CP_DEFAULTS = { bg: '#1c1c1cFF', border: '#555555FF', label: '#bbbbbbFF', text: '#FFFFFFFF' };
+  const CP_DEFAULTS = { bg: '#1c1c1cFF', border: '#555555FF', label: '#bbbbbbFF', text: '#FFFFFFFF', labelBorder: '#00000000' };
   function cpCfg() {
     try { const s = JSON.parse(localStorage.getItem('_cpSettings')); if (s) return Object.assign({}, CP_DEFAULTS, s); } catch {}
     return Object.assign({}, CP_DEFAULTS);
@@ -652,6 +652,9 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
     if (c.text) {
       setColorValue('s-cp-text', c.text);
     }
+    if (c.labelBorder) {
+      setColorValue('s-cp-label-border', c.labelBorder);
+    }
     if (c.labelStops && window._cpSetGradientStops) {
       window._cpSetGradientStops('s-cp-label', c.labelStops);
       const _lbOv = document.getElementById('s-cp-label-swatch-overlay');
@@ -685,6 +688,7 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
         el.style.backgroundClip = '';
         el.style.color = h8css(typeof c.label === 'string' ? c.label : '#bbbbbbFF');
       }
+      el.style.border = c.labelBorder && c.labelBorder !== '#00000000' ? '1px solid ' + h8css(c.labelBorder) : '';
     });
   }
   window._cpSaveFromUI = function () {
@@ -698,6 +702,7 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
       borderStops: window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-border') : null,
       labelStops:  window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-label')  : null,
       textStops:   window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-text')   : null,
+      labelBorder: (typeof getColorValue === 'function' ? getColorValue('s-cp-label-border') : null),
     }));
     _applyLabelToSwatches();
   };
