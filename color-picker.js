@@ -678,61 +678,39 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
   function _applyLabelToSwatches() {
     const c = cpCfg();
     const grad = c.labelStops ? _gBuildCSS(c.labelStops) : null;
+    var _lbGradStops = c.labelBorderStops ? c.labelBorderStops.filter(function(s){ return !s.isPercent; }) : null;
+    var _hasLbGrad   = _lbGradStops && _lbGradStops.length >= 2;
+    var _lbAlpha     = (!_hasLbGrad && c.labelBorder) ? parseInt(c.labelBorder.slice(7,9) || 'ff', 16) : (_hasLbGrad ? 1 : 0);
+    var hasOutline   = _hasLbGrad || (c.labelBorder && _lbAlpha > 0);
     document.querySelectorAll('.color-swatch-label').forEach(function(el) {
+      el.style.background = '';
+      el.style.webkitBackgroundClip = '';
+      el.style.webkitTextFillColor = '';
+      el.style.backgroundClip = '';
+      el.style.color = '';
+      el.style.display = '';
+      el.style.webkitTextStroke = '';
+      el.style.paintOrder = '';
+      el.style.textShadow = '';
+      el.style.filter = '';
       if (grad) {
-      el.style.background = grad;
-      el.style.webkitBackgroundClip = 'text';
-      el.style.webkitTextFillColor = 'transparent';
-      el.style.backgroundClip = 'text';
-      el.style.color = 'transparent';
-      el.style.display = 'inline-block';
+        el.style.background = grad;
+        el.style.webkitBackgroundClip = 'text';
+        el.style.webkitTextFillColor = 'transparent';
+        el.style.backgroundClip = 'text';
+        el.style.color = 'transparent';
+        el.style.display = 'inline-block';
       } else {
-        el.style.background = '';
-        el.style.webkitBackgroundClip = '';
-        el.style.webkitTextFillColor = '';
-        el.style.backgroundClip = '';
         el.style.color = h8css(typeof c.label === 'string' ? c.label : '#bbbbbbFF');
       }
-      var _lbGradStops = c.labelBorderStops ? c.labelBorderStops.filter(function(s){ return !s.isPercent; }) : null;
-      var _hasLbGrad   = _lbGradStops && _lbGradStops.length >= 2;
-      var _lbAlpha     = (!_hasLbGrad && c.labelBorder) ? parseInt(c.labelBorder.slice(7,9) || 'ff', 16) : (_hasLbGrad ? 1 : 0);
-      if (_hasLbGrad || (c.labelBorder && _lbAlpha > 0)) {
-        el.style.border = '';
-        el.style.borderRadius = '';
-        el.style.display = '';
-        el.style.maxWidth = '';
-        el.style.webkitTextStroke = '';
-        el.style.paintOrder = '';
-        el.style.textShadow = '';
-        el.style.filter = '';
-        var _strokeColor;
+      if (hasOutline) {
+        var oc;
         if (_hasLbGrad) {
-          var _lbN = _lbGradStops.length;
-          var _lbC0 = h8css(_lbGradStops[0].hex8);
-          var _lbCM = h8css(_gInterp(_lbGradStops[0].hex8, _lbGradStops[_lbN - 1].hex8, 0.5));
-          var _lbC1 = h8css(_lbGradStops[_lbN - 1].hex8);
-          el.style.webkitTextStroke = '';
-el.style.paintOrder = '';
-el.style.textShadow = '';
-el.style.webkitTextStroke = '2px '+_lbCM;
-          el.style.paintOrder = 'stroke fill';
+          oc = h8css(_gInterp(_lbGradStops[0].hex8, _lbGradStops[_lbGradStops.length - 1].hex8, 0.5));
         } else {
-          var _strokeColor = h8css(c.labelBorder);
-          el.style.webkitTextStroke = '';
-el.style.paintOrder = '';
-el.style.textShadow = '';
-el.style.webkitTextStroke = '2px '+_strokeColor;
-          el.style.paintOrder = 'stroke fill';
+          oc = h8css(c.labelBorder);
         }
-      } else {
-        el.style.border = '';
-        el.style.borderRadius = '';
-        el.style.display = '';
-        el.style.maxWidth = '';
-        el.style.webkitTextStroke = '';
-        el.style.paintOrder = '';
-        el.style.textShadow = '';
-        el.style.filter = '';
+        el.style.textShadow = '1px 0 0 '+oc+',-1px 0 0 '+oc+',0 1px 0 '+oc+',0 -1px 0 '+oc+',1px 1px 0 '+oc+',-1px -1px 0 '+oc+',1px -1px 0 '+oc+',-1px 1px 0 '+oc;
       }
     });
   }
