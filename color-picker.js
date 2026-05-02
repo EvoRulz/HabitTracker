@@ -445,13 +445,13 @@
     `</div>` +
     `<button id="cp-grad-plus"  style="background:#2a2a2a;border:1px solid ${sb};border-radius:4px;color:#aaa;cursor:pointer;width:22px;height:22px;font-size:16px;line-height:1;padding:0;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">+</button>` +
   `</div>` +
-  `<div><div class="cp-field-label">Hue</div>` +
+  `<div><div class="cp-field-label" style="${ls}">Hue</div>` +
     `<input id="cp-hue" type="range" min="0" max="360" value="${H}" style="${ss}"></div>` +
-  `<div><div class="cp-field-label">Saturation</div>` +
+  `<div><div class="cp-field-label" style="${ls}">Saturation</div>` +
     `<input id="cp-sat" type="range" min="0" max="100" value="${S}" style="${ss}"></div>` +
-  `<div><div class="cp-field-label">Brightness</div>` +
+  `<div><div class="cp-field-label" style="${ls}">Brightness</div>` +
     `<input id="cp-bri" type="range" min="0" max="100" value="${B}" style="${ss}"></div>` +
-`<div><div class="cp-field-label">Alpha</div>` +
+`<div><div class="cp-field-label" style="${ls}">Alpha</div>` +
   `<input id="cp-alpha" type="range" min="0" max="255" value="255" style="${ss}"></div>` +
 `<div style="display:flex;gap:6px;align-items:center;margin-top:2px;">` +
   `<input id="cp-hex" type="text" maxlength="9" ` +
