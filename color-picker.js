@@ -431,9 +431,11 @@
       `display:flex;flex-direction:column;gap:10px;touch-action:none;` +
       `user-select:none;-webkit-user-select:none;`;
     const ss = sliderCSS(v);
-    const ls = _lblGrad
+    const ls = _txtGrad
+      ? `font-size:11px;background:${_txtGrad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:transparent;margin-bottom:2px;`
+      : _lblGrad
       ? `font-size:11px;background:${_lblGrad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:transparent;margin-bottom:2px;`
-      : `font-size:11px;color:${lbl};margin-bottom:2px;`;
+      : `font-size:11px;color:${txt};margin-bottom:2px;`;
     el.innerHTML =
   `<div style="display:flex;gap:10px;align-items:center;">` +
     `<button id="cp-grad-minus" style="background:#2a2a2a;border:1px solid ${sb};border-radius:4px;color:#aaa;cursor:pointer;width:22px;height:22px;font-size:16px;line-height:1;padding:0;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">&#8722;</button>` +
