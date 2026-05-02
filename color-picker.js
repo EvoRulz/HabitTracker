@@ -693,8 +693,10 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
         el.style.borderRadius = '';
         el.style.display = '';
         el.style.maxWidth = '';
-        el.style.webkitTextStroke = '1px ' + h8css(c.labelBorder);
-        el.style.paintOrder = 'stroke fill';
+        var _oc = h8css(c.labelBorder);
+        el.style.textShadow = '-1px -1px 0 '+_oc+', 1px -1px 0 '+_oc+', -1px 1px 0 '+_oc+', 1px 1px 0 '+_oc+', -2px 0 0 '+_oc+', 2px 0 0 '+_oc+', 0 -2px 0 '+_oc+', 0 2px 0 '+_oc;
+        el.style.webkitTextStroke = '';
+        el.style.paintOrder = '';
       } else {
         el.style.border = '';
         el.style.borderRadius = '';
@@ -702,6 +704,7 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
         el.style.maxWidth = '';
         el.style.webkitTextStroke = '';
         el.style.paintOrder = '';
+        el.style.textShadow = '';
       }
     });
   }
