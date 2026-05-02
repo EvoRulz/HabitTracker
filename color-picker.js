@@ -688,7 +688,17 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
         el.style.backgroundClip = '';
         el.style.color = h8css(typeof c.label === 'string' ? c.label : '#bbbbbbFF');
       }
-      el.style.border = c.labelBorder && c.labelBorder !== '#00000000' ? '1px solid ' + h8css(c.labelBorder) : '';
+      if (c.labelBorder && c.labelBorder !== '#00000000') {
+        el.style.border = '1px solid ' + h8css(c.labelBorder);
+        el.style.borderRadius = '2px';
+        el.style.display = 'inline-block';
+        el.style.maxWidth = '90%';
+      } else {
+        el.style.border = '';
+        el.style.borderRadius = '';
+        el.style.display = '';
+        el.style.maxWidth = '';
+      }
     });
   }
   window._cpSaveFromUI = function () {
