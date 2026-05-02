@@ -697,7 +697,13 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
         var _oc = h8css(c.labelBorder);
         el.style.webkitTextStroke = '';
         el.style.paintOrder = '';
-        el.style.textShadow = '-1px -1px 0 '+_oc+', 1px -1px 0 '+_oc+', -1px 1px 0 '+_oc+', 1px 1px 0 '+_oc+', -2px 0 0 '+_oc+', 2px 0 0 '+_oc+', 0 -2px 0 '+_oc+', 0 2px 0 '+_oc;
+        if (grad) {
+          el.style.textShadow = '';
+          el.style.filter = 'drop-shadow(1px 0px 0px '+_oc+') drop-shadow(-1px 0px 0px '+_oc+') drop-shadow(0px 1px 0px '+_oc+') drop-shadow(0px -1px 0px '+_oc+')';
+        } else {
+          el.style.filter = '';
+          el.style.textShadow = '-1px -1px 0 '+_oc+', 1px -1px 0 '+_oc+', -1px 1px 0 '+_oc+', 1px 1px 0 '+_oc+', -2px 0 0 '+_oc+', 2px 0 0 '+_oc+', 0 -2px 0 '+_oc+', 0 2px 0 '+_oc;
+        }
       } else {
         el.style.border = '';
         el.style.borderRadius = '';
@@ -706,6 +712,7 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
         el.style.webkitTextStroke = '';
         el.style.paintOrder = '';
         el.style.textShadow = '';
+        el.style.filter = '';
       }
     });
   }
