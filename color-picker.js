@@ -46,7 +46,7 @@
   let   _gRenderTime = 0; // timestamp of last _gRender call
   let H = 0, S = 100, B = 100;
 
-  const CP_DEFAULTS = { bg: '#1c1c1cFF', border: '#555555FF', label: '#bbbbbbFF' };
+  const CP_DEFAULTS = { bg: '#1c1c1cFF', border: '#555555FF', label: '#bbbbbbFF', text: '#FFFFFFFF' };
   function cpCfg() {
     try { const s = JSON.parse(localStorage.getItem('_cpSettings')); if (s) return Object.assign({}, CP_DEFAULTS, s); } catch {}
     return Object.assign({}, CP_DEFAULTS);
@@ -417,6 +417,7 @@
     const bgLayer = brIsGrad ? (bgIsGrad ? bg : `linear-gradient(${bg}, ${bg})`) : bg;
     const _lblGrad = c.labelStops ? _gBuildCSS(c.labelStops) : (typeof c.label === 'string' && (c.label.startsWith('linear-gradient') || c.label.startsWith('radial-gradient'))) ? c.label : null;
     const lbl = _lblGrad || h8css(typeof c.label === 'string' ? c.label : '#bbbbbbFF');
+    const txt = h8css(typeof c.text === 'string' ? c.text : '#FFFFFFFF');
     const sb = h8css((typeof btnStyle !== 'undefined' && btnStyle.sliderBorder) || '#555555FF');
     injectThumbCSS(v);
     const el = document.createElement('div');
@@ -451,7 +452,7 @@
   `<input id="cp-alpha" type="range" min="0" max="255" value="255" style="${ss}"></div>` +
 `<div style="display:flex;gap:6px;align-items:center;margin-top:2px;">` +
   `<input id="cp-hex" type="text" maxlength="9" ` +
-    `style="flex:1;min-width:0;background:#111;color:#fff;border:1px solid ${sb};border-radius:4px;padding:4px 6px;font-size:12px;font-family:monospace;outline:none;text-transform:uppercase;letter-spacing:0.04em;" ` +
+    `style="flex:1;min-width:0;background:#111;color:${txt};border:1px solid ${sb};border-radius:4px;padding:4px 6px;font-size:12px;font-family:monospace;outline:none;text-transform:uppercase;letter-spacing:0.04em;" ` +
     `spellcheck="false" autocomplete="off">` +
   `<button id="cp-copy" style="background:#2a2a2a;border:1px solid ${sb};border-radius:4px;color:#aaa;cursor:pointer;padding:4px 8px;font-size:12px;flex-shrink:0;">Copy</button>` +
 `</div>`;
@@ -630,6 +631,9 @@
     } else {
       setColorValue('s-cp-border', c.border);
     }
+    if (c.text) {
+      setColorValue('s-cp-text', c.text);
+    }
     if (c.labelStops && window._cpSetGradientStops) {
       window._cpSetGradientStops('s-cp-label', c.labelStops);
       const _lbOv = document.getElementById('s-cp-label-swatch-overlay');
@@ -639,7 +643,6 @@
     }
     _applyLabelToSwatches();
   };
-  window._cpRebuild
   function _applyLabelToSwatches() {
     const c = cpCfg();
     const grad = c.labelStops ? _gBuildCSS(c.labelStops) : null;
@@ -665,6 +668,7 @@
       bg:          (typeof getStyleValue === 'function' ? getStyleValue('s-cp-bg') : getColorValue('s-cp-bg')),
       border:      (typeof getStyleValue === 'function' ? getStyleValue('s-cp-border') : getColorValue('s-cp-border')),
       label:       (typeof getStyleValue === 'function' ? getStyleValue('s-cp-label') : getColorValue('s-cp-label')),
+      text:        getColorValue('s-cp-text'),
       bgStops:     window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-bg')     : null,
       borderStops: window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-border') : null,
       labelStops:  window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-label')  : null,
