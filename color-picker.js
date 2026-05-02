@@ -714,13 +714,15 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
           el.style.webkitTextStroke = '';
 el.style.paintOrder = '';
 el.style.textShadow = '';
-el.style.textShadow = '0.5px 0 0 '+_lbCM+',-0.5px 0 0 '+_lbCM+',0 0.5px 0 '+_lbCM+',0 -0.5px 0 '+_lbCM+',0.5px 0.5px 0 '+_lbCM+',-0.5px -0.5px 0 '+_lbCM+',0.5px -0.5px 0 '+_lbCM+',-0.5px 0.5px 0 '+_lbCM;
+el.style.webkitTextStroke = '2px '+_lbCM;
+          el.style.paintOrder = 'stroke fill';
         } else {
           var _strokeColor = h8css(c.labelBorder);
           el.style.webkitTextStroke = '';
 el.style.paintOrder = '';
 el.style.textShadow = '';
-el.style.textShadow = '0.5px 0 0 '+_strokeColor+',-0.5px 0 0 '+_strokeColor+',0 0.5px 0 '+_strokeColor+',0 -0.5px 0 '+_strokeColor+',0.5px 0.5px 0 '+_strokeColor+',-0.5px -0.5px 0 '+_strokeColor+',0.5px -0.5px 0 '+_strokeColor+',-0.5px 0.5px 0 '+_strokeColor;
+el.style.webkitTextStroke = '2px '+_strokeColor;
+          el.style.paintOrder = 'stroke fill';
         }
       } else {
         el.style.border = '';
