@@ -1,4 +1,4 @@
- // @version 1233
+ // @version 1234
 
   // ── Constants ──────────────────────────────────────────────
   const MIN_DATE       = new Date("2026-03-14");
@@ -122,25 +122,15 @@ async function toggleOrientLock() {
     if (scale !== 1) {
       const wrapper = document.getElementById('zoom-wrapper');
       if (wrapper) {
-        wrapper.style.transform = `scale(${scale})`;
-        wrapper.style.transformOrigin = 'top center';
-        const spacer = document.getElementById('zoom-spacer');
-        if (spacer) spacer.style.height = Math.max(0, wrapper.scrollHeight * (scale - 1)) + 'px';
+        wrapper.style.transform = '';
+        wrapper.style.transformOrigin = '';
+        wrapper.style.zoom = String(scale);
       }
     }
     const sl = document.getElementById('zoom-slider');
     const lb = document.getElementById('zoom-label');
     if (sl) sl.value = saved;
     if (lb) lb.textContent = saved + '%';
-  }
-  const _zw = document.getElementById('zoom-wrapper');
-  if (_zw) {
-    new ResizeObserver(() => {
-      const s = parseFloat(localStorage.getItem('_zoom') || '100') / 100;
-      if (s === 1) return;
-      const sp = document.getElementById('zoom-spacer');
-      if (sp) sp.style.height = Math.max(0, _zw.scrollHeight * (s - 1)) + 'px';
-    }).observe(_zw);
   }
 })();
   function ctrlZoom(val) {
@@ -149,15 +139,10 @@ async function toggleOrientLock() {
     const wrapper = document.getElementById('zoom-wrapper');
     const spacer = document.getElementById('zoom-spacer');
     if (wrapper) {
-      if (scale === 1) {
-        wrapper.style.transform = '';
-        wrapper.style.transformOrigin = '';
-        if (spacer) spacer.style.height = '0';
-      } else {
-        wrapper.style.transform = `scale(${scale})`;
-        wrapper.style.transformOrigin = 'top center';
-        if (spacer) spacer.style.height = Math.max(0, wrapper.scrollHeight * (scale - 1)) + 'px';
-      }
+      wrapper.style.transform = '';
+      wrapper.style.transformOrigin = '';
+      wrapper.style.zoom = scale === 1 ? '' : String(scale);
+      if (spacer) spacer.style.height = '0';
     }
     const lb = document.getElementById('zoom-label');
     if (lb) lb.textContent = val + '%';
@@ -186,6 +171,7 @@ async function toggleOrientLock() {
     if (t) t.classList.toggle('on', window._interactEnabled);
     document.body.classList.toggle('interact-locked', !window._interactEnabled);
   }
+
 
 
 
