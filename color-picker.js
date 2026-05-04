@@ -1,4 +1,4 @@
-// @version 1228
+// @version 1229
 
 // ── color-picker.js ────────────────────────────────────────
 (function () {
@@ -672,6 +672,7 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
 
   // ── Public API ─────────────────────────────────────────────
   window._cpClose = close;
+  window._applyLabelToSwatches = _applyLabelToSwatches;
   window._cpSyncUI = function () {
     if (typeof setColorValue !== 'function') return;
     const c = cpCfg();
@@ -716,6 +717,13 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
     } else {
       setColorValue('s-cp-text', c.text);
     }
+    const _szSyncEl = document.getElementById('s-cp-label-size');
+    const _stSyncEl = document.getElementById('s-cp-label-stroke');
+    const _szValSyncEl = document.getElementById('s-cp-label-size-val');
+    const _stValSyncEl = document.getElementById('s-cp-label-stroke-val');
+    const c2 = cpCfg();
+    if (_szSyncEl) { _szSyncEl.value = c2.labelSize || 8; if (_szValSyncEl) _szValSyncEl.textContent = (c2.labelSize || 8) + 'px'; }
+    if (_stSyncEl) { const _sv = Math.round((c2.labelStroke !== undefined ? c2.labelStroke : 0.5) * 10); _stSyncEl.value = _sv; if (_stValSyncEl) _stValSyncEl.textContent = (c2.labelStroke !== undefined ? c2.labelStroke : 0.5).toFixed(1) + 'px'; }
     _applyLabelToSwatches();
   };
   function _applyLabelToSwatches() {
@@ -723,6 +731,10 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
     const fillGrad = c.labelStops ? _gBuildCSS(c.labelStops) : (c.label && typeof c.label === 'string' && (c.label.startsWith('linear-gradient') || c.label.startsWith('radial-gradient'))) ? c.label : null;
     const outlineColor = c.labelOutline ? h8css(c.labelOutline) : 'rgba(0,0,0,1)';
     const outlineGrad = c.labelBorderStops ? _gBuildCSS(c.labelBorderStops) : null;
+    const _szEl = document.getElementById('s-cp-label-size');
+    const _stEl = document.getElementById('s-cp-label-stroke');
+    const _fontSize = _szEl ? parseInt(_szEl.value) : (c.labelSize || 8);
+    const _strokeW = _stEl ? (parseFloat(_stEl.value) / 10).toFixed(1) : (c.labelStroke !== undefined ? c.labelStroke : 0.5).toFixed(1);
     let lbStyleTag = document.getElementById('_swatch-label-pseudo-style');
     if (!lbStyleTag) {
       lbStyleTag = document.createElement('style');
@@ -731,10 +743,10 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
     }
     // ::before is now the FILL (z-index:1 in CSS, paints on top of the stroke on the main element)
     if (fillGrad) {
-      lbStyleTag.textContent = `.color-swatch-label::before { background: ${fillGrad}; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; -webkit-text-stroke: 0; }`;
+      lbStyleTag.textContent = `.color-swatch-label::before { background: ${fillGrad}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; -webkit-text-stroke: 0; font-size: ${_fontSize}px; }`;
     } else {
       const _fc = h8css(typeof c.label === 'string' && !c.label.startsWith('linear-gradient') && !c.label.startsWith('radial-gradient') ? c.label : '#bbbbbbFF');
-      lbStyleTag.textContent = `.color-swatch-label::before { -webkit-text-fill-color: ${_fc}; background: none; color: ${_fc}; -webkit-text-stroke: 0; }`;
+      lbStyleTag.textContent = `.color-swatch-label::before { -webkit-text-fill-color: ${_fc}; background: none; color: ${_fc}; -webkit-text-stroke: 0; font-size: ${_fontSize}px; }`;
     }
     // Main element carries the STROKE only, fill transparent so ::before shows through
     document.querySelectorAll('.color-swatch-label').forEach(function(el) {
@@ -744,13 +756,14 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
       el.style.webkitTextFillColor = 'transparent';
       el.style.color = 'transparent';
       el.style.display = 'inline-block';
+      el.style.fontSize = _fontSize + 'px';
       if (outlineGrad) {
-        el.style.webkitTextStroke = '3px transparent';
+        el.style.webkitTextStroke = _strokeW + 'px transparent';
         el.style.background = outlineGrad;
         el.style.webkitBackgroundClip = 'text';
         el.style.backgroundClip = 'text';
       } else {
-        el.style.webkitTextStroke = '0.5px ' + outlineColor;
+        el.style.webkitTextStroke = _strokeW + 'px ' + outlineColor;
         el.style.background = '';
         el.style.webkitBackgroundClip = '';
         el.style.backgroundClip = '';
@@ -771,6 +784,8 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
       labelOutline: getColorValue('s-cp-label-outline'),
       labelBorder: (typeof getColorValue === 'function' ? getColorValue('s-cp-label-border') : null),
       labelBorderStops: window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-label-outline') : null,
+      labelSize: (function(){ const el = document.getElementById('s-cp-label-size'); return el ? parseInt(el.value) : 8; })(),
+      labelStroke: (function(){ const el = document.getElementById('s-cp-label-stroke'); return el ? parseFloat(el.value) / 10 : 0.5; })(),
     }));
     _applyLabelToSwatches();
   };
@@ -801,3 +816,4 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
   refreshAlphaTrack();
   };
 })();
+

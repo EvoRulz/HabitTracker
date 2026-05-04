@@ -1,4 +1,4 @@
-// @version 1228
+// @version 1229
 
 // ── IndexedDB image store ──────────────────────────────────
 if (navigator.storage && navigator.storage.persist) {
@@ -472,3 +472,4 @@ if (navigator.storage && navigator.storage.persist) {
     wrap.appendChild(overlay);
   });
   applyBtnStyle(true);
+
