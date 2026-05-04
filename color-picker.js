@@ -1,4 +1,4 @@
-// @version 1230
+// @version 1231
 
 // ── color-picker.js ────────────────────────────────────────
 (function () {
@@ -724,6 +724,9 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
     const c2 = cpCfg();
     if (_szSyncEl) { _szSyncEl.value = c2.labelSize || 8; if (_szValSyncEl) _szValSyncEl.textContent = (c2.labelSize || 8) + 'px'; }
     if (_stSyncEl) { const _sv = Math.round((c2.labelStroke !== undefined ? c2.labelStroke : 0.5) * 10); _stSyncEl.value = _sv; if (_stValSyncEl) _stValSyncEl.textContent = (c2.labelStroke !== undefined ? c2.labelStroke : 0.5).toFixed(1) + 'px'; }
+    const _lfSyncEl = document.getElementById('s-cp-label-font');
+    if (_lfSyncEl && c2.labelFont) _lfSyncEl.value = c2.labelFont;
+    if (window.fontPickerSwatchSync) window.fontPickerSwatchSync();
     _applyLabelToSwatches();
   };
   function _applyLabelToSwatches() {
@@ -735,6 +738,8 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
     const _stEl = document.getElementById('s-cp-label-stroke');
     const _fontSize = _szEl ? parseInt(_szEl.value) : (c.labelSize || 8);
     const _strokeW = _stEl ? (parseFloat(_stEl.value) / 10).toFixed(1) : (c.labelStroke !== undefined ? c.labelStroke : 0.5).toFixed(1);
+    const _lfEl = document.getElementById('s-cp-label-font');
+    const _lf = _lfEl ? _lfEl.value : (c.labelFont || 'sans-serif');
     let lbStyleTag = document.getElementById('_swatch-label-pseudo-style');
     if (!lbStyleTag) {
       lbStyleTag = document.createElement('style');
@@ -743,10 +748,10 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
     }
     // ::before is now the FILL (z-index:1 in CSS, paints on top of the stroke on the main element)
     if (fillGrad) {
-      lbStyleTag.textContent = `.color-swatch-label::before { background: ${fillGrad}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; -webkit-text-stroke: 0; font-size: ${_fontSize}px; }`;
+      lbStyleTag.textContent = `.color-swatch-label::before { background: ${fillGrad}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; -webkit-text-stroke: 0; font-size: ${_fontSize}px; font-family: ${_lf}; }`;
     } else {
       const _fc = h8css(typeof c.label === 'string' && !c.label.startsWith('linear-gradient') && !c.label.startsWith('radial-gradient') ? c.label : '#bbbbbbFF');
-      lbStyleTag.textContent = `.color-swatch-label::before { -webkit-text-fill-color: ${_fc}; background: none; color: ${_fc}; -webkit-text-stroke: 0; font-size: ${_fontSize}px; }`;
+      lbStyleTag.textContent = `.color-swatch-label::before { -webkit-text-fill-color: ${_fc}; background: none; color: ${_fc}; -webkit-text-stroke: 0; font-size: ${_fontSize}px; font-family: ${_lf}; }`;
     }
     // Main element carries the STROKE only, fill transparent so ::before shows through
     document.querySelectorAll('.color-swatch-label').forEach(function(el) {
@@ -757,6 +762,7 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
       el.style.color = 'transparent';
       el.style.display = 'inline-block';
       el.style.fontSize = _fontSize + 'px';
+      el.style.fontFamily = _lf;
       if (outlineGrad) {
         el.style.webkitTextStroke = _strokeW + 'px transparent';
         el.style.background = outlineGrad;
@@ -786,6 +792,7 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
       labelBorderStops: window._cpGetGradientStops ? window._cpGetGradientStops('s-cp-label-outline') : null,
       labelSize: (function(){ const el = document.getElementById('s-cp-label-size'); return el ? parseInt(el.value) : 8; })(),
       labelStroke: (function(){ const el = document.getElementById('s-cp-label-stroke'); return el ? parseFloat(el.value) / 10 : 0.5; })(),
+      labelFont: (function(){ const el = document.getElementById('s-cp-label-font'); return el ? el.value : 'sans-serif'; })(),
     }));
     _applyLabelToSwatches();
   };
@@ -816,5 +823,6 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
   refreshAlphaTrack();
   };
 })();
+
 
 
