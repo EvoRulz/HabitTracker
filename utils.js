@@ -1,4 +1,4 @@
- // @version 1231
+ // @version 1232
 
   // ── Constants ──────────────────────────────────────────────
   const MIN_DATE       = new Date("2026-03-14");
@@ -114,7 +114,25 @@ async function toggleOrientLock() {
   _updateOrientBtn();
   if (window._cfRender) window._cfRender();
 }
-window._dragEnabled = true;
+(function() {
+  const saved = localStorage.getItem('_zoom');
+  if (saved) {
+    document.documentElement.style.zoom = saved + '%';
+    window.addEventListener('DOMContentLoaded', () => {
+      const sl = document.getElementById('zoom-slider');
+      const lb = document.getElementById('zoom-label');
+      if (sl) sl.value = saved;
+      if (lb) lb.textContent = saved + '%';
+    });
+  }
+})();
+  function ctrlZoom(val) {
+    document.documentElement.style.zoom = val + '%';
+    const lb = document.getElementById('zoom-label');
+    if (lb) lb.textContent = val + '%';
+    localStorage.setItem('_zoom', val);
+  }
+  window._dragEnabled = true;
   window._interactEnabled = true;
   function ctrlToggleDrag() {
     window._dragEnabled = !window._dragEnabled;
@@ -137,6 +155,7 @@ window._dragEnabled = true;
     if (t) t.classList.toggle('on', window._interactEnabled);
     document.body.classList.toggle('interact-locked', !window._interactEnabled);
   }
+
 
 
 

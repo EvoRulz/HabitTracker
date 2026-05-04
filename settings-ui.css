@@ -1,4 +1,4 @@
-/* @version 1231 */
+/* @version 1232 */
 
 /* ── Settings cog & panel ── */
     #settings-cog {
@@ -485,12 +485,17 @@ input[type="checkbox"]:hover {
     body.interact-locked #settings-footer button { pointer-events: none; }
     body.interact-locked .cf-arrow { pointer-events: none; }
     body { padding-bottom: 68px !important; }
+    #zoom-slider {
+      width: 80px; height: 4px; cursor: pointer;
+      accent-color: #99ff99; flex-shrink: 0;
+    }
     #sg-swatches.settings-group-content {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-start;
   gap: 12px;
 }
+
 
 
 
