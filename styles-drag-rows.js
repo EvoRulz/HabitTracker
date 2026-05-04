@@ -303,21 +303,15 @@ window.addEventListener('load', function() {
       w: rect.width, h: rect.height,
       ghost: null, lastOver: null, active: false, pointerId: e.pointerId,
     };
-    swReady = false;
+    swReady = true;
     swGrid.style.touchAction = 'none';
-    swHoldTimer = setTimeout(() => {
-      if (swDrag) {
-        swReady = true;
-        swDrag.item.style.boxShadow = '0 0 14px 5px rgba(255,255,255,0.85)';
-        const _so = document.getElementById('settings-overlay'); if (_so) _so.style.overflowY = 'hidden';
-      }
-    }, 500);
+    const _so = document.getElementById('settings-overlay'); if (_so) _so.style.overflowY = 'hidden';
   });
 
   swGrid.addEventListener('pointermove', e => {
     if (!swDrag) return;
     const moved = Math.hypot(e.clientX - swDrag.startX, e.clientY - swDrag.startY);
-    if (!swReady) { if (moved > 10) swCancel(); return; }
+    if (!swReady) { swCancel(); return; }
     e.preventDefault();
     if (!swDrag.active) {
       if (moved < 4) return;
