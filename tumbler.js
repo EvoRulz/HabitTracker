@@ -378,13 +378,25 @@
         requestAnimationFrame(() => requestAnimationFrame(syncPreviewSizes));
       }
     }).observe(_settingsOverlayEl, { attributes: true, attributeFilter: ["class"] });
-fetch('./index.html').then(r=>r.text()).then(t=>{
-  const el=document.getElementById('app-stats');
-  if(el){
-    el.innerHTML=t.split('\n').length.toLocaleString()+' lines<br>'+t.length.toLocaleString()+' chars';
-    el.style.color=hex8ToCss(_btnStyleFor('top-version').fg);
-    el.style.opacity='0.4';
-  }
+(function(){
+  const _files = [
+    './index.html','./utils.js','./tracker.js','./bootstrap.js','./styles-core.js',
+    './styles-colors.js','./settings-panel.js','./settings-change.js','./styles-drag-rows.js',
+    './coverflow.js','./drag.js','./manage.js','./tumbler.js','./font.js','./notifications.js',
+    './slider-init.js','./color-picker.js','./app-data.js','./clock.js','./app.css','./settings-ui.css',
+    './service-worker.js','./manifest.json','./LauncherActivity.java','./NotificationReceiver.java',
+    './BootReceiver.java','./AndroidManifest.xml'
+  ];
+  Promise.all(_files.map(f=>fetch(f+'?nocache='+Date.now(),{cache:'no-store'}).then(r=>r.text()).catch(()=>'')))
+    .then(texts=>{
+      const totalLines = texts.reduce((a,t)=>a+t.split('\n').length,0);
+      const totalChars = texts.reduce((a,t)=>a+t.length,0);
+      const el=document.getElementById('app-stats');
+      if(el){
+        el.innerHTML=totalLines.toLocaleString()+' lines<br>'+totalChars.toLocaleString()+' chars';
+        el.style.color=hex8ToCss(_btnStyleFor('top-version').fg);
+        el.style.opacity='0.4';
+      }
   const vEl=document.getElementById('app-version');
   if(vEl){
     const vNum=parseInt(vEl.textContent.replace('v',''))||0;
@@ -403,7 +415,8 @@ fetch('./index.html').then(r=>r.text()).then(t=>{
     }
     applyBtnStyle();
   }
-}).catch(()=>{});
+});
+})();
     buildTumbler();
     requestAnimationFrame(syncPreviewSizes);
     new ResizeObserver(() => syncPreviewSizes()).observe(document.getElementById("top-grid"));
@@ -414,3 +427,41 @@ fetch('./index.html').then(r=>r.text()).then(t=>{
   }
 }, 1000);
   })();
+
+window._verifyDeployedVersion = (function() {
+  let _pending = false;
+  return function() {
+    if (_pending) return;
+    _pending = true;
+    const vEl = document.getElementById('app-version');
+    const statsEl = document.getElementById('app-stats');
+    if (!vEl || !statsEl) { _pending = false; return; }
+    const localVer = parseInt(vEl.textContent.replace('v','')) || 0;
+    const orig = statsEl.innerHTML;
+    const origColor = statsEl.style.color;
+    statsEl.innerHTML = 'checking CDN...';
+    statsEl.style.color = hex8ToCss(_btnStyleFor('top-version').fg);
+    statsEl.style.opacity = '1';
+    fetch('./service-worker.js?nocache=' + Date.now(), { cache: 'no-store' })
+      .then(r => r.text())
+      .then(t => {
+        const m = t.match(/habit-tracker-v(\d+)/);
+        const remoteVer = m ? parseInt(m[1]) : 0;
+        if (remoteVer === localVer) {
+          statsEl.innerHTML = 'CDN synced v' + remoteVer;
+          statsEl.style.color = '#99ff99';
+        } else {
+          statsEl.innerHTML = 'CDN: v' + remoteVer + '<br>local: v' + localVer;
+          statsEl.style.color = '#ffaa00';
+        }
+        statsEl.style.opacity = '1';
+        setTimeout(() => { statsEl.innerHTML = orig; statsEl.style.color = origColor; statsEl.style.opacity = '0.4'; _pending = false; }, 3000);
+      })
+      .catch(() => {
+        statsEl.innerHTML = 'fetch failed';
+        statsEl.style.color = '#ff6666';
+        statsEl.style.opacity = '1';
+        setTimeout(() => { statsEl.innerHTML = orig; statsEl.style.color = origColor; statsEl.style.opacity = '0.4'; _pending = false; }, 3000);
+      });
+  };
+})();
