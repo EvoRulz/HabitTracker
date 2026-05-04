@@ -1,4 +1,4 @@
- // @version 1222
+ // @version 1228
 
   // ── Constants ──────────────────────────────────────────────
   const MIN_DATE       = new Date("2026-03-14");

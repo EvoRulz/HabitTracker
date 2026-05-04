@@ -1,4 +1,4 @@
-// @version 1222
+// @version 1228
 
 document.querySelectorAll('.alpha-slider').forEach(function(s){
   if (s.closest('.color-settings-row')) return;

@@ -1,4 +1,4 @@
-// @version 1222
+// @version 1228
 
 // ── IndexedDB image store ──────────────────────────────────
 if (navigator.storage && navigator.storage.persist) {
