@@ -409,14 +409,6 @@ if (navigator.storage && navigator.storage.persist) {
       _vBtn.onpointerdown = () => { _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').tap); };
       _vBtn.onpointerup = () => {
         _versionItem.style.background = _bgCss(_btnStyleFor('top-version').bg);
-        const _statsEl = document.getElementById('app-stats');
-        if (_statsEl && _statsEl.dataset.swOrig) {
-          _statsEl.innerHTML = _statsEl.dataset.swOrig;
-          _statsEl.style.color = _statsEl.dataset.swOrigColor || '';
-          _statsEl.style.opacity = '0.4';
-          delete _statsEl.dataset.swOrig;
-          delete _statsEl.dataset.swOrigColor;
-        }
         if(localStorage.getItem('_versionUpdatePending')==='1'){
           const _prev=localStorage.getItem('_versionPrevFg');
           if(_prev){_btnStyles['top-version']=Object.assign({},_btnStyles['top-version']||{},{fg:_prev});localStorage.setItem('_btnStyles',JSON.stringify(_btnStyles));applyBtnStyle();}
