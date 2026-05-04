@@ -303,9 +303,14 @@ window.addEventListener('load', function() {
       w: rect.width, h: rect.height,
       ghost: null, lastOver: null, active: false, pointerId: e.pointerId,
     };
-    swReady = true;
-    swGrid.style.touchAction = 'none';
-    const _so = document.getElementById('settings-overlay'); if (_so) _so.style.overflowY = 'hidden';
+    swReady = false;
+    swHoldTimer = setTimeout(() => {
+      if (swDrag) {
+        swReady = true;
+        swGrid.style.touchAction = 'none';
+        const _so = document.getElementById('settings-overlay'); if (_so) _so.style.overflowY = 'hidden';
+      }
+    }, 400);
   });
 
   swGrid.addEventListener('pointermove', e => {

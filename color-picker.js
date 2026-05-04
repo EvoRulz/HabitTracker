@@ -614,7 +614,7 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
     const sw = _resolveSwatchEl(e);
     if (!sw) return;
     e.preventDefault();
-    _swatchDownX = e.clientX; _swatchDownY = e.clientY; _swatchDownEl = sw;
+    _swatchDownX = e.clientX; _swatchDownY = e.clientY; _swatchDownEl = sw; sw.style.boxShadow = '0 0 10px 4px rgba(255,255,255,0.75)';
   }, true);
 
   document.addEventListener('pointerup', function(e) {
@@ -622,11 +622,13 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
     const sw = _swatchDownEl;
     const moved = Math.hypot(e.clientX - (_swatchDownX || 0), e.clientY - (_swatchDownY || 0));
     _swatchDownX = null; _swatchDownY = null; _swatchDownEl = null;
+    sw.style.boxShadow = '';
     if (moved > 8) return;
     activeSwatch === sw ? close() : openFor(sw);
   }, true);
 
   document.addEventListener('pointercancel', function() {
+    if (_swatchDownEl) _swatchDownEl.style.boxShadow = '';
     _swatchDownX = null; _swatchDownY = null; _swatchDownEl = null;
   }, true);
 
