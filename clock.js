@@ -187,16 +187,33 @@ dateEl.closest(".top-item").addEventListener("click", () => {
             const vEl = document.getElementById('app-version');
             if (!vEl) return;
             if (ev.data.type === 'sw-installing') {
+              const vEl = document.getElementById('app-version');
+              if (!vEl) return;
               vEl.dataset.swPrev = vEl.textContent;
-              vEl.textContent = 'loading...';
-              vEl.style.opacity = '0.5';
+              vEl.textContent = 'updating...';
+              vEl.style.color = '#ffaa00';
+              vEl.style.fontWeight = 'bold';
             } else if (ev.data.type === 'sw-installed') {
+              const vEl = document.getElementById('app-version');
+              if (!vEl) return;
               vEl.textContent = vEl.dataset.swPrev || vEl.textContent;
-              vEl.style.opacity = '';
+              vEl.style.color = '';
+              vEl.style.fontWeight = '';
             } else if (ev.data.type === 'sw-activated') {
-              vEl.style.outline = '2px solid #99ff99';
-              vEl.style.borderRadius = '3px';
-              setTimeout(() => { vEl.style.outline = ''; vEl.style.borderRadius = ''; }, 2000);
+              const vEl = document.getElementById('app-version');
+              if (!vEl) return;
+              vEl.style.background = '#99ff99';
+              vEl.style.color = '#000';
+              vEl.style.borderRadius = '4px';
+              vEl.style.padding = '2px 6px';
+              vEl.style.fontWeight = 'bold';
+              setTimeout(() => {
+                vEl.style.background = '';
+                vEl.style.color = '';
+                vEl.style.borderRadius = '';
+                vEl.style.padding = '';
+                vEl.style.fontWeight = '';
+              }, 3000);
             }
           });
         })

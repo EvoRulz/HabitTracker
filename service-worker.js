@@ -1,4 +1,4 @@
-const CACHE = "habit-tracker-v1202";
+const CACHE = "habit-tracker-v1203";
 
 const ASSETS = [
   "./",
@@ -66,10 +66,10 @@ self.addEventListener("install", e => {
   e.waitUntil(
     caches.open(CACHE).then(c => {
       console.log("Caching assets...");
-      self.clients.matchAll().then(cls => cls.forEach(c2 => c2.postMessage({type:"sw-installing"})));
+      self.clients.matchAll({includeUncontrolled:true,type:'window'}).then(cls => cls.forEach(c2 => c2.postMessage({type:"sw-installing"})));
       return c.addAll(ASSETS);
     }).then(() => {
-      self.clients.matchAll().then(cls => cls.forEach(c2 => c2.postMessage({type:"sw-installed"})));
+      self.clients.matchAll({includeUncontrolled:true,type:'window'}).then(cls => cls.forEach(c2 => c2.postMessage({type:"sw-installed"})));
     })
   );
   self.skipWaiting();
@@ -87,7 +87,7 @@ self.addEventListener("activate", e => {
         })
       )
     ).then(() => {
-      self.clients.matchAll().then(cls => cls.forEach(c2 => c2.postMessage({type:"sw-activated"})));
+      self.clients.matchAll({includeUncontrolled:true,type:'window'}).then(cls => cls.forEach(c2 => c2.postMessage({type:"sw-activated"})));
     })
   );
   self.clients.claim();
