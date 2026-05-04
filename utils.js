@@ -1,4 +1,4 @@
- // @version 1234
+ // @version 1235
 
   // ── Constants ──────────────────────────────────────────────
   const MIN_DATE       = new Date("2026-03-14");
@@ -146,7 +146,7 @@ async function toggleOrientLock() {
     }
     const lb = document.getElementById('zoom-label');
     if (lb) lb.textContent = val + '%';
-    localStorage.setItem('_zoom', val);
+    requestAnimationFrame(() => window.scrollTo(0, document.body.scrollHeight));
   }
   window._dragEnabled = true;
   window._interactEnabled = true;
@@ -171,6 +171,7 @@ async function toggleOrientLock() {
     if (t) t.classList.toggle('on', window._interactEnabled);
     document.body.classList.toggle('interact-locked', !window._interactEnabled);
   }
+
 
 
 
