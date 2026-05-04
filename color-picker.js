@@ -476,6 +476,26 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
   });
   document.body.appendChild(el);
 
+  (function() {
+    let ox = 0, oy = 0, active = false;
+    el.addEventListener('pointerdown', function(e) {
+      if (e.target.closest('input, button, .alpha-slider, #cp-grad-hw')) return;
+      const r = el.getBoundingClientRect();
+      ox = e.clientX - r.left; oy = e.clientY - r.top;
+      active = true; el.style.cursor = 'grabbing';
+      el.setPointerCapture(e.pointerId);
+      e.stopPropagation(); e.preventDefault();
+    });
+    el.addEventListener('pointermove', function(e) {
+      if (!active) return;
+      el.style.left = Math.max(0, Math.min(window.innerWidth - el.offsetWidth, e.clientX - ox)) + 'px';
+      el.style.top  = Math.max(0, Math.min(window.innerHeight - el.offsetHeight, e.clientY - oy)) + 'px';
+      e.preventDefault();
+    });
+    el.addEventListener('pointerup',     () => { active = false; el.style.cursor = ''; });
+    el.addEventListener('pointercancel', () => { active = false; el.style.cursor = ''; });
+  })();
+
   makeDragger(el.querySelector('#cp-hue'), v => { H = v; commitColor(); });
   makeDragger(el.querySelector('#cp-sat'), v => { S = v; commitColor(); });
   makeDragger(el.querySelector('#cp-bri'), v => { B = v; commitColor(); });
