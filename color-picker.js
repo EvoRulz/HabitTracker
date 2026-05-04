@@ -477,23 +477,37 @@ el.querySelectorAll('.cp-field-label').forEach(function(label) {
   document.body.appendChild(el);
 
   (function() {
-    let ox = 0, oy = 0, active = false;
+    let ox = 0, oy = 0, active = false, holdTimer = null, holdReady = false;
     el.addEventListener('pointerdown', function(e) {
       if (e.target.closest('input, button, .alpha-slider, #cp-grad-hw')) return;
       const r = el.getBoundingClientRect();
       ox = e.clientX - r.left; oy = e.clientY - r.top;
-      active = true; el.style.cursor = 'grabbing';
+      holdReady = false;
+      holdTimer = setTimeout(() => {
+        holdReady = true;
+        el.style.boxShadow = '0 0 0 3px rgba(255,255,255,0.85), 0 4px 24px rgba(0,0,0,0.65)';
+        el.style.cursor = 'grab';
+      }, 1000);
       el.setPointerCapture(e.pointerId);
       e.stopPropagation(); e.preventDefault();
     });
     el.addEventListener('pointermove', function(e) {
-      if (!active) return;
+      if (!holdReady) return;
+      if (!active) { active = true; el.style.cursor = 'grabbing'; }
       el.style.left = Math.max(0, Math.min(window.innerWidth - el.offsetWidth, e.clientX - ox)) + 'px';
       el.style.top  = Math.max(0, Math.min(window.innerHeight - el.offsetHeight, e.clientY - oy)) + 'px';
       e.preventDefault();
     });
-    el.addEventListener('pointerup',     () => { active = false; el.style.cursor = ''; });
-    el.addEventListener('pointercancel', () => { active = false; el.style.cursor = ''; });
+    el.addEventListener('pointerup', () => {
+      clearTimeout(holdTimer); holdTimer = null;
+      active = false; holdReady = false;
+      el.style.cursor = ''; el.style.boxShadow = '';
+    });
+    el.addEventListener('pointercancel', () => {
+      clearTimeout(holdTimer); holdTimer = null;
+      active = false; holdReady = false;
+      el.style.cursor = ''; el.style.boxShadow = '';
+    });
   })();
 
   makeDragger(el.querySelector('#cp-hue'), v => { H = v; commitColor(); });
