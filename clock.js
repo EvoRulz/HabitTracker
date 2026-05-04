@@ -190,6 +190,7 @@ dateEl.closest(".top-item").addEventListener("click", () => {
               const vEl = document.getElementById('app-version');
               if (!vEl) return;
               vEl.dataset.swPrev = vEl.textContent;
+              vEl.dataset.swPrevColor = vEl.style.color;
               vEl.textContent = 'updating...';
               vEl.style.color = '#ffaa00';
               vEl.style.fontWeight = 'bold';
@@ -197,7 +198,7 @@ dateEl.closest(".top-item").addEventListener("click", () => {
               const vEl = document.getElementById('app-version');
               if (!vEl) return;
               vEl.textContent = vEl.dataset.swPrev || vEl.textContent;
-              vEl.style.color = '';
+              vEl.style.color = vEl.dataset.swPrevColor || '';
               vEl.style.fontWeight = '';
             } else if (ev.data.type === 'sw-activated') {
               const vEl = document.getElementById('app-version');
