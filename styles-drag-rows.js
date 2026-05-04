@@ -260,17 +260,15 @@ window.addEventListener('load', function() {
   });
 });
 (function() {
-  let swDrag = null, swHoldTimer = null, swReady = false;
+  let swDrag = null;
   const swGrid = document.getElementById('sg-swatches');
   if (!swGrid) return;
+  swGrid.style.touchAction = 'none';
 
   function swCancel() {
-    clearTimeout(swHoldTimer); swHoldTimer = null; swReady = false;
-    swGrid.style.touchAction = '';
     const _so = document.getElementById('settings-overlay'); if (_so) _so.style.overflowY = '';
     if (swDrag) {
       try { swGrid.releasePointerCapture(swDrag.pointerId); } catch {}
-      swDrag.item.style.boxShadow = '';
       swDrag.item.style.opacity = '';
       if (swDrag.ghost) { swDrag.ghost.remove(); swDrag.ghost = null; }
     }
@@ -304,30 +302,17 @@ window.addEventListener('load', function() {
       w: rect.width, h: rect.height,
       ghost: null, lastOver: null, active: false, pointerId: e.pointerId,
     };
-    swReady = false;
     swGrid.setPointerCapture(e.pointerId);
-    swHoldTimer = setTimeout(() => {
-      if (swDrag) {
-        swReady = true;
-        swGrid.style.touchAction = 'none';
-        const _so = document.getElementById('settings-overlay'); if (_so) _so.style.overflowY = 'hidden';
-        swDrag.item.style.boxShadow = '0 0 14px 5px rgba(255,255,255,0.85)';
-      }
-    }, 400);
   });
 
   swGrid.addEventListener('pointermove', e => {
     if (!swDrag) return;
     const moved = Math.hypot(e.clientX - swDrag.startX, e.clientY - swDrag.startY);
-    if (!swReady) {
-      if (moved > 12) swCancel();
-      return;
-    }
     e.preventDefault();
     if (!swDrag.active) {
-      if (moved < 4) return;
+      if (moved < 6) return;
       swDrag.active = true;
-      swDrag.item.style.boxShadow = '';
+      const _so = document.getElementById('settings-overlay'); if (_so) _so.style.overflowY = 'hidden';
       const rect = swDrag.item.getBoundingClientRect();
       swDrag.offX = swDrag.startX - rect.left;
       swDrag.offY = swDrag.startY - rect.top;
