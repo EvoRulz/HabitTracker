@@ -413,8 +413,9 @@ if (navigator.storage && navigator.storage.persist) {
           const _prev=localStorage.getItem('_versionPrevFg');
           if(_prev){_btnStyles['top-version']=Object.assign({},_btnStyles['top-version']||{},{fg:_prev});localStorage.setItem('_btnStyles',JSON.stringify(_btnStyles));applyBtnStyle();}
           localStorage.removeItem('_versionUpdatePending');
-        }
-        if (window._versionCheckState === 'synced') {
+      return;
+    }
+    if (window._versionCheckState === 'synced') {
           const _statsEl = document.getElementById('app-stats');
           if (_statsEl && _statsEl.dataset.swOrig) {
             _statsEl.innerHTML = _statsEl.dataset.swOrig;
