@@ -1,4 +1,4 @@
-/* @version 1248 */
+/* @version 1249 */
 
 /* ── Settings cog & panel ── */
     #settings-cog {
@@ -514,7 +514,7 @@ input[type="checkbox"]:hover {
       width: var(--slider-handle-w, 16px);
       height: var(--slider-handle-h, 16px);
       border-radius: var(--slider-handle-r, 3%);
-      background: var(--slider-handle-color, #fff);
+      background: radial-gradient(circle, transparent calc(var(--slider-handle-hole, 0) * 1%), var(--slider-handle-color, #fff) calc(var(--slider-handle-hole, 0) * 1%));
       border: 1px solid var(--slider-handle-border, transparent);
       cursor: pointer;
       box-sizing: border-box;
@@ -523,7 +523,7 @@ input[type="checkbox"]:hover {
       width: var(--slider-handle-w, 16px);
       height: var(--slider-handle-h, 16px);
       border-radius: var(--slider-handle-r, 3%);
-      background: var(--slider-handle-color, #fff);
+      background: radial-gradient(circle, transparent calc(var(--slider-handle-hole, 0) * 1%), var(--slider-handle-color, #fff) calc(var(--slider-handle-hole, 0) * 1%));
       border: 1px solid var(--slider-handle-border, transparent);
       cursor: pointer;
       box-sizing: border-box;
@@ -550,6 +550,7 @@ input[type="checkbox"]:hover {
   padding: 20px;
   box-sizing: border-box;
 }
+
 
 
 
