@@ -1,4 +1,4 @@
- // @version 1242
+ // @version 1243
 
   // ── Constants ──────────────────────────────────────────────
   const MIN_DATE       = new Date("2026-03-14");
@@ -125,11 +125,13 @@ async function toggleOrientLock() {
         wrapper.style.transform = '';
         wrapper.style.transformOrigin = '';
         wrapper.style.width = '';
+        wrapper.style.height = '';
       } else {
         const scale = val / 100;
-        wrapper.style.transformOrigin = 'top left';
+        wrapper.style.transformOrigin = 'top center';
         wrapper.style.transform = 'scale(' + scale + ')';
         wrapper.style.width = (100 / scale) + '%';
+        wrapper.style.height = (wrapper.scrollHeight * scale) + 'px';
       }
     }
     const sl = document.getElementById('zoom-slider');
@@ -150,11 +152,13 @@ async function toggleOrientLock() {
         wrapper.style.transform = '';
         wrapper.style.transformOrigin = '';
         wrapper.style.width = '';
+        wrapper.style.height = '';
       } else {
         const scale = val / 100;
-        wrapper.style.transformOrigin = 'top left';
+        wrapper.style.transformOrigin = 'top center';
         wrapper.style.transform = 'scale(' + scale + ')';
         wrapper.style.width = (100 / scale) + '%';
+        wrapper.style.height = (wrapper.scrollHeight * scale) + 'px';
       }
     }
     if (spacer) spacer.style.height = '0';
@@ -185,6 +189,7 @@ async function toggleOrientLock() {
     if (t) t.classList.toggle('on', window._interactEnabled);
     document.body.classList.toggle('interact-locked', !window._interactEnabled);
   }
+
 
 
 
