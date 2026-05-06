@@ -1,4 +1,4 @@
-/* @version 1249 */
+/* @version 1250 */
 
 /* ── Settings cog & panel ── */
     #settings-cog {
@@ -431,8 +431,8 @@ input[type="checkbox"]:hover {
       border-top: 1px solid #333;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 8px;
       z-index: 99990;
       box-sizing: border-box;
       padding: 6px 12px;
@@ -446,7 +446,6 @@ input[type="checkbox"]:hover {
     }
     .ctrl-zoom-group {
       flex: 1;
-      max-width: 220px;
     }
     .ctrl-label { font-size: 12px; color: #888; user-select: none; -webkit-user-select: none; }
     .ctrl-divider { width: 1px; height: 24px; background: #333; margin: 0 4px; }
@@ -550,6 +549,7 @@ input[type="checkbox"]:hover {
   padding: 20px;
   box-sizing: border-box;
 }
+
 
 
 

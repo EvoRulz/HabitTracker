@@ -1,4 +1,4 @@
-// @version 1249
+// @version 1250
 
 // ── IndexedDB image store ──────────────────────────────────
 if (navigator.storage && navigator.storage.persist) {
@@ -510,6 +510,7 @@ if (navigator.storage && navigator.storage.persist) {
       if (_vNumSpan) _vNumSpan.style.fontFamily = _btnStyleFor('top-version').font;
     if (_vBtn) {
       _vBtn.onpointerdown = () => { _versionItem.style.background = hex8ToCss(_btnStyleFor('top-version').tap); };
+      _vBtn.onpointerleave = () => { _versionItem.style.background = _bgCss(_btnStyleFor('top-version').bg); };
       _vBtn.onpointerup = () => {
         _versionItem.style.background = _bgCss(_btnStyleFor('top-version').bg);
         if(localStorage.getItem('_versionUpdatePending')==='1'){
@@ -572,6 +573,7 @@ if (navigator.storage && navigator.storage.persist) {
     wrap.appendChild(overlay);
   });
   applyBtnStyle(true);
+
 
 
 
