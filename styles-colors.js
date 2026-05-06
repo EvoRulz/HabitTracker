@@ -1,4 +1,4 @@
-// @version 1246
+// @version 1247
 
 // ── Settings panel logic ───────────────────────────────────
   function onColorPickerChange(id) {
@@ -250,6 +250,7 @@ function onHexInput(id) {
     appStyle.statusBarMode   = document.getElementById('s-app-statusbar-mode')?.value || 'auto';
     appStyle.statusBarColor  = getColorValue('s-app-statusbar-color');
     appStyle.statusBarStops  = window._cpGetGradientStops ? window._cpGetGradientStops('s-app-statusbar-color') : null;
+    appStyle.statusBarIconStyle = document.getElementById('s-app-statusbar-icons')?.value || 'auto';
     const _padEl = document.getElementById("s-app-padding"); if (_padEl) appStyle.padding = Number(_padEl.value);
     collectAppStops();
     applyAppStyle();
@@ -282,6 +283,7 @@ function onHexInput(id) {
     if (thumb) { thumb.src = ""; prev.style.display = "none"; }
     buildAppBg();
   }
+
 
 
 
