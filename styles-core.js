@@ -1,4 +1,4 @@
-// @version 1245
+// @version 1246
 
 // ── IndexedDB image store ──────────────────────────────────
 if (navigator.storage && navigator.storage.persist) {
@@ -289,6 +289,7 @@ if (navigator.storage && navigator.storage.persist) {
     document.documentElement.style.setProperty("--bar-total-color",  hex8ToCss(appStyle.barTotal));
     document.documentElement.style.setProperty("--bar-streak-color", hex8ToCss(appStyle.barStreak));
     _applyStatusBarColor();
+  }
   applyAppStyle();
 
   const BTN_STYLE_DEFAULTS = { bg: "#444444FF", fg: "#FFFFFFFF", font: "sans-serif", glow: "#9659FFFF", activeGlow: "#9659FFFF", activeBg: "#555555FF", tap: "#FFFFFF40", tapHighlight: "#0000FFFF", btnRadius: 6, sliderBorder: "#555555FF", sliderHandleBorder: "#00000000", sliderH: 8, sliderR: 4, sliderW: 100, sliderHandleW: 16, checkboxChecked: "#90EE90FF", checkboxMark: "#000000FF", checkboxBorder: "#555555FF", checkboxBg: "#111111FF", sliderHandleHole: 0, clockDateColor: "#666666FF", clockTimeColor: "#666666FF", clockDateSize: 13, clockTimeSize: 13, clockBg: "#00000000" };
@@ -571,6 +572,7 @@ if (navigator.storage && navigator.storage.persist) {
     wrap.appendChild(overlay);
   });
   applyBtnStyle(true);
+
 
 
 
