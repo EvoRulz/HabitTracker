@@ -1,4 +1,4 @@
-// @version 1244
+// @version 1245
 
 function settingsExport() {
     const clk = window._clockGet();
@@ -262,6 +262,11 @@ _btnStyles['top-date'] = Object.assign(_btnStyles['top-date'] || {}, {
     if (window._tumblerRenderPreviews) window._tumblerRenderPreviews();
     settingsUpdatePreview();
     document.querySelectorAll('.alpha-slider:not([id$="-alpha"])').forEach(s => updateSliderFill(s));
+    appStyle.statusBarMode   = document.getElementById('s-app-statusbar-mode')?.value || 'auto';
+    appStyle.statusBarColor = getColorValue('s-app-statusbar-color');
+    appStyle.statusBarStops = window._cpGetGradientStops ? window._cpGetGradientStops('s-app-statusbar-color') : null;
+    appStyle.statusBarIconStyle = document.getElementById('s-app-statusbar-icons')?.value || 'auto';
+    _applyStatusBarColor();
     if (window._cpRebuild && !window._cpActiveDrag) window._cpRebuild();
   }
   async function settingsReset() {
@@ -369,6 +374,7 @@ _btnStyles = {};
       _cogEl2.style.boxShadow   = `0 0 16px 5px ${hex8ToCss(s.glow)}`;
     }
   }
+
 
 
 

@@ -1,4 +1,4 @@
-// @version 1244
+// @version 1245
 
 // ── Settings open/close/save/cancel/reset/export/import ───
   let _appStyleSnapshot = null;
@@ -118,6 +118,12 @@
     document.getElementById('s-app-grad-dir-row').style.display = _isGrad ? '' : 'none';
     document.getElementById('s-app-pattern-wrap').style.display = _isPat  ? '' : 'none';
     document.getElementById('s-app-image-wrap').style.display   = _isImg  ? 'flex' : 'none';
+    const _sbModeEl2 = document.getElementById('s-app-statusbar-mode');
+    if (_sbModeEl2) _sbModeEl2.value = appStyle.statusBarMode || 'auto';
+    setColorValue('s-app-statusbar-color', appStyle.statusBarColor || '#111111FF');
+    const _sbRow2 = document.getElementById('s-app-statusbar-color-row');
+    if (_sbRow2) _sbRow2.style.display = (appStyle.statusBarMode === 'solid' || appStyle.statusBarMode === 'gradient') ? '' : 'none';
+    if (appStyle.statusBarStops && window._cpSetGradientStops) window._cpSetGradientStops('s-app-statusbar-color', appStyle.statusBarStops);
     if (window._cpSyncUI) window._cpSyncUI();
     const _fontSel = document.getElementById('s-font'); if (_fontSel) _fontSel.value = btnStyle.font;
     if (window.fontPickerSync) window.fontPickerSync();
@@ -272,6 +278,14 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     _s("s-app-img-pos",    appStyle.imgPos);
     _s("s-app-img-repeat", appStyle.imgRepeat);
     _s("s-app-img-attach", appStyle.imgAttach);
+    const _sbModeEl = document.getElementById('s-app-statusbar-mode');
+    if (_sbModeEl) _sbModeEl.value = appStyle.statusBarMode || 'auto';
+    const _sbIconEl = document.getElementById('s-app-statusbar-icons');
+    if (_sbIconEl) _sbIconEl.value = appStyle.statusBarIconStyle || 'auto';
+    setColorValue('s-app-statusbar-color', appStyle.statusBarColor || '#111111FF');
+    const _sbRow = document.getElementById('s-app-statusbar-color-row');
+    if (_sbRow) _sbRow.style.display = (appStyle.statusBarMode === 'solid' || appStyle.statusBarMode === 'gradient') ? '' : 'none';
+    if (appStyle.statusBarStops && window._cpSetGradientStops) window._cpSetGradientStops('s-app-statusbar-color', appStyle.statusBarStops);
     _s("s-app-padding",    appStyle.padding);
     setColorValue("s-app-pat-color",  appStyle.patColor);
     setColorValue("s-app-pat-bg",     appStyle.patBg);
@@ -381,6 +395,7 @@ const _rvVal = document.getElementById("s-radius-val"); if (_rvVal) _rvVal.textC
     settingsRedo   = dbounce(settingsRedo);
     settingsCancel = dbounce(settingsCancel);
     })();
+
 
 
 

@@ -1,4 +1,4 @@
-// @version 1244
+// @version 1245
 
 /*
  * Copyright 2020 Google Inc.
@@ -32,11 +32,15 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import androidx.core.app.NotificationCompat;
 import android.webkit.WebView;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 public class LauncherActivity
         extends com.google.androidbrowserhelper.trusted.LauncherActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
         Intent intent = getIntent();
         Uri data = intent != null ? intent.getData() : null;
         if (data != null && "appsettings".equals(data.getScheme())) {
@@ -70,6 +74,13 @@ public class LauncherActivity
             Intent myFilesIntent = new Intent(android.app.DownloadManager.ACTION_VIEW_DOWNLOADS);
             myFilesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try { startActivity(myFilesIntent); } catch (Exception ignored) {}
+        }
+        @JavascriptInterface
+        public void setStatusBarIconColor(boolean lightIcons) {
+            runOnUiThread(() -> {
+                WindowInsetsControllerCompat wic = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+                if (wic != null) wic.setAppearanceLightStatusBars(!lightIcons);
+            });
         }
         @JavascriptInterface
         public void openAlarmSettings() {
@@ -289,6 +300,7 @@ public class LauncherActivity
         return uri;
     }
 }
+
 
 
 
