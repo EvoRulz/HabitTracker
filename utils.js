@@ -1,4 +1,4 @@
- // @version 1241
+ // @version 1242
 
   // ── Constants ──────────────────────────────────────────────
   const MIN_DATE       = new Date("2026-03-14");
@@ -176,7 +176,7 @@ async function toggleOrientLock() {
   }
   const keys = await caches.keys();
   for (const k of keys) await caches.delete(k);
-  location.reload(true);
+  window.location.replace(location.href.replace(/[?#].*$/, '') + '?t=' + Date.now());
 }
   
   function ctrlToggleInteract() {
@@ -185,6 +185,7 @@ async function toggleOrientLock() {
     if (t) t.classList.toggle('on', window._interactEnabled);
     document.body.classList.toggle('interact-locked', !window._interactEnabled);
   }
+
 
 
 
