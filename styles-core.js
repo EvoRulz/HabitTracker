@@ -1,4 +1,4 @@
-// @version 1250
+// @version 1248
 
 // ── IndexedDB image store ──────────────────────────────────
 if (navigator.storage && navigator.storage.persist) {
@@ -385,6 +385,7 @@ if (navigator.storage && navigator.storage.persist) {
   } catch {}
   function _btnStyleFor(id) {
     const base = { bg: btnStyle.bg, fg: btnStyle.fg, glow: btnStyle.glow, activeGlow: btnStyle.activeGlow || btnStyle.glow, activeBg: btnStyle.activeBg, font: btnStyle.font, tap: btnStyle.tap, btnRadius: btnStyle.btnRadius ?? 6 };
+    const _cachedVersionColor = localStorage.getItem('_versionColor');
     const TOP_GRID_DEFAULTS = {
       'top-clear-all':     { bg: '#5a1a1aFF', fg: '#ff9999FF' },
       'top-settings':      { bg: '#2a2a2aFF', fg: '#999999FF' },
@@ -393,7 +394,7 @@ if (navigator.storage && navigator.storage.persist) {
       'top-manage-habits': { bg: '#444444FF', fg: '#FFFFFFFF' },
       'top-orient-lock':        { bg: '#2a2a2aFF', fg: '#999999FF', glow: '#00000000' },
       'top-orient-lock-locked': { bg: '#2a2a2aFF', fg: '#99ff99FF', glow: '#00000000' },
-      'top-version':       { bg: '#444444FF', fg: '#FFFFFFFF' },
+      'top-version':       { bg: '#444444FF', fg: _cachedVersionColor || '#FFFFFFFF' },
       };
     return Object.assign({}, base, TOP_GRID_DEFAULTS[id] || {}, _btnStyles[id] || {});
   }
@@ -538,7 +539,7 @@ if (navigator.storage && navigator.storage.persist) {
     }
     const _versionNumSpan = document.getElementById('app-version');
     const _versionStatsSpan = document.getElementById('app-stats');
-    if (_versionNumSpan) _versionNumSpan.style.color = _versionColor;
+    if (_versionNumSpan) { _versionNumSpan.style.color = _versionColor; _versionNumSpan.style.visibility = ''; }
     if (_versionStatsSpan) { _versionStatsSpan.style.color = _versionColor; _versionStatsSpan.style.opacity = '0.4'; }
 
     buttonsEl.querySelectorAll(".tracker-btn[data-id]").forEach(btn => {
@@ -573,6 +574,7 @@ if (navigator.storage && navigator.storage.persist) {
     wrap.appendChild(overlay);
   });
   applyBtnStyle(true);
+
 
 
 
