@@ -1,4 +1,4 @@
-/* @version 1243 */
+/* @version 1244 */
 
 /* ── Settings cog & panel ── */
     #settings-cog {
@@ -495,18 +495,19 @@ input[type="checkbox"]:hover {
   align-items: flex-start;
   gap: 12px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#zoom-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 48px;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+#zoom-wrapper::-webkit-scrollbar { display: none; }
+#zoom-content {
+  transform-origin: top center;
+  padding: 20px;
+  box-sizing: border-box;
+}
