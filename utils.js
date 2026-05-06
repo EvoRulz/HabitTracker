@@ -1,4 +1,4 @@
- // @version 1240
+ // @version 1241
 
   // ── Constants ──────────────────────────────────────────────
   const MIN_DATE       = new Date("2026-03-14");
@@ -120,11 +120,17 @@ async function toggleOrientLock() {
     const val = parseInt(saved);
     const wrapper = document.getElementById('zoom-wrapper');
     if (wrapper) {
-      wrapper.style.zoom = val === 100 ? '' : (val / 100).toString();
-      wrapper.style.transform = '';
-      wrapper.style.transformOrigin = '';
-      wrapper.style.width = '';
-      wrapper.style.marginLeft = '';
+      wrapper.style.zoom = '';
+      if (val === 100) {
+        wrapper.style.transform = '';
+        wrapper.style.transformOrigin = '';
+        wrapper.style.width = '';
+      } else {
+        const scale = val / 100;
+        wrapper.style.transformOrigin = 'top left';
+        wrapper.style.transform = 'scale(' + scale + ')';
+        wrapper.style.width = (100 / scale) + '%';
+      }
     }
     const sl = document.getElementById('zoom-slider');
     const lb = document.getElementById('zoom-label');
@@ -139,11 +145,17 @@ async function toggleOrientLock() {
     const wrapper = document.getElementById('zoom-wrapper');
     const spacer = document.getElementById('zoom-spacer');
     if (wrapper) {
-      wrapper.style.zoom = val === 100 ? '' : (val / 100).toString();
-      wrapper.style.transform = '';
-      wrapper.style.transformOrigin = '';
-      wrapper.style.width = '';
-      wrapper.style.marginLeft = '';
+      wrapper.style.zoom = '';
+      if (val === 100) {
+        wrapper.style.transform = '';
+        wrapper.style.transformOrigin = '';
+        wrapper.style.width = '';
+      } else {
+        const scale = val / 100;
+        wrapper.style.transformOrigin = 'top left';
+        wrapper.style.transform = 'scale(' + scale + ')';
+        wrapper.style.width = (100 / scale) + '%';
+      }
     }
     if (spacer) spacer.style.height = '0';
     const lb = document.getElementById('zoom-label');
@@ -173,6 +185,7 @@ async function toggleOrientLock() {
     if (t) t.classList.toggle('on', window._interactEnabled);
     document.body.classList.toggle('interact-locked', !window._interactEnabled);
   }
+
 
 
 
