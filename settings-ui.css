@@ -1,4 +1,4 @@
-/* @version 1251 */
+/* @version 1252 */
 
 /* ── Settings cog & panel ── */
     #settings-cog {
@@ -120,7 +120,7 @@
     .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; }
     .settings-row label { font-size: 13px; color: #bbb; white-space: nowrap; }
     .settings-row input[type="color"] {
-      width: 34px; height: 34px; border: 1px solid #555; border-radius: 4px;.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; }
+      width: 34px; height: 34px; border: 1px solid #555; border-radius: 4px;
       background: none; cursor: pointer; padding: 2px 3px; flex-shrink: 0;
     }
     .settings-row select {
@@ -496,11 +496,11 @@ input[type="checkbox"]:hover {
     body.interact-locked .cf-arrow { pointer-events: none; }
     body { padding-bottom: 80px !important; }
     #zoom-slider {
-      width: 100%;
+      width: var(--slider-w, 100%);
       height: var(--slider-h, 8px);
       cursor: pointer;
       flex-shrink: 0;
-      border-radius: var(--slider-spread, 4px);
+      border-radius: var(--slider-spread, 4px) / var(--slider-r, 4px);
       border: 1px solid var(--slider-border-color, #555);
       outline: none;
       appearance: none;
@@ -549,6 +549,7 @@ input[type="checkbox"]:hover {
   padding: 20px;
   box-sizing: border-box;
 }
+
 
 
 
